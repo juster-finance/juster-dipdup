@@ -1,0 +1,100 @@
+spec_version: 0.1
+package: demo_bets
+
+database:
+  kind: sqlite
+  path: bets.sqlite3
+
+contracts:
+  coinbase_storage_mainnet:
+    address: KT1Jr5t9UvGiqkvvsuUbPJHaYx24NzdUwNW9
+    typename: storage
+  coinbase_normalizer_mainnet:
+    address: KT1AdbYiPYb5hDuEuVrfxmFehtnBCXv4Np7r
+    typename: normalizer
+  normalizer_edo2net:
+    address: KT1RCNpUEDjZAYhabjzgz1ZfxQijCDVMEaTZ
+    typename: normalizer
+  bets_edo2net:
+    address: KT1XNVYA3634qXHoJiN8y5qWbMxvhvx7qfxo
+    typename: bets
+
+datasources:
+  tzkt_staging_mainnet:
+    kind: tzkt
+    url: https://staging.api.tzkt.io
+  tzkt_staging_edo2net:
+    kind: tzkt
+    url: https://staging.api.edo2net.tzkt.io
+
+templates:
+  harbinger:
+    kind: big_map
+    datasource: <datasource>
+    handlers:
+      - callback: on_oracle_update
+        pattern:
+          - contract: <normalizer>
+            path: assetMap
+
+  bets:
+    kind: operation
+    datasource: <datasource>
+    contracts:
+      - <bets>
+    handlers:
+      - callback: on_new_event
+        pattern:
+          - type: transaction
+            destination: <bets>
+            entrypoint: newEvent
+      - callback: on_provide_liquidity
+        pattern:
+          - type: transaction
+            destination: <bets>
+            entrypoint: provideLiquidity
+      - callback: on_bet
+        pattern:
+          - type: transaction
+            destination: <bets>
+            entrypoint: bet
+      - callback: on_start_measurement
+        pattern:
+          - type: transaction
+            destination: <bets>
+            entrypoint: startMeasurementCallback
+          - type: transaction
+            source: <bets>
+      - callback: on_close
+        pattern:
+          - type: transaction
+            destination: <bets>
+            entrypoint: closeCallback
+          - type: transaction
+            source: <bets>
+      - callback: on_withdraw
+        pattern:
+          - type: transaction
+            destination: <bets>
+            entrypoint: withdraw
+          - type: transaction
+            source: <bets>
+
+indexes:
+  # harbinger_mainnet:
+  #   template: harbinger
+  #   values:
+  #     datasource: tzkt_staging_mainnet
+  #     normalizer: coinbase_normalizer_mainnet
+
+  harbinger_edo2net:
+    template: harbinger
+    values:
+      datasource: tzkt_staging_edo2net
+      normalizer: normalizer_edo2net
+    
+  bets_edo2net:
+    template: bets
+    values:
+      datasource: tzkt_staging_edo2net
+      bets: bets_edo2net
