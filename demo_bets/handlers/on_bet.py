@@ -21,30 +21,36 @@ async def on_bet(
     event.winForProfitLossPerShare=int(updated_event.winForProfitLossPerShare)  # type: ignore
 
     user, _ = await models.User.get_or_create(address=bet.data.sender_address)
-    args = dict(depositedBets=from_mutez(bet.storage.depositedBets[0].value))
     amount = from_mutez(cast(int, bet.data.amount))
+
+    ledger, _ = await models.Ledger.get_or_create(
+        event=event,
+        user=user,
+    )
+    ledger.depositedBets = from_mutez(bet.storage.depositedBets[0].value)
+
     if bet.storage.betsAgainstWinningLedger:
-        args['betsAgainstWinningLedger'] = from_mutez(bet.storage.betsAgainstWinningLedger[0].value)
+        new_reward = from_mutez(bet.storage.betsAgainstWinningLedger[0].value)
+        reward = new_reward - ledger.betsAgainstWinningLedger
+        ledger.betsAgainstWinningLedger = new_reward
         is_for = False
         event.totalBetsAgainst += 1  # type: ignore
     if bet.storage.betsForWinningLedger:
-        args['betsForWinningLedger'] = from_mutez(bet.storage.betsForWinningLedger[0].value)
+        new_reward = from_mutez(bet.storage.betsForWinningLedger[0].value)
+        reward = new_reward - ledger.betsForWinningLedger
+        ledger.betsAgainstWinningLedger = new_reward
         is_for = True
         event.totalBetsFor += 1  # type: ignore
     await event.save()
+    await ledger.save()
 
     await models.Bet(
         event=event,
         user=user,
         amount=amount,
+        reward=reward,
         isFor=is_for,
     ).save()
-
-    await models.Ledger.update_or_create(
-        event=event,
-        user=user,
-        defaults=args,
-    )
 
     user.totalBets += 1  # type: ignore
     user.totalDepositedBets += amount  # type: ignore

@@ -82,6 +82,7 @@ class Bet(Model):
 
     isFor = fields.BooleanField()
     amount = fields.DecimalField(10, 6)
+    reward = fields.DecimalField(10, 6)
 
     event = fields.ForeignKeyField('models.Event')
     user = fields.ForeignKeyField('models.User')
