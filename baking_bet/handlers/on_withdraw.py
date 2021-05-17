@@ -2,10 +2,10 @@ from typing import Optional
 
 from dipdup.models import OperationData, OperationHandlerContext, OriginationContext, TransactionContext
 
-import demo_bets.models as models
-from demo_bets.utils import from_mutez
-from demo_bets.types.bets.parameter.withdraw import WithdrawParameter
-from demo_bets.types.bets.storage import BetsStorage
+import baking_bet.models as models
+from baking_bet.utils import from_mutez
+from baking_bet.types.bets.parameter.withdraw import WithdrawParameter
+from baking_bet.types.bets.storage import BetsStorage
 from typing import cast
 
 

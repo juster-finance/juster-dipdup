@@ -1,6 +1,6 @@
 [tool.poetry]
-name = "dipdup-bets"
-version = "0.1.0"
+name = "baking-bet"
+version = "0.0.1"
 description = ""
 authors = ["Lev Gorodetskiy <github@droserasprout.space>"]
 
