@@ -17,4 +17,4 @@ USER dipdup
 
 EXPOSE 8888
 ENTRYPOINT ["python", "-m", "dipdup"]
-CMD ["-c", "dipdup.yml", "run"]
+CMD ["-c", "dipdup.yml", "-c", "dipdup.prod.yml", "run"]

@@ -43,7 +43,7 @@ class Event(Model):
     winAgainstProfitLossPerShare = fields.BigIntField()
     winForProfitLossPerShare = fields.BigIntField()
 
-    user = fields.ForeignKeyField('models.User')
+    user = fields.ForeignKeyField('models.User', 'events')
     totalBetsFor = fields.IntField(default=0)
     totalBetsAgainst = fields.IntField(default=0)
 
@@ -73,8 +73,8 @@ class Ledger(Model):
 
     withdrawed = fields.BooleanField(default=False)
 
-    event = fields.ForeignKeyField('models.Event')
-    user = fields.ForeignKeyField('models.User')
+    event = fields.ForeignKeyField('models.Event', 'positions')
+    user = fields.ForeignKeyField('models.User', 'positions')
 
 
 class Bet(Model):
@@ -84,5 +84,5 @@ class Bet(Model):
     amount = fields.DecimalField(10, 6)
     reward = fields.DecimalField(10, 6)
 
-    event = fields.ForeignKeyField('models.Event')
-    user = fields.ForeignKeyField('models.User')
+    event = fields.ForeignKeyField('models.Event', 'bets')
+    user = fields.ForeignKeyField('models.User', 'bets')

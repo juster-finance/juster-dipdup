@@ -1,7 +1,7 @@
 version: "3.8"
 
 services:
-  baking_bet:
+  indexer:
     build: .
     depends_on:
       - db
@@ -30,7 +30,7 @@ services:
   hasura:
     image: hasura/graphql-engine:v1.3.3
     ports:
-      - 127.0.0.1:8080:8080
+      - 127.0.0.1:44000:8080
     depends_on:
       - db
     restart: always
