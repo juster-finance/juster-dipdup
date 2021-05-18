@@ -38,7 +38,7 @@ class Symbol(Model):
 
 class Quote(Model):
     id = fields.IntField(pk=True)
-    symbol = fields.ForeignKeyField("models.Symbol")
+    symbol = fields.ForeignKeyField("models.Symbol", "quotes")
     price = fields.BigIntField()
     timestamp = fields.DatetimeField()
 
@@ -52,7 +52,7 @@ class Event(Model):
     closedOracleTime = fields.DatetimeField()
     closedRate = fields.DecimalField(10, ratioPrecision)
     createdTime = fields.DatetimeField()
-    currencyPair = fields.ForeignKeyField("models.Symbol")
+    currencyPair = fields.ForeignKeyField("models.Symbol", "events")
     expirationFee = fields.DecimalField(10, 6)
     firstProviderAgainstSharesSum = fields.DecimalField(10, 6)
     firstProviderForSharesSum = fields.DecimalField(10, 6)
