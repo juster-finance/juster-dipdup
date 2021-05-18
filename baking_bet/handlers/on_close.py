@@ -9,6 +9,13 @@ from demo_bets.types.bets.parameter.close_callback import CloseCallbackParameter
 from demo_bets.types.bets.storage import BetsStorage
 from demo_bets.utils import from_mutez
 
+import baking_bet.models as models
+
+from baking_bet.types.bets.parameter.close_callback import CloseCallbackParameter
+from baking_bet.types.bets.storage import BetsStorage
+from baking_bet.utils import from_mutez
+from typing import cast
+from dateutil.parser import parse
 
 async def on_close(
     ctx: OperationHandlerContext,

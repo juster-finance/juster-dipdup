@@ -1,6 +1,6 @@
 [tool.poetry]
-name = "dipdup-bets"
-version = "0.1.0"
+name = "baking-bet"
+version = "0.0.1"
 description = ""
 authors = ["Lev Gorodetskiy <github@droserasprout.space>"]
 
@@ -8,6 +8,7 @@ authors = ["Lev Gorodetskiy <github@droserasprout.space>"]
 python = "^3.9"
 dipdup = {git = "https://github.com/dipdup-net/dipdup-py.git"}
 dateutils = "^0.6.12"
+click = "7.1.2"
 
 [tool.poetry.dev-dependencies]
 

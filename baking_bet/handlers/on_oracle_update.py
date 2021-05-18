@@ -5,6 +5,10 @@ from dipdup.models import BigMapContext, BigMapHandlerContext
 import demo_bets.models as models
 from demo_bets.types.normalizer.big_map.asset_map_key import AssetMapKey
 from demo_bets.types.normalizer.big_map.asset_map_value import AssetMapValue
+import baking_bet.models as models
+from baking_bet.types.normalizer.big_map.asset_map_key import AssetMapKey
+from baking_bet.types.normalizer.big_map.asset_map_value import AssetMapValue
+from dipdup.models import BigMapContext, BigMapHandlerContext
 
 
 async def on_oracle_update(
