@@ -11,5 +11,5 @@ async def on_rollback(
 ) -> None:
     if from_level - to_level == 1:
         return
-    _logger.warning('Rollback event received, reindexing')
+    _logger.warning("Rollback event received, reindexing")
     await reindex()

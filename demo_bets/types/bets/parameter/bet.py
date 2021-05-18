@@ -13,7 +13,7 @@ class BetItem(BaseModel):
 
 
 class BetItem1(BaseModel):
-    for_: Dict[str, Any] = Field(..., alias='for')
+    for_: Dict[str, Any] = Field(..., alias="for")
 
 
 class BetParameter(BaseModel):

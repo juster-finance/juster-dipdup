@@ -1,12 +1,12 @@
+from decimal import Decimal
 from typing import Optional
-from demo_bets.utils import from_mutez
 
 from dipdup.models import OperationData, OperationHandlerContext, OriginationContext, TransactionContext
 
 import demo_bets.models as models
-
 from demo_bets.types.bets.parameter.provide_liquidity import ProvideLiquidityParameter
 from demo_bets.types.bets.storage import BetsStorage
+from demo_bets.utils import from_mutez
 
 
 async def on_provide_liquidity(
@@ -34,8 +34,8 @@ async def on_provide_liquidity(
             liquidityAgainstSharesLedger=from_mutez(provide_liquidity.storage.liquidityAgainstSharesLedger[0].value),
             liquidityForSharesLedger=from_mutez(provide_liquidity.storage.liquidityForSharesLedger[0].value),
             providedLiquidityLedger=from_mutez(provide_liquidity.storage.providedLiquidityLedger[0].value),
-            winAgainstProfitLossPerShareAtEntry=provide_liquidity.storage.winAgainstProfitLossPerShareAtEntry[0].value,
-            winForProfitLossPerShareAtEntry=provide_liquidity.storage.winForProfitLossPerShareAtEntry[0].value,
+            winAgainstProfitLossPerShareAtEntry=models.to_share(provide_liquidity.storage.winAgainstProfitLossPerShareAtEntry[0].value),
+            winForProfitLossPerShareAtEntry=models.to_share(provide_liquidity.storage.winForProfitLossPerShareAtEntry[0].value),
         ),
     )
     user.totalLiquidityProvided += from_mutez(provide_liquidity.storage.providedLiquidityLedger[0].value)  # type: ignore

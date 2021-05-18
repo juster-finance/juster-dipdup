@@ -1,12 +1,13 @@
+from decimal import Decimal
 from typing import Optional, cast
 
 from dipdup.models import OperationData, OperationHandlerContext, OriginationContext, TransactionContext
 
 import demo_bets.models as models
-
 from demo_bets.types.bets.parameter.bet import BetParameter
 from demo_bets.types.bets.storage import BetsForWinningLedgerItem, BetsStorage
 from demo_bets.utils import from_mutez
+
 
 async def on_bet(
     ctx: OperationHandlerContext,
@@ -17,8 +18,8 @@ async def on_bet(
     event = await models.Event.filter(id=event_id).get()
     event.betsAgainstLiquidityPoolSum = from_mutez(updated_event.betsAgainstLiquidityPoolSum)  # type: ignore
     event.betsForLiquidityPoolSum = from_mutez(updated_event.betsForLiquidityPoolSum)  # type: ignore
-    event.winAgainstProfitLossPerShare=int(updated_event.winAgainstProfitLossPerShare)  # type: ignore
-    event.winForProfitLossPerShare=int(updated_event.winForProfitLossPerShare)  # type: ignore
+    event.winAgainstProfitLossPerShare = models.to_share(updated_event.winAgainstProfitLossPerShare)  # type: ignore
+    event.winForProfitLossPerShare = models.to_share(updated_event.winForProfitLossPerShare)  # type: ignore
 
     user, _ = await models.User.get_or_create(address=bet.data.sender_address)
     amount = from_mutez(cast(int, bet.data.amount))
