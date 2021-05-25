@@ -12,20 +12,20 @@ contracts:
   coinbase_normalizer_mainnet:
     address: KT1AdbYiPYb5hDuEuVrfxmFehtnBCXv4Np7r
     typename: normalizer
-  normalizer_edo2net:
-    address: KT1RCNpUEDjZAYhabjzgz1ZfxQijCDVMEaTZ
+  normalizer_florencenet:
+    address: KT1SUP27JhX24Kvr11oUdWswk7FnCW78ZyUn
     typename: normalizer
-  bets_edo2net:
-    address: KT1XNVYA3634qXHoJiN8y5qWbMxvhvx7qfxo
+  bets_florencenet:
+    address: KT1KnA16ES9sgwqDwEEd5XB7EomY7yAfLWTX
     typename: bets
 
 datasources:
-  tzkt_staging_mainnet:
+  tzkt_mainnet:
     kind: tzkt
-    url: https://staging.api.tzkt.io
-  tzkt_staging_edo2net:
+    url: https://api.tzkt.io
+  tzkt_florencenet:
     kind: tzkt
-    url: https://staging.api.edo2net.tzkt.io
+    url: https://api.florencenet.tzkt.io
 
 templates:
   harbinger:
@@ -87,14 +87,14 @@ indexes:
   #     datasource: tzkt_staging_mainnet
   #     normalizer: coinbase_normalizer_mainnet
 
-  harbinger_edo2net:
+  harbinger_florencenet:
     template: harbinger
     values:
-      datasource: tzkt_staging_edo2net
-      normalizer: normalizer_edo2net
+      datasource: tzkt_florencenet
+      normalizer: normalizer_florencenet
     
-  bets_edo2net:
+  bets_florencenet:
     template: bets
     values:
-      datasource: tzkt_staging_edo2net
-      bets: bets_edo2net
+      datasource: tzkt_florencenet
+      bets: bets_florencenet

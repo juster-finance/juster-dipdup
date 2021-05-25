@@ -3,7 +3,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict, Optional, Union
+from typing import Any, Dict, Union
 
 from pydantic import BaseModel, Field
 
@@ -13,10 +13,10 @@ class BetItem(BaseModel):
 
 
 class BetItem1(BaseModel):
-    for_: Dict[str, Any] = Field(..., alias="for")
+    for_: Dict[str, Any] = Field(..., alias='for')
 
 
 class BetParameter(BaseModel):
     bet: Union[BetItem, BetItem1]
-    eventId: Optional[str]
+    eventId: str
     minimalWinAmount: str

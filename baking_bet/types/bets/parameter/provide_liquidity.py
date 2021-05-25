@@ -3,13 +3,11 @@
 
 from __future__ import annotations
 
-from typing import Optional
-
 from pydantic import BaseModel
 
 
 class ProvideLiquidityParameter(BaseModel):
-    eventId: Optional[str]
+    eventId: str
     expectedRatioAgainst: str
     expectedRatioFor: str
     maxSlippage: str

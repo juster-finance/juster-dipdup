@@ -3,34 +3,34 @@
 
 from __future__ import annotations
 
-from typing import List, Optional
+from typing import Dict, List, Optional
 
 from pydantic import BaseModel
 
 
 class Key(BaseModel):
     address: str
-    nat: Optional[str]
+    nat: str
 
 
-class BetsAgainstWinningLedgerItem(BaseModel):
+class BetsAgainstItem(BaseModel):
     key: Key
     value: str
 
 
 class Key1(BaseModel):
     address: str
-    nat: Optional[str]
+    nat: str
 
 
-class BetsForWinningLedgerItem(BaseModel):
+class BetsForItem(BaseModel):
     key: Key1
     value: str
 
 
 class Key2(BaseModel):
     address: str
-    nat: Optional[str]
+    nat: str
 
 
 class DepositedBet(BaseModel):
@@ -38,105 +38,92 @@ class DepositedBet(BaseModel):
     value: str
 
 
-class Value(BaseModel):
-    betsAgainstLiquidityPoolSum: str
+class Events(BaseModel):
     betsCloseTime: str
-    betsForLiquidityPoolSum: str
     closedDynamics: str
     closedOracleTime: str
     closedRate: str
     createdTime: str
     currencyPair: str
     expirationFee: str
-    firstProviderAgainstSharesSum: str
-    firstProviderForSharesSum: str
     isBetsForWin: bool
     isClosed: bool
+    isForceMajeure: bool
     isMeasurementStarted: bool
     liquidityPercent: str
-    liquidityPrecision: str
+    maxAllowedMeasureLag: str
     measureOracleStartTime: str
     measurePeriod: str
     measureStartFee: str
+    minPoolSize: str
     oracleAddress: str
-    ratioPrecision: str
+    poolAgainst: str
+    poolFor: str
     rewardCallFee: str
-    sharePrecision: str
     startRate: str
     targetDynamics: str
-    targetDynamicsPrecision: str
-    totalLiquidityAgainstSharesSum: str
-    totalLiquidityForSharesSum: str
-    totalLiquidityProvided: str
-    winAgainstProfitLossPerShare: str
-    winForProfitLossPerShare: str
-
-
-class Event(BaseModel):
-    key: Optional[str]
-    value: Value
+    totalLiquidityShares: str
 
 
 class Key3(BaseModel):
     address: str
-    nat: Optional[str]
+    nat: str
 
 
-class LiquidityAgainstSharesLedgerItem(BaseModel):
+class LiquidityShare(BaseModel):
     key: Key3
     value: str
 
 
+class NewEventConfig(BaseModel):
+    defaultTime: str
+    expirationFee: str
+    liquidityPercent: str
+    maxAllowedMeasureLag: str
+    maxMeasurePeriod: str
+    maxPeriodToBetsClose: str
+    measureStartFee: str
+    minMeasurePeriod: str
+    minPeriodToBetsClose: str
+    minPoolSize: str
+    oracleAddress: str
+    rewardCallFee: str
+
+
 class Key4(BaseModel):
     address: str
-    nat: Optional[str]
+    nat: str
 
 
-class LiquidityForSharesLedgerItem(BaseModel):
+class ProvidedLiquidityAgainstItem(BaseModel):
     key: Key4
     value: str
 
 
 class Key5(BaseModel):
     address: str
-    nat: Optional[str]
+    nat: str
 
 
-class ProvidedLiquidityLedgerItem(BaseModel):
+class ProvidedLiquidityForItem(BaseModel):
     key: Key5
     value: str
 
 
-class Key6(BaseModel):
-    address: str
-    nat: Optional[str]
-
-
-class WinAgainstProfitLossPerShareAtEntryItem(BaseModel):
-    key: Key6
-    value: str
-
-
-class Key7(BaseModel):
-    address: str
-    nat: Optional[str]
-
-
-class WinForProfitLossPerShareAtEntryItem(BaseModel):
-    key: Key7
-    value: str
-
-
 class BetsStorage(BaseModel):
-    betsAgainstWinningLedger: List[BetsAgainstWinningLedgerItem]
-    betsForWinningLedger: List[BetsForWinningLedgerItem]
-    closeCallEventId: Optional[str]
+    betsAgainst: List[BetsAgainstItem]
+    betsFor: List[BetsForItem]
+    closeCallId: Optional[str]
     depositedBets: List[DepositedBet]
-    events: List[Event]
-    lastEventId: Optional[str]
-    liquidityAgainstSharesLedger: List[LiquidityAgainstSharesLedgerItem]
-    liquidityForSharesLedger: List[LiquidityForSharesLedgerItem]
-    measurementStartCallEventId: Optional[str]
-    providedLiquidityLedger: List[ProvidedLiquidityLedgerItem]
-    winAgainstProfitLossPerShareAtEntry: List[WinAgainstProfitLossPerShareAtEntryItem]
-    winForProfitLossPerShareAtEntry: List[WinForProfitLossPerShareAtEntryItem]
+    events: Dict[str, Events]
+    lastEventId: str
+    liquidityPrecision: str
+    liquidityShares: List[LiquidityShare]
+    manager: str
+    measurementStartCallId: Optional[str]
+    newEventConfig: NewEventConfig
+    providedLiquidityAgainst: List[ProvidedLiquidityAgainstItem]
+    providedLiquidityFor: List[ProvidedLiquidityForItem]
+    ratioPrecision: str
+    sharePrecision: str
+    targetDynamicsPrecision: str

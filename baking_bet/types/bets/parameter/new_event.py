@@ -9,9 +9,5 @@ from pydantic import BaseModel
 class NewEventParameter(BaseModel):
     betsCloseTime: str
     currencyPair: str
-    expirationFee: str
-    liquidityPercent: str
     measurePeriod: str
-    measureStartFee: str
-    oracleAddress: str
     targetDynamics: str

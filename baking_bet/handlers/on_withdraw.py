@@ -1,30 +1,34 @@
-from typing import Optional, cast
+from typing import Optional
 
 from dipdup.models import OperationData, OperationHandlerContext, OriginationContext, TransactionContext
 
 import baking_bet.models as models
+
 from baking_bet.types.bets.parameter.withdraw import WithdrawParameter
 from baking_bet.types.bets.storage import BetsStorage
 from baking_bet.utils import from_mutez
-import baking_bet.models as models
-from baking_bet.utils import from_mutez
-from baking_bet.types.bets.parameter.withdraw import WithdrawParameter
-from baking_bet.types.bets.storage import BetsStorage
-from typing import cast
 
 
 async def on_withdraw(
     ctx: OperationHandlerContext,
     withdraw: TransactionContext[WithdrawParameter, BetsStorage],
-    transaction_2: OperationData,
+    withdraw_tx: OperationData,
 ) -> None:
-    event_id = withdraw.storage.events[0].key
+    event_id = int(withdraw.parameter.__root__)
+    amount = from_mutez(withdraw_tx.amount)
+
     event = await models.Event.filter(id=event_id).get()
 
-    user, _ = await models.User.get_or_create(address=transaction_2.target_address)
-    user.totalWithdrawed += from_mutez(cast(int, transaction_2.amount))  # type: ignore
+    user, _ = await models.User.get_or_create(address=withdraw.data.sender_address)
+    user.totalWithdrawn += amount
     await user.save()
 
-    ledger = await models.Ledger.filter(event=event, user=user).get()
-    ledger.withdrawed = True  # type: ignore
-    await ledger.save()
+    position = await models.Position.filter(event=event, user=user).get()
+    position.withdrawn = True
+    await position.save()
+
+    await models.Withdrawal(
+        event=event,
+        user=user,
+        amount=amount
+    ).save()
