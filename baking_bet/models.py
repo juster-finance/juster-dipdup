@@ -71,7 +71,7 @@ class Event(Model):
     # [1 - liquidityPercent * (now - createdTime) / (betsCloseTime - createdTime)] * (poolAgainst / (poolFor + amount))
 
     totalLiquidityShares = fields.DecimalField(10, sharePrecision, default=Decimal('0'))
-    # Calculate: incomingShare = amount / (poolFor + poolAgainst)
+    # Calculate: incomingShare = amount / (poolFor + poolAgainst) * totalLiquidityShares
     # Calculate: finalReward(for) = poolAgainst * (shares[own] / totalLiquidityShares) + providedLiquidityFor[own]
     
     totalBetsAmount = fields.DecimalField(10, 6, default=Decimal('0'))
