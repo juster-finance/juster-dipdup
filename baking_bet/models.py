@@ -3,26 +3,26 @@ from enum import Enum
 
 from tortoise import Model, fields
 
-liquidityPrecision = 6
-ratioPrecision = 8
-sharePrecision = 8
-targetDynamicsPrecision = 6
+liquidity_precision = 6
+ratio_precision = 8
+share_precision = 8
+target_dynamics_precision = 6
 
 
 def to_liquidity(value):
-    return int(value) / Decimal(10 ** liquidityPrecision)
+    return int(value) / Decimal(10 ** liquidity_precision)
 
 
 def to_ratio(value):
-    return int(value) / Decimal(10 ** ratioPrecision)
+    return int(value) / Decimal(10 ** ratio_precision)
 
 
 def to_share(value):
-    return int(value) / Decimal(10 ** sharePrecision)
+    return int(value) / Decimal(10 ** share_precision)
 
 
 def to_dynamics(value):
-    return int(value) / Decimal(10 ** targetDynamicsPrecision)
+    return int(value) / Decimal(10 ** target_dynamics_precision)
 
 
 class EventStatus(Enum):
@@ -45,37 +45,37 @@ class Quote(Model):
     id = fields.IntField(pk=True)
     price = fields.BigIntField()
     timestamp = fields.DatetimeField()
-    currencyPair = fields.ForeignKeyField("models.CurrencyPair", "quotes")
+    currency_pair = fields.ForeignKeyField("models.CurrencyPair", "quotes")
 
 
 class Event(Model):
     id = fields.IntField(pk=True)
-    currencyPair = fields.ForeignKeyField("models.CurrencyPair", "events")
+    currency_pair = fields.ForeignKeyField("models.CurrencyPair", "events")
     status = fields.CharEnumField(EventStatus)
 
-    targetDynamics = fields.DecimalField(10, targetDynamicsPrecision)  # 1.1 == +10%, 0.8 == -20%
-    measurePeriod = fields.BigIntField()  # interval in seconds
-    betsCloseTime = fields.DatetimeField()  # countdown
+    target_dynamics = fields.DecimalField(10, target_dynamics_precision)  # 1.1 == +10%, 0.8 == -20%
+    measure_period = fields.BigIntField()  # interval in seconds
+    bets_close_time = fields.DatetimeField()  # countdown
 
-    startRate = fields.DecimalField(10, ratioPrecision)
-    closedRate = fields.DecimalField(10, ratioPrecision, null=True)
+    start_rate = fields.DecimalField(10, ratio_precision)
+    closed_rate = fields.DecimalField(10, ratio_precision, null=True)
 
-    measureOracleStartTime = fields.DatetimeField(null=True)  # actual start time
-    closedOracleTime = fields.DatetimeField(null=True)  # actual stop time
+    measure_oracle_start_time = fields.DatetimeField(null=True)  # actual start time
+    closed_oracle_time = fields.DatetimeField(null=True)  # actual stop time
 
-    createdTime = fields.DatetimeField(auto_now_add=True)
-    poolFor = fields.DecimalField(10, 6, default=Decimal('0'))  # available liquidity
-    poolAgainst = fields.DecimalField(10, 6, default=Decimal('0'))  # and current ratio
-    liquidityPercent = fields.DecimalField(10, liquidityPrecision)  # used to calculate potential reward
+    created_time = fields.DatetimeField(auto_now_add=True)
+    pool_for = fields.DecimalField(10, 6, default=Decimal('0'))  # available liquidity
+    pool_against = fields.DecimalField(10, 6, default=Decimal('0'))  # and current ratio
+    liquidity_percent = fields.DecimalField(10, liquidity_precision)  # used to calculate potential reward
     # Calculate: potentialReward(for) =
     # [1 - liquidityPercent * (now - createdTime) / (betsCloseTime - createdTime)] * (poolAgainst / (poolFor + amount))
 
-    totalLiquidityShares = fields.DecimalField(10, sharePrecision, default=Decimal('0'))
+    total_liquidity_shares = fields.DecimalField(10, share_precision, default=Decimal('0'))
     # Calculate: incomingShare = amount / (poolFor + poolAgainst)
     # Calculate: finalReward(for) = poolAgainst * (shares[own] / totalLiquidityShares) + providedLiquidityFor[own]
     
-    totalBetsAmount = fields.DecimalField(10, 6, default=Decimal('0'))
-    totalLiquidityProvided = fields.DecimalField(10, 6, default=Decimal('0'))
+    total_bets_amount = fields.DecimalField(10, 6, default=Decimal('0'))
+    total_liquidity_provided = fields.DecimalField(10, 6, default=Decimal('0'))
 
 
 class Bet(Model):
@@ -90,7 +90,7 @@ class Bet(Model):
 class Deposit(Model):
     id = fields.IntField(pk=True)
     amount = fields.DecimalField(10, 6)
-    shares = fields.DecimalField(10, sharePrecision)
+    shares = fields.DecimalField(10, share_precision)
     event = fields.ForeignKeyField('models.Event', 'deposits')
     user = fields.ForeignKeyField('models.User', 'deposits')
 
@@ -104,9 +104,9 @@ class Withdrawal(Model):
 
 class Position(Model):
     id = fields.IntField(pk=True)
-    rewardFor = fields.DecimalField(10, 6, default=Decimal('0'))
-    rewardAgainst = fields.DecimalField(10, 6, default=Decimal('0'))
-    shares = fields.DecimalField(10, sharePrecision, default=Decimal('0'))
+    reward_for = fields.DecimalField(10, 6, default=Decimal('0'))
+    reward_against = fields.DecimalField(10, 6, default=Decimal('0'))
+    shares = fields.DecimalField(10, share_precision, default=Decimal('0'))
     withdrawn = fields.BooleanField(default=False)
     event = fields.ForeignKeyField('models.Event', 'positions')
     user = fields.ForeignKeyField('models.User', 'positions')
@@ -114,8 +114,8 @@ class Position(Model):
 
 class User(Model):
     address = fields.TextField(pk=True)
-    totalBetsCount = fields.IntField(default=0)
-    totalBetsAmount = fields.DecimalField(10, 6, default=Decimal('0'))
-    totalLiquidityProvided = fields.DecimalField(10, 6, default=Decimal('0'))
-    totalReward = fields.DecimalField(10, 6, default=Decimal('0'))
-    totalWithdrawn = fields.DecimalField(10, 6, default=Decimal('0'))
+    total_bets_count = fields.IntField(default=0)
+    total_bets_amount = fields.DecimalField(10, 6, default=Decimal('0'))
+    total_liquidity_provided = fields.DecimalField(10, 6, default=Decimal('0'))
+    total_reward = fields.DecimalField(10, 6, default=Decimal('0'))
+    total_withdrawn = fields.DecimalField(10, 6, default=Decimal('0'))

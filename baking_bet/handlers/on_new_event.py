@@ -17,12 +17,12 @@ async def on_new_event(
 
     event = models.Event(
         id=event_id,
-        currencyPair=currency_pair,
+        currency_pair=currency_pair,
         status=models.EventStatus.NEW,
-        targetDynamics=models.to_dynamics(event_diff.targetDynamics),
-        measurePeriod=int(event_diff.measurePeriod),
-        betsCloseTime=event_diff.betsCloseTime,
-        startRate=models.to_ratio(event_diff.startRate),
-        liquidityPercent=models.to_liquidity(event_diff.liquidityPercent)
+        target_dynamics=models.to_dynamics(event_diff.targetDynamics),
+        measure_period=int(event_diff.measurePeriod),
+        bets_close_time=event_diff.betsCloseTime,
+        start_rate=models.to_ratio(event_diff.startRate),
+        liquidity_percent=models.to_liquidity(event_diff.liquidityPercent)
     )
     await event.save()

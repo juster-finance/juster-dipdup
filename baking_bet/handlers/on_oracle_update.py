@@ -18,7 +18,7 @@ async def on_oracle_update(
         symbol = asset.key.__root__
         currency_pair, _ = await models.CurrencyPair.get_or_create(symbol=symbol)
         quote = models.Quote(
-            currencyPair=currency_pair,
+            currency_pair=currency_pair,
             price=asset.value.computedPrice,
             timestamp=asset.value.lastUpdateTime,
         )

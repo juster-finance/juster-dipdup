@@ -15,14 +15,14 @@ async def on_provide_liquidity(
     amount = from_mutez(provide_liquidity.data.amount)
 
     event = await models.Event.filter(id=event_id).get()
-    event.totalLiquidityShares = from_mutez(event_diff.totalLiquidityShares)  # type: ignore
-    event.poolFor = from_mutez(event_diff.poolFor)  # type: ignore
-    event.poolAgainst = from_mutez(event_diff.poolAgainst)  # type: ignore
-    event.totalLiquidityProvided += amount
+    event.total_liquidity_shares = from_mutez(event_diff.totalLiquidityShares)  # type: ignore
+    event.pool_for = from_mutez(event_diff.poolFor)  # type: ignore
+    event.pool_against = from_mutez(event_diff.poolAgainst)  # type: ignore
+    event.total_liquidity_provided += amount
     await event.save()
 
     user, _ = await models.User.get_or_create(address=provide_liquidity.data.sender_address)
-    user.totalLiquidityProvided += amount  # type: ignore
+    user.total_liquidity_provided += amount  # type: ignore
     await user.save()
 
     position, _ = await models.Position.get_or_create(
