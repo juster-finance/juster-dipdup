@@ -52,6 +52,7 @@ class Event(Model):
     id = fields.IntField(pk=True)
     currency_pair = fields.ForeignKeyField("models.CurrencyPair", "events")
     status = fields.CharEnumField(EventStatus)
+    winner_bets = fields.CharEnumField(BetSide, null=True)
 
     target_dynamics = fields.DecimalField(10, target_dynamics_precision)  # 1.1 == +10%, 0.8 == -20%
     measure_period = fields.BigIntField()  # interval in seconds
@@ -59,6 +60,7 @@ class Event(Model):
 
     start_rate = fields.DecimalField(10, ratio_precision)
     closed_rate = fields.DecimalField(10, ratio_precision, null=True)
+    closed_dynamics = fields.DecimalField(10, target_dynamics_precision, null=True)
 
     measure_oracle_start_time = fields.DatetimeField(null=True)  # actual start time
     closed_oracle_time = fields.DatetimeField(null=True)  # actual stop time
@@ -119,3 +121,4 @@ class User(Model):
     total_liquidity_provided = fields.DecimalField(10, 6, default=Decimal('0'))
     total_reward = fields.DecimalField(10, 6, default=Decimal('0'))
     total_withdrawn = fields.DecimalField(10, 6, default=Decimal('0'))
+    total_fees_collected = fields.DecimalField(10, 6, default=Decimal('0'))

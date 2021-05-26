@@ -6,6 +6,7 @@ from baking_bet.types.bets.parameter.bet import BetParameter, BetItem
 from baking_bet.types.bets.storage import BetsStorage
 from baking_bet.utils import from_mutez, get_event
 
+BetAgainst = BetItem
 
 async def on_bet(
     ctx: OperationHandlerContext,
@@ -29,16 +30,17 @@ async def on_bet(
         event=event,
         user=user,
     )
-    if isinstance(bet.parameter.bet, BetItem):
+    if isinstance(bet.parameter.bet, BetAgainst):
         assert len(bet.storage.betsAgainst) == 1
         reward = from_mutez(bet.storage.betsAgainst[0].value)
-        position.reward_against += reward
+        position.reward_against = reward
         bet_side = models.BetSide.AGAINST
     else:
         assert len(bet.storage.betsFor) == 1
         reward = from_mutez(bet.storage.betsFor[0].value)
-        position.reward_for += reward
+        position.reward_for = reward
         bet_side = models.BetSide.FOR
+    position.shares += amount / (event.pool_for + event.pool_against)
     await position.save()
 
     await models.Bet(
@@ -49,4 +51,7 @@ async def on_bet(
         side=bet_side
     ).save()
 
-    # TODO: update all positions with shares (reward for/against based on total shares/provided)
+    positions = await event.positions
+    for position in positions:
+        position.reward_for = (position.shares / event.total_liquidity_shares) * event.pool_for
+        position.reward_against = (position.shares / event.total_liquidity_shares) * event.pool_against
