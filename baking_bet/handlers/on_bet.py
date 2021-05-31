@@ -35,11 +35,13 @@ async def on_bet(
     if isinstance(bet.parameter.bet, BetAboveEq):
         assert len(bet.storage.betsAboveEq) == 1
         reward = from_mutez(bet.storage.betsAboveEq[0].value)
+        bet_reward = reward - position.reward_above_eq
         position.reward_above_eq = reward  # type: ignore
         bet_side = models.BetSide.ABOVE_EQ
     else:
         assert len(bet.storage.betsBellow) == 1
         reward = from_mutez(bet.storage.betsBellow[0].value)
+        bet_reward = reward - position.reward_below
         position.reward_below = reward  # type: ignore
         bet_side = models.BetSide.BELOW
 
@@ -49,6 +51,6 @@ async def on_bet(
         event=event,
         user=user,
         amount=amount,
-        reward=reward,
+        reward=bet_reward,
         side=bet_side
     ).save()
