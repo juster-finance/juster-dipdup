@@ -5,15 +5,15 @@ from __future__ import annotations
 
 from typing import Any, Dict, Union
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 
 class BetItem(BaseModel):
-    against: Dict[str, Any]
+    aboveEq: Dict[str, Any]
 
 
 class BetItem1(BaseModel):
-    for_: Dict[str, Any] = Field(..., alias='for')
+    bellow: Dict[str, Any]
 
 
 class BetParameter(BaseModel):

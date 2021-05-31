@@ -16,7 +16,7 @@ contracts:
     address: KT1SUP27JhX24Kvr11oUdWswk7FnCW78ZyUn
     typename: normalizer
   bets_florencenet:
-    address: KT1KnA16ES9sgwqDwEEd5XB7EomY7yAfLWTX
+    address: KT1EYYqhWAPFsnoMRmyiuYjTqR84QaMmzgZ6
     typename: bets
 
 datasources:

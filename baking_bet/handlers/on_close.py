@@ -18,33 +18,26 @@ async def on_close(
     event = await models.Event.filter(id=event_id).get()
     event.closed_rate = models.to_ratio(event_diff.closedRate)  # type: ignore
     event.closed_oracle_time = event_diff.closedOracleTime  # type: ignore
-    event.closed_dynamics = event.closed_rate / event.start_rate
+    event.closed_dynamics = event.closed_rate / event.start_rate  # type: ignore
     event.status = models.EventStatus.FINISHED
 
     fee_collector, _ = await models.User.get_or_create(address=fee_tx.target_address)
-    fee_collector.total_fees_collected += from_mutez(fee_tx.amount)
+    fee_collector.total_fees_collected += from_mutez(fee_tx.amount)  # type: ignore
     await fee_collector.save()
 
-    higher_target = event.target_dynamics > 1
-    lower_target = event.target_dynamics < 1
-    equal_target = event.target_dynamics == 1
-
-    higher_target_reached = event.closed_dynamics > event.target_dynamics
-    lower_target_reached = event.closed_dynamics < event.target_dynamics
-    equal_target_reached = event.closed_dynamics != event.target_dynamics
-
-    if (higher_target and higher_target_reached) or (lower_target and lower_target_reached) or (equal_target and equal_target_reached):
-        event.winner_bets = models.BetSide.FOR
-    else:
-        event.winner_bets = models.BetSide.AGAINST
-
+    event.set_winner_bets()
     await event.save()
 
     positions: List[models.Position] = await event.positions
     for position in positions:
         user: models.User = await position.user
-        shares_percentage = (position.shares / event.total_liquidity_shares)
-        pool = event.pool_for if event.winner_bets == models.BetSide.FOR else event.pool_against
-        reward = pool * shares_percentage
-        user.total_reward += reward
+
+        reward = position.get_reward(event.winner_bets)
+        user.total_reward += reward  # type: ignore
+
+        if position.shares:
+            position.set_shares_reward(event)
+            await position.save()
+            user.total_reward += position.shares_reward  # type: ignore
+
         await user.save()

@@ -33,8 +33,8 @@ class EventStatus(Enum):
 
 
 class BetSide(Enum):
-    FOR = "FOR"
-    AGAINST = "AGAINST"
+    ABOVE_EQ = "ABOVE_EQ"
+    BELOW = "BELOW"
 
 
 class CurrencyPair(Model):
@@ -66,8 +66,8 @@ class Event(Model):
     closed_oracle_time = fields.DatetimeField(null=True)  # actual stop time
 
     created_time = fields.DatetimeField(auto_now_add=True)
-    pool_for = fields.DecimalField(10, 6, default=Decimal('0'))  # available liquidity
-    pool_against = fields.DecimalField(10, 6, default=Decimal('0'))  # and current ratio
+    pool_above_eq = fields.DecimalField(10, 6, default=Decimal('0'))  # available liquidity
+    pool_below = fields.DecimalField(10, 6, default=Decimal('0'))  # and current ratio
     liquidity_percent = fields.DecimalField(10, liquidity_precision)  # used to calculate potential reward
     # Calculate: potentialReward(for) =
     # [1 - liquidityPercent * (now - createdTime) / (betsCloseTime - createdTime)] * (poolAgainst / (poolFor + amount))
@@ -78,6 +78,30 @@ class Event(Model):
     
     total_bets_amount = fields.DecimalField(10, 6, default=Decimal('0'))
     total_liquidity_provided = fields.DecimalField(10, 6, default=Decimal('0'))
+
+    positions: fields.ReverseRelation['Position']
+
+    @property
+    def winning_pool(self):
+        return {
+            BetSide.ABOVE_EQ: self.pool_above_eq,
+            BetSide.BELOW: self.pool_below,
+        }[self.winner_bets]
+
+    @property
+    def losing_pool(self):
+        return {
+            BetSide.BELOW: self.pool_above_eq,
+            BetSide.ABOVE_EQ: self.pool_below,
+        }[self.winner_bets]
+
+    def set_winner_bets(self):
+        assert self.closed_rate
+        target_rate = self.closed_rate * self.target_dynamics
+        self.winner_bets = {
+            True: BetSide.ABOVE_EQ,
+            False: BetSide.BELOW,
+        }[self.closed_rate >= target_rate]
 
 
 class Bet(Model):
@@ -106,12 +130,25 @@ class Withdrawal(Model):
 
 class Position(Model):
     id = fields.IntField(pk=True)
-    reward_for = fields.DecimalField(10, 6, default=Decimal('0'))
-    reward_against = fields.DecimalField(10, 6, default=Decimal('0'))
+    reward_above_eq = fields.DecimalField(10, 6, default=Decimal('0'))
+    reward_below = fields.DecimalField(10, 6, default=Decimal('0'))
     shares = fields.DecimalField(10, share_precision, default=Decimal('0'))
+    shares_reward = fields.DecimalField(10, 6, null=True)
     withdrawn = fields.BooleanField(default=False)
     event = fields.ForeignKeyField('models.Event', 'positions')
     user = fields.ForeignKeyField('models.User', 'positions')
+
+    def get_reward(self, side: BetSide) -> Decimal:
+        return {
+            BetSide.ABOVE_EQ: self.reward_above_eq,
+            BetSide.BELOW: self.reward_below,
+        }[side]
+
+    def set_shares_reward(self, event: Event) -> None:
+        if not self.shares:
+            return
+        shares_percentage = self.shares / event.total_liquidity_shares
+        self.shares_reward = event.losing_pool * shares_percentage
 
 
 class User(Model):

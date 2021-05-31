@@ -21,5 +21,5 @@ async def on_start_measurement(
     await event.save()
 
     fee_collector, _ = await models.User.get_or_create(address=fee_tx.target_address)
-    fee_collector.total_fees_collected += from_mutez(fee_tx.amount)
+    fee_collector.total_fees_collected += from_mutez(fee_tx.amount)  # type: ignore
     await fee_collector.save()

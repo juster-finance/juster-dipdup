@@ -13,7 +13,7 @@ class Key(BaseModel):
     nat: str
 
 
-class BetsAgainstItem(BaseModel):
+class BetsAboveEqItem(BaseModel):
     key: Key
     value: str
 
@@ -23,7 +23,7 @@ class Key1(BaseModel):
     nat: str
 
 
-class BetsForItem(BaseModel):
+class BetsBellowItem(BaseModel):
     key: Key1
     value: str
 
@@ -46,7 +46,7 @@ class Events(BaseModel):
     createdTime: str
     currencyPair: str
     expirationFee: str
-    isBetsForWin: bool
+    isBetsAboveEqWin: bool
     isClosed: bool
     isForceMajeure: bool
     isMeasurementStarted: bool
@@ -55,10 +55,9 @@ class Events(BaseModel):
     measureOracleStartTime: str
     measurePeriod: str
     measureStartFee: str
-    minPoolSize: str
     oracleAddress: str
-    poolAgainst: str
-    poolFor: str
+    poolAboveEq: str
+    poolBellow: str
     rewardCallFee: str
     startRate: str
     targetDynamics: str
@@ -78,14 +77,14 @@ class LiquidityShare(BaseModel):
 class NewEventConfig(BaseModel):
     defaultTime: str
     expirationFee: str
-    liquidityPercent: str
     maxAllowedMeasureLag: str
+    maxLiquidityPercent: str
     maxMeasurePeriod: str
     maxPeriodToBetsClose: str
     measureStartFee: str
+    minLiquidityPercent: str
     minMeasurePeriod: str
     minPeriodToBetsClose: str
-    minPoolSize: str
     oracleAddress: str
     rewardCallFee: str
 
@@ -95,7 +94,7 @@ class Key4(BaseModel):
     nat: str
 
 
-class ProvidedLiquidityAgainstItem(BaseModel):
+class ProvidedLiquidityAboveEqItem(BaseModel):
     key: Key4
     value: str
 
@@ -105,14 +104,14 @@ class Key5(BaseModel):
     nat: str
 
 
-class ProvidedLiquidityForItem(BaseModel):
+class ProvidedLiquidityBellowItem(BaseModel):
     key: Key5
     value: str
 
 
 class BetsStorage(BaseModel):
-    betsAgainst: List[BetsAgainstItem]
-    betsFor: List[BetsForItem]
+    betsAboveEq: List[BetsAboveEqItem]
+    betsBellow: List[BetsBellowItem]
     closeCallId: Optional[str]
     depositedBets: List[DepositedBet]
     events: Dict[str, Events]
@@ -122,8 +121,8 @@ class BetsStorage(BaseModel):
     manager: str
     measurementStartCallId: Optional[str]
     newEventConfig: NewEventConfig
-    providedLiquidityAgainst: List[ProvidedLiquidityAgainstItem]
-    providedLiquidityFor: List[ProvidedLiquidityForItem]
+    providedLiquidityAboveEq: List[ProvidedLiquidityAboveEqItem]
+    providedLiquidityBellow: List[ProvidedLiquidityBellowItem]
     ratioPrecision: str
     sharePrecision: str
     targetDynamicsPrecision: str

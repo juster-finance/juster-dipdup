@@ -12,15 +12,16 @@ async def on_provide_liquidity(
     provide_liquidity: TransactionContext[ProvideLiquidityParameter, BetsStorage],
 ) -> None:
     event_id, event_diff = get_event(provide_liquidity.storage)
+    assert provide_liquidity.data.amount
     amount = from_mutez(provide_liquidity.data.amount)
 
     event = await models.Event.filter(id=event_id).get()
     new_liquidity_shares = from_mutez(event_diff.totalLiquidityShares)
     liquidity_shares_added = new_liquidity_shares - event.total_liquidity_shares
     event.total_liquidity_shares = new_liquidity_shares  # type: ignore
-    event.pool_for = from_mutez(event_diff.poolFor)  # type: ignore
-    event.pool_against = from_mutez(event_diff.poolAgainst)  # type: ignore
-    event.total_liquidity_provided += amount
+    event.pool_above_eq = from_mutez(event_diff.poolAboveEq)  # type: ignore
+    event.pool_below = from_mutez(event_diff.poolBellow)  # type: ignore
+    event.total_liquidity_provided += amount  # type: ignore
     await event.save()
 
     user, _ = await models.User.get_or_create(address=provide_liquidity.data.sender_address)
@@ -31,20 +32,12 @@ async def on_provide_liquidity(
         event=event,
         user=user,
     )
-    position.shares += liquidity_shares_added
+    position.shares += liquidity_shares_added  # type: ignore
     await position.save()
 
-    shares = from_mutez(provide_liquidity.storage.liquidityShares[0].value)
     await models.Deposit(
         event=event,
         user=user,
         amount=amount,
         shares=liquidity_shares_added,
     ).save()
-
-    positions = await event.positions
-    for position in positions:
-        shares_percentage = (position.shares / event.total_liquidity_shares)
-        position.reward_for = event.pool_for * shares_percentage
-        position.reward_against = event.pool_against * shares_percentage
-        await position.save()

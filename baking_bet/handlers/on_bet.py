@@ -6,18 +6,20 @@ from baking_bet.types.bets.parameter.bet import BetParameter, BetItem
 from baking_bet.types.bets.storage import BetsStorage
 from baking_bet.utils import from_mutez, get_event
 
-BetAgainst = BetItem
+BetAboveEq = BetItem
 
 async def on_bet(
     ctx: OperationHandlerContext,
     bet: TransactionContext[BetParameter, BetsStorage],
 ) -> None:
     event_id, event_diff = get_event(bet.storage)
+    assert bet.data.amount
     amount = from_mutez(bet.data.amount)
 
     event = await models.Event.filter(id=event_id).get()
-    event.pool_for = from_mutez(event_diff.poolFor)  # type: ignore
-    event.pool_against = from_mutez(event_diff.poolAgainst)  # type: ignore
+    event.pool_above_eq = from_mutez(event_diff.poolAboveEq)  # type: ignore
+    # FIXME: Report typo in storage
+    event.pool_below = from_mutez(event_diff.poolBellow)  # type: ignore
     event.total_bets_amount += amount  # type: ignore
     await event.save()
 
@@ -30,17 +32,17 @@ async def on_bet(
         event=event,
         user=user,
     )
-    if isinstance(bet.parameter.bet, BetAgainst):
-        assert len(bet.storage.betsAgainst) == 1
-        reward = from_mutez(bet.storage.betsAgainst[0].value)
-        position.reward_against = reward
-        bet_side = models.BetSide.AGAINST
+    if isinstance(bet.parameter.bet, BetAboveEq):
+        assert len(bet.storage.betsAboveEq) == 1
+        reward = from_mutez(bet.storage.betsAboveEq[0].value)
+        position.reward_above_eq = reward  # type: ignore
+        bet_side = models.BetSide.ABOVE_EQ
     else:
-        assert len(bet.storage.betsFor) == 1
-        reward = from_mutez(bet.storage.betsFor[0].value)
-        position.reward_for = reward
-        bet_side = models.BetSide.FOR
-    position.shares += amount / (event.pool_for + event.pool_against)
+        assert len(bet.storage.betsBellow) == 1
+        reward = from_mutez(bet.storage.betsBellow[0].value)
+        position.reward_below = reward  # type: ignore
+        bet_side = models.BetSide.BELOW
+
     await position.save()
 
     await models.Bet(
@@ -50,8 +52,3 @@ async def on_bet(
         reward=reward,
         side=bet_side
     ).save()
-
-    positions = await event.positions
-    for position in positions:
-        position.reward_for = (position.shares / event.total_liquidity_shares) * event.pool_for
-        position.reward_against = (position.shares / event.total_liquidity_shares) * event.pool_against
