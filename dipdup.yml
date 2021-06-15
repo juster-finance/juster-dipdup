@@ -16,7 +16,7 @@ contracts:
     address: KT1SUP27JhX24Kvr11oUdWswk7FnCW78ZyUn
     typename: normalizer
   bets_florencenet:
-    address: KT1EYYqhWAPFsnoMRmyiuYjTqR84QaMmzgZ6
+    address: KT1UeUPKe4Wh2UQDdQX1xAYm9y1YBMFLkF3f
     typename: bets
 
 datasources:
@@ -87,11 +87,11 @@ indexes:
   #     datasource: tzkt_staging_mainnet
   #     normalizer: coinbase_normalizer_mainnet
 
-  harbinger_florencenet:
-    template: harbinger
-    values:
-      datasource: tzkt_florencenet
-      normalizer: normalizer_florencenet
+  # harbinger_florencenet:
+  #   template: harbinger
+  #   values:
+  #     datasource: tzkt_florencenet
+  #     normalizer: normalizer_florencenet
     
   bets_florencenet:
     template: bets

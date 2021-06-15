@@ -28,6 +28,23 @@ class BetsBellowItem(BaseModel):
     value: str
 
 
+class Config(BaseModel):
+    expirationFee: str
+    isEventCreationPaused: bool
+    maxAllowedMeasureLag: str
+    maxLiquidityPercent: str
+    maxMeasurePeriod: str
+    maxPeriodToBetsClose: str
+    measureStartFee: str
+    minLiquidityPercent: str
+    minMeasurePeriod: str
+    minPeriodToBetsClose: str
+    oracleAddress: str
+    providerProfitFee: str
+    rewardCallFee: str
+    rewardFeeSplitAfter: str
+
+
 class Key2(BaseModel):
     address: str
     nat: str
@@ -40,26 +57,26 @@ class DepositedBet(BaseModel):
 
 class Events(BaseModel):
     betsCloseTime: str
-    closedDynamics: str
-    closedOracleTime: str
-    closedRate: str
+    closedDynamics: Optional[str]
+    closedOracleTime: Optional[str]
+    closedRate: Optional[str]
     createdTime: str
     currencyPair: str
     expirationFee: str
-    isBetsAboveEqWin: bool
+    isBetsAboveEqWin: Optional[bool]
     isClosed: bool
     isForceMajeure: bool
-    isMeasurementStarted: bool
     liquidityPercent: str
     maxAllowedMeasureLag: str
-    measureOracleStartTime: str
+    measureOracleStartTime: Optional[str]
     measurePeriod: str
     measureStartFee: str
     oracleAddress: str
+    participants: str
     poolAboveEq: str
     poolBellow: str
     rewardCallFee: str
-    startRate: str
+    startRate: Optional[str]
     targetDynamics: str
     totalLiquidityShares: str
 
@@ -72,21 +89,6 @@ class Key3(BaseModel):
 class LiquidityShare(BaseModel):
     key: Key3
     value: str
-
-
-class NewEventConfig(BaseModel):
-    defaultTime: str
-    expirationFee: str
-    maxAllowedMeasureLag: str
-    maxLiquidityPercent: str
-    maxMeasurePeriod: str
-    maxPeriodToBetsClose: str
-    measureStartFee: str
-    minLiquidityPercent: str
-    minMeasurePeriod: str
-    minPeriodToBetsClose: str
-    oracleAddress: str
-    rewardCallFee: str
 
 
 class Key4(BaseModel):
@@ -110,9 +112,11 @@ class ProvidedLiquidityBellowItem(BaseModel):
 
 
 class BetsStorage(BaseModel):
+    bakingRewards: str
     betsAboveEq: List[BetsAboveEqItem]
     betsBellow: List[BetsBellowItem]
     closeCallId: Optional[str]
+    config: Config
     depositedBets: List[DepositedBet]
     events: Dict[str, Events]
     lastEventId: str
@@ -120,9 +124,11 @@ class BetsStorage(BaseModel):
     liquidityShares: List[LiquidityShare]
     manager: str
     measurementStartCallId: Optional[str]
-    newEventConfig: NewEventConfig
+    proposedManager: Optional[str]
     providedLiquidityAboveEq: List[ProvidedLiquidityAboveEqItem]
     providedLiquidityBellow: List[ProvidedLiquidityBellowItem]
+    providerProfitFeePrecision: str
     ratioPrecision: str
+    retainedProfits: str
     sharePrecision: str
     targetDynamicsPrecision: str

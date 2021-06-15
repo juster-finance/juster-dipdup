@@ -1,4 +1,5 @@
-from dipdup.models import OperationHandlerContext, TransactionContext
+from dipdup.models import Transaction
+from dipdup.context import OperationHandlerContext
 
 import baking_bet.models as models
 
@@ -9,7 +10,7 @@ from baking_bet.utils import get_event, from_mutez
 
 async def on_provide_liquidity(
     ctx: OperationHandlerContext,
-    provide_liquidity: TransactionContext[ProvideLiquidityParameter, BetsStorage],
+    provide_liquidity: Transaction[ProvideLiquidityParameter, BetsStorage],
 ) -> None:
     event_id, event_diff = get_event(provide_liquidity.storage)
     assert provide_liquidity.data.amount

@@ -1,6 +1,6 @@
-from typing import Optional
+from dipdup.models import OperationData, Transaction
+from dipdup.context import OperationHandlerContext
 
-from dipdup.models import OperationData, OperationHandlerContext, OriginationContext, TransactionContext
 
 import baking_bet.models as models
 
@@ -11,10 +11,11 @@ from baking_bet.utils import from_mutez
 
 async def on_withdraw(
     ctx: OperationHandlerContext,
-    withdraw: TransactionContext[WithdrawParameter, BetsStorage],
+    withdraw: Transaction[WithdrawParameter, BetsStorage],
     withdraw_tx: OperationData,
 ) -> None:
-    event_id = int(withdraw.parameter.__root__)
+    event_id = int(withdraw.parameter.eventId)
+    assert withdraw_tx.amount
     amount = from_mutez(withdraw_tx.amount)
 
     event = await models.Event.filter(id=event_id).get()

@@ -1,4 +1,5 @@
-from dipdup.models import OperationHandlerContext, TransactionContext
+from dipdup.models import Transaction
+from dipdup.context import OperationHandlerContext
 
 import baking_bet.models as models
 
@@ -9,7 +10,7 @@ from baking_bet.utils import get_event
 
 async def on_new_event(
     ctx: OperationHandlerContext,
-    new_event: TransactionContext[NewEventParameter, BetsStorage],
+    new_event: Transaction[NewEventParameter, BetsStorage],
 ) -> None:
     event_id, event_diff = get_event(new_event.storage)
 
@@ -22,7 +23,7 @@ async def on_new_event(
         target_dynamics=models.to_dynamics(event_diff.targetDynamics),
         measure_period=int(event_diff.measurePeriod),
         bets_close_time=event_diff.betsCloseTime,
-        start_rate=models.to_ratio(event_diff.startRate),
+        start_rate=None,
         liquidity_percent=models.to_liquidity(event_diff.liquidityPercent)
     )
     await event.save()

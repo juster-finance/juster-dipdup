@@ -1,15 +1,10 @@
+from dipdup.context import RollbackHandlerContext
 import logging
 
-from dipdup.utils import reindex
 
 _logger = logging.getLogger(__name__)
 
 
-async def on_rollback(
-    from_level: int,
-    to_level: int,
-) -> None:
-    if from_level - to_level == 1:
-        return
-    _logger.warning('Rollback event received, reindexing')
-    await reindex()
+async def on_rollback(ctx: RollbackHandlerContext) -> None:
+    _logger.warning('Datasource `%s` rolled back from level %s to level %s, reindexing', ctx.datasource, ctx.from_level, ctx.to_level)
+    await ctx.reindex()

@@ -1,4 +1,5 @@
-from dipdup.models import OperationData, OperationHandlerContext, TransactionContext
+from dipdup.models import OperationData, Transaction
+from dipdup.context import OperationHandlerContext
 
 import baking_bet.models as models
 
@@ -9,7 +10,7 @@ from baking_bet.utils import from_mutez, get_event
 
 async def on_start_measurement(
     ctx: OperationHandlerContext,
-    start_measurement_callback: TransactionContext[StartMeasurementCallbackParameter, BetsStorage],
+    start_measurement_callback: Transaction[StartMeasurementCallbackParameter, BetsStorage],
     fee_tx: OperationData,
 ) -> None:
     event_id, event_diff = get_event(start_measurement_callback.storage)

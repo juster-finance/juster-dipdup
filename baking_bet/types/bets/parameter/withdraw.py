@@ -7,4 +7,5 @@ from pydantic import BaseModel
 
 
 class WithdrawParameter(BaseModel):
-    __root__: str
+    eventId: str
+    participantAddress: str

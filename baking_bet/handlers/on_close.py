@@ -1,5 +1,6 @@
+from dipdup.models import OperationData, Transaction
+from dipdup.context import OperationHandlerContext
 from typing import List
-from dipdup.models import OperationData, OperationHandlerContext, TransactionContext
 
 import baking_bet.models as models
 
@@ -10,7 +11,7 @@ from baking_bet.utils import from_mutez, get_event
 
 async def on_close(
     ctx: OperationHandlerContext,
-    close_callback: TransactionContext[CloseCallbackParameter, BetsStorage],
+    close_callback: Transaction[CloseCallbackParameter, BetsStorage],
     fee_tx: OperationData,
 ) -> None:
     event_id, event_diff = get_event(close_callback.storage)

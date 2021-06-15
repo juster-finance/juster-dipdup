@@ -1,4 +1,5 @@
-from dipdup.models import OperationHandlerContext, TransactionContext
+from dipdup.models import Transaction
+from dipdup.context import OperationHandlerContext
 
 import baking_bet.models as models
 
@@ -10,7 +11,7 @@ BetAboveEq = BetItem
 
 async def on_bet(
     ctx: OperationHandlerContext,
-    bet: TransactionContext[BetParameter, BetsStorage],
+    bet: Transaction[BetParameter, BetsStorage],
 ) -> None:
     event_id, event_diff = get_event(bet.storage)
     assert bet.data.amount
