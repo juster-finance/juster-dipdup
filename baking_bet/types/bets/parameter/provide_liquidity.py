@@ -9,5 +9,5 @@ from pydantic import BaseModel
 class ProvideLiquidityParameter(BaseModel):
     eventId: str
     expectedRatioAboveEq: str
-    expectedRatioBellow: str
+    expectedRatioBelow: str
     maxSlippage: str

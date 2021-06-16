@@ -21,11 +21,11 @@ async def on_withdraw(
     event = await models.Event.filter(id=event_id).get()
 
     user, _ = await models.User.get_or_create(address=withdraw.data.sender_address)
-    user.total_withdrawn += amount
+    user.total_withdrawn += amount  # type: ignore
     await user.save()
 
     position = await models.Position.filter(event=event, user=user).get()
-    position.withdrawn = True
+    position.withdrawn = True  # type: ignore
     await position.save()
 
     await models.Withdrawal(

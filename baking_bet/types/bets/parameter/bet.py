@@ -13,7 +13,7 @@ class BetItem(BaseModel):
 
 
 class BetItem1(BaseModel):
-    bellow: Dict[str, Any]
+    below: Dict[str, Any]
 
 
 class BetParameter(BaseModel):

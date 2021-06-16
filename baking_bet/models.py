@@ -97,7 +97,7 @@ class Event(Model):
 
     def set_winner_bets(self):
         assert self.closed_rate
-        target_rate = self.closed_rate * self.target_dynamics
+        target_rate = self.start_rate * self.target_dynamics
         self.winner_bets = {
             True: BetSide.ABOVE_EQ,
             False: BetSide.BELOW,
@@ -115,7 +115,8 @@ class Bet(Model):
 
 class Deposit(Model):
     id = fields.IntField(pk=True)
-    amount = fields.DecimalField(10, 6)
+    amount_above_eq = fields.DecimalField(10, 6)
+    amount_below = fields.DecimalField(10, 6)
     shares = fields.DecimalField(10, share_precision)
     event = fields.ForeignKeyField('models.Event', 'deposits')
     user = fields.ForeignKeyField('models.User', 'deposits')
@@ -132,8 +133,9 @@ class Position(Model):
     id = fields.IntField(pk=True)
     reward_above_eq = fields.DecimalField(10, 6, default=Decimal('0'))
     reward_below = fields.DecimalField(10, 6, default=Decimal('0'))
+    liquidity_provided_above_eq = fields.DecimalField(10, 6, default=Decimal('0'))
+    liquidity_provided_below = fields.DecimalField(10, 6, default=Decimal('0'))
     shares = fields.DecimalField(10, share_precision, default=Decimal('0'))
-    shares_reward = fields.DecimalField(10, 6, null=True)
     withdrawn = fields.BooleanField(default=False)
     event = fields.ForeignKeyField('models.Event', 'positions')
     user = fields.ForeignKeyField('models.User', 'positions')
@@ -143,12 +145,6 @@ class Position(Model):
             BetSide.ABOVE_EQ: self.reward_above_eq,
             BetSide.BELOW: self.reward_below,
         }[side]
-
-    def set_shares_reward(self, event: Event) -> None:
-        if not self.shares:
-            return
-        shares_percentage = self.shares / event.total_liquidity_shares
-        self.shares_reward = event.losing_pool * shares_percentage
 
 
 class User(Model):

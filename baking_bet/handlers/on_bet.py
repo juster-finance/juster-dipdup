@@ -20,7 +20,7 @@ async def on_bet(
     event = await models.Event.filter(id=event_id).get()
     event.pool_above_eq = from_mutez(event_diff.poolAboveEq)  # type: ignore
     # FIXME: Report typo in storage
-    event.pool_below = from_mutez(event_diff.poolBellow)  # type: ignore
+    event.pool_below = from_mutez(event_diff.poolBelow)  # type: ignore
     event.total_bets_amount += amount  # type: ignore
     await event.save()
 
@@ -40,8 +40,8 @@ async def on_bet(
         position.reward_above_eq = reward  # type: ignore
         bet_side = models.BetSide.ABOVE_EQ
     else:
-        assert len(bet.storage.betsBellow) == 1
-        reward = from_mutez(bet.storage.betsBellow[0].value)
+        assert len(bet.storage.betsBelow) == 1
+        reward = from_mutez(bet.storage.betsBelow[0].value)
         bet_reward = reward - position.reward_below
         position.reward_below = reward  # type: ignore
         bet_side = models.BetSide.BELOW

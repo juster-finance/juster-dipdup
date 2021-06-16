@@ -35,10 +35,4 @@ async def on_close(
 
         reward = position.get_reward(event.winner_bets)
         user.total_reward += reward  # type: ignore
-
-        if position.shares:
-            position.set_shares_reward(event)
-            await position.save()
-            user.total_reward += position.shares_reward  # type: ignore
-
         await user.save()

@@ -23,7 +23,7 @@ class Key1(BaseModel):
     nat: str
 
 
-class BetsBellowItem(BaseModel):
+class BetsBelowItem(BaseModel):
     key: Key1
     value: str
 
@@ -74,7 +74,7 @@ class Events(BaseModel):
     oracleAddress: str
     participants: str
     poolAboveEq: str
-    poolBellow: str
+    poolBelow: str
     rewardCallFee: str
     startRate: Optional[str]
     targetDynamics: str
@@ -106,7 +106,7 @@ class Key5(BaseModel):
     nat: str
 
 
-class ProvidedLiquidityBellowItem(BaseModel):
+class ProvidedLiquidityBelowItem(BaseModel):
     key: Key5
     value: str
 
@@ -114,19 +114,19 @@ class ProvidedLiquidityBellowItem(BaseModel):
 class BetsStorage(BaseModel):
     bakingRewards: str
     betsAboveEq: List[BetsAboveEqItem]
-    betsBellow: List[BetsBellowItem]
+    betsBelow: List[BetsBelowItem]
     closeCallId: Optional[str]
     config: Config
     depositedBets: List[DepositedBet]
     events: Dict[str, Events]
-    lastEventId: str
     liquidityPrecision: str
     liquidityShares: List[LiquidityShare]
     manager: str
     measurementStartCallId: Optional[str]
+    nextEventId: str
     proposedManager: Optional[str]
     providedLiquidityAboveEq: List[ProvidedLiquidityAboveEqItem]
-    providedLiquidityBellow: List[ProvidedLiquidityBellowItem]
+    providedLiquidityBelow: List[ProvidedLiquidityBelowItem]
     providerProfitFeePrecision: str
     ratioPrecision: str
     retainedProfits: str
