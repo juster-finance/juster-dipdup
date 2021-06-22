@@ -13,7 +13,7 @@ class Key(BaseModel):
     nat: str
 
 
-class BetsAgainstItem(BaseModel):
+class BetsAboveEqItem(BaseModel):
     key: Key
     value: str
 
@@ -23,9 +23,26 @@ class Key1(BaseModel):
     nat: str
 
 
-class BetsForItem(BaseModel):
+class BetsBelowItem(BaseModel):
     key: Key1
     value: str
+
+
+class Config(BaseModel):
+    expirationFee: str
+    isEventCreationPaused: bool
+    maxAllowedMeasureLag: str
+    maxLiquidityPercent: str
+    maxMeasurePeriod: str
+    maxPeriodToBetsClose: str
+    measureStartFee: str
+    minLiquidityPercent: str
+    minMeasurePeriod: str
+    minPeriodToBetsClose: str
+    oracleAddress: str
+    providerProfitFee: str
+    rewardCallFee: str
+    rewardFeeSplitAfter: str
 
 
 class Key2(BaseModel):
@@ -40,27 +57,26 @@ class DepositedBet(BaseModel):
 
 class Events(BaseModel):
     betsCloseTime: str
-    closedDynamics: str
-    closedOracleTime: str
-    closedRate: str
+    closedDynamics: Optional[str]
+    closedOracleTime: Optional[str]
+    closedRate: Optional[str]
     createdTime: str
     currencyPair: str
     expirationFee: str
-    isBetsForWin: bool
+    isBetsAboveEqWin: Optional[bool]
     isClosed: bool
     isForceMajeure: bool
-    isMeasurementStarted: bool
     liquidityPercent: str
     maxAllowedMeasureLag: str
-    measureOracleStartTime: str
+    measureOracleStartTime: Optional[str]
     measurePeriod: str
     measureStartFee: str
-    minPoolSize: str
     oracleAddress: str
-    poolAgainst: str
-    poolFor: str
+    participants: str
+    poolAboveEq: str
+    poolBelow: str
     rewardCallFee: str
-    startRate: str
+    startRate: Optional[str]
     targetDynamics: str
     totalLiquidityShares: str
 
@@ -75,27 +91,12 @@ class LiquidityShare(BaseModel):
     value: str
 
 
-class NewEventConfig(BaseModel):
-    defaultTime: str
-    expirationFee: str
-    liquidityPercent: str
-    maxAllowedMeasureLag: str
-    maxMeasurePeriod: str
-    maxPeriodToBetsClose: str
-    measureStartFee: str
-    minMeasurePeriod: str
-    minPeriodToBetsClose: str
-    minPoolSize: str
-    oracleAddress: str
-    rewardCallFee: str
-
-
 class Key4(BaseModel):
     address: str
     nat: str
 
 
-class ProvidedLiquidityAgainstItem(BaseModel):
+class ProvidedLiquidityAboveEqItem(BaseModel):
     key: Key4
     value: str
 
@@ -105,25 +106,29 @@ class Key5(BaseModel):
     nat: str
 
 
-class ProvidedLiquidityForItem(BaseModel):
+class ProvidedLiquidityBelowItem(BaseModel):
     key: Key5
     value: str
 
 
-class BetsStorage(BaseModel):
-    betsAgainst: List[BetsAgainstItem]
-    betsFor: List[BetsForItem]
+class JusterStorage(BaseModel):
+    bakingRewards: str
+    betsAboveEq: List[BetsAboveEqItem]
+    betsBelow: List[BetsBelowItem]
     closeCallId: Optional[str]
+    config: Config
     depositedBets: List[DepositedBet]
     events: Dict[str, Events]
-    lastEventId: str
     liquidityPrecision: str
     liquidityShares: List[LiquidityShare]
     manager: str
     measurementStartCallId: Optional[str]
-    newEventConfig: NewEventConfig
-    providedLiquidityAgainst: List[ProvidedLiquidityAgainstItem]
-    providedLiquidityFor: List[ProvidedLiquidityForItem]
+    nextEventId: str
+    proposedManager: Optional[str]
+    providedLiquidityAboveEq: List[ProvidedLiquidityAboveEqItem]
+    providedLiquidityBelow: List[ProvidedLiquidityBelowItem]
+    providerProfitFeePrecision: str
     ratioPrecision: str
+    retainedProfits: str
     sharePrecision: str
     targetDynamicsPrecision: str
