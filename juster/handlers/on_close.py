@@ -1,17 +1,17 @@
 from dipdup.models import OperationData, Transaction
-from dipdup.context import OperationHandlerContext
+from dipdup.context import HandlerContext
 from typing import List
 
-import baking_bet.models as models
+import juster.models as models
 
-from baking_bet.types.bets.parameter.close_callback import CloseCallbackParameter
-from baking_bet.types.bets.storage import BetsStorage
-from baking_bet.utils import from_mutez, get_event
+from juster.types.juster.parameter.close_callback import CloseCallbackParameter
+from juster.types.juster.storage import JusterStorage
+from juster.utils import from_mutez, get_event
 
 
 async def on_close(
-    ctx: OperationHandlerContext,
-    close_callback: Transaction[CloseCallbackParameter, BetsStorage],
+    ctx: HandlerContext,
+    close_callback: Transaction[CloseCallbackParameter, JusterStorage],
     fee_tx: OperationData,
 ) -> None:
     event_id, event_diff = get_event(close_callback.storage)

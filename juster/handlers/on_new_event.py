@@ -1,16 +1,16 @@
 from dipdup.models import Transaction
-from dipdup.context import OperationHandlerContext
+from dipdup.context import HandlerContext
 
-import baking_bet.models as models
+import juster.models as models
 
-from baking_bet.types.bets.parameter.new_event import NewEventParameter
-from baking_bet.types.bets.storage import BetsStorage
-from baking_bet.utils import get_event
+from juster.types.juster.parameter.new_event import NewEventParameter
+from juster.types.juster.storage import JusterStorage
+from juster.utils import get_event
 
 
 async def on_new_event(
-    ctx: OperationHandlerContext,
-    new_event: Transaction[NewEventParameter, BetsStorage],
+    ctx: HandlerContext,
+    new_event: Transaction[NewEventParameter, JusterStorage],
 ) -> None:
     event_id, event_diff = get_event(new_event.storage)
 

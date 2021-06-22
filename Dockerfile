@@ -6,7 +6,7 @@ RUN apt update && \
 RUN pip install poetry
 RUN useradd -ms /bin/bash dipdup
 
-WORKDIR /home/dipdup/baking_bet
+WORKDIR /home/dipdup/juster
 COPY . .
 
 RUN poetry config virtualenvs.create false

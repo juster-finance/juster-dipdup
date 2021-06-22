@@ -1,16 +1,16 @@
 from dipdup.models import Transaction
-from dipdup.context import OperationHandlerContext
+from dipdup.context import HandlerContext
 
-import baking_bet.models as models
+import juster.models as models
 
-from baking_bet.types.bets.parameter.provide_liquidity import ProvideLiquidityParameter
-from baking_bet.types.bets.storage import BetsStorage
-from baking_bet.utils import get_event, from_mutez
+from juster.types.juster.parameter.provide_liquidity import ProvideLiquidityParameter
+from juster.types.juster.storage import JusterStorage
+from juster.utils import get_event, from_mutez
 
 
 async def on_provide_liquidity(
-    ctx: OperationHandlerContext,
-    provide_liquidity: Transaction[ProvideLiquidityParameter, BetsStorage],
+    ctx: HandlerContext,
+    provide_liquidity: Transaction[ProvideLiquidityParameter, JusterStorage],
 ) -> None:
     event_id, event_diff = get_event(provide_liquidity.storage)
     assert provide_liquidity.data.amount

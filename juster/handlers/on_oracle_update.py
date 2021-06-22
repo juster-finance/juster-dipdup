@@ -1,16 +1,16 @@
 from dipdup.models import BigMapDiff
-from dipdup.context import BigMapHandlerContext
+from dipdup.context import HandlerContext
 from typing import List
 
 
-import baking_bet.models as models
+import juster.models as models
 
-from baking_bet.types.normalizer.big_map.asset_map_key import AssetMapKey
-from baking_bet.types.normalizer.big_map.asset_map_value import AssetMapValue
+from juster.types.harbinger_normalizer.big_map.asset_map_key import AssetMapKey
+from juster.types.harbinger_normalizer.big_map.asset_map_value import AssetMapValue
 
 
 async def on_oracle_update(
-    ctx: BigMapHandlerContext,
+    ctx: HandlerContext,
     asset_map: List[BigMapDiff[AssetMapKey, AssetMapValue]],
 ) -> None:
     for asset in asset_map:

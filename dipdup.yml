@@ -1,23 +1,23 @@
-spec_version: 0.1
-package: baking_bet
+spec_version: 1.0
+package: juster
 
 database:
   kind: sqlite
-  path: bets.sqlite3
+  path: juster.sqlite3
 
 contracts:
   coinbase_storage_mainnet:
     address: KT1Jr5t9UvGiqkvvsuUbPJHaYx24NzdUwNW9
-    typename: storage
+    typename: harbinger_storage
   coinbase_normalizer_mainnet:
     address: KT1AdbYiPYb5hDuEuVrfxmFehtnBCXv4Np7r
-    typename: normalizer
-  normalizer_florencenet:
+    typename: harbinger_normalizer
+  harbinger_normalizer_florencenet:
     address: KT1SUP27JhX24Kvr11oUdWswk7FnCW78ZyUn
-    typename: normalizer
-  bets_florencenet:
+    typename: harbinger_normalizer
+  juster_florencenet:
     address: KT1CepDBrMg73d7LHm773KAsunjAjgLYituP
-    typename: bets
+    typename: juster
 
 datasources:
   tzkt_mainnet:
@@ -28,73 +28,72 @@ datasources:
     url: https://api.florencenet.tzkt.io
 
 templates:
-  harbinger:
+  harbinger_normalizer:
     kind: big_map
     datasource: <datasource>
     handlers:
       - callback: on_oracle_update
-        pattern:
-          - contract: <normalizer>
-            path: assetMap
+        contract: <harbinger_normalizer>
+        path: assetMap
 
-  bets:
+  juster:
     kind: operation
     datasource: <datasource>
     contracts:
-      - <bets>
+      - <juster>
     handlers:
       - callback: on_new_event
         pattern:
           - type: transaction
-            destination: <bets>
+            destination: <juster>
             entrypoint: newEvent
       - callback: on_provide_liquidity
         pattern:
           - type: transaction
-            destination: <bets>
+            destination: <juster>
             entrypoint: provideLiquidity
       - callback: on_bet
         pattern:
           - type: transaction
-            destination: <bets>
+            destination: <juster>
             entrypoint: bet
       - callback: on_start_measurement
         pattern:
           - type: transaction
-            destination: <bets>
+            destination: <juster>
             entrypoint: startMeasurementCallback
           - type: transaction
-            source: <bets>
+            source: <juster>
       - callback: on_close
         pattern:
           - type: transaction
-            destination: <bets>
+            destination: <juster>
             entrypoint: closeCallback
           - type: transaction
-            source: <bets>
+            source: <juster>
       - callback: on_withdraw
         pattern:
           - type: transaction
-            destination: <bets>
+            destination: <juster>
             entrypoint: withdraw
           - type: transaction
-            source: <bets>
+            source: <juster>
 
 indexes:
   # harbinger_mainnet:
-  #   template: harbinger
+  #   template: harbinger_normalizer
   #   values:
   #     datasource: tzkt_staging_mainnet
   #     normalizer: coinbase_normalizer_mainnet
 
-  # harbinger_florencenet:
-  #   template: harbinger
-  #   values:
-  #     datasource: tzkt_florencenet
-  #     normalizer: normalizer_florencenet
-    
-  bets_florencenet:
-    template: bets
+  harbinger_florencenet:
+    template: harbinger_normalizer
     values:
       datasource: tzkt_florencenet
-      bets: bets_florencenet
+      harbinger_normalizer: harbinger_normalizer_florencenet
+
+  juster_florencenet:
+    template: juster
+    values:
+      datasource: tzkt_florencenet
+      juster: juster_florencenet

@@ -1,17 +1,17 @@
 from dipdup.models import Transaction
-from dipdup.context import OperationHandlerContext
+from dipdup.context import HandlerContext
 
-import baking_bet.models as models
+import juster.models as models
 
-from baking_bet.types.bets.parameter.bet import BetParameter, BetItem
-from baking_bet.types.bets.storage import BetsStorage
-from baking_bet.utils import from_mutez, get_event
+from juster.types.juster.parameter.bet import BetParameter, BetItem
+from juster.types.juster.storage import JusterStorage
+from juster.utils import from_mutez, get_event
 
 BetAboveEq = BetItem
 
 async def on_bet(
-    ctx: OperationHandlerContext,
-    bet: Transaction[BetParameter, BetsStorage],
+    ctx: HandlerContext,
+    bet: Transaction[BetParameter, JusterStorage],
 ) -> None:
     event_id, event_diff = get_event(bet.storage)
     assert bet.data.amount
@@ -19,7 +19,6 @@ async def on_bet(
 
     event = await models.Event.filter(id=event_id).get()
     event.pool_above_eq = from_mutez(event_diff.poolAboveEq)  # type: ignore
-    # FIXME: Report typo in storage
     event.pool_below = from_mutez(event_diff.poolBelow)  # type: ignore
     event.total_bets_amount += amount  # type: ignore
     await event.save()

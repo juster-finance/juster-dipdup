@@ -1,13 +1,13 @@
 [tool.poetry]
-name = "baking-bet"
+name = "juster-dipdup"
 version = "0.0.1"
 description = ""
 authors = ["Lev Gorodetskiy <github@droserasprout.space>"]
 
 [tool.poetry.dependencies]
 python = "^3.9"
-dipdup = {git = "https://github.com/dipdup-net/dipdup-py.git"}
 dateutils = "^0.6.12"
+dipdup = "^1.0.1"
 
 [tool.poetry.dev-dependencies]
 mypy = "^0.812"

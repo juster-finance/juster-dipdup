@@ -111,7 +111,7 @@ class ProvidedLiquidityBelowItem(BaseModel):
     value: str
 
 
-class BetsStorage(BaseModel):
+class JusterStorage(BaseModel):
     bakingRewards: str
     betsAboveEq: List[BetsAboveEqItem]
     betsBelow: List[BetsBelowItem]

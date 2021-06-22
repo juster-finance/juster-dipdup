@@ -1,17 +1,17 @@
 from dipdup.models import OperationData, Transaction
-from dipdup.context import OperationHandlerContext
+from dipdup.context import HandlerContext
 
 
-import baking_bet.models as models
+import juster.models as models
 
-from baking_bet.types.bets.parameter.withdraw import WithdrawParameter
-from baking_bet.types.bets.storage import BetsStorage
-from baking_bet.utils import from_mutez
+from juster.types.juster.parameter.withdraw import WithdrawParameter
+from juster.types.juster.storage import JusterStorage
+from juster.utils import from_mutez
 
 
 async def on_withdraw(
-    ctx: OperationHandlerContext,
-    withdraw: Transaction[WithdrawParameter, BetsStorage],
+    ctx: HandlerContext,
+    withdraw: Transaction[WithdrawParameter, JusterStorage],
     withdraw_tx: OperationData,
 ) -> None:
     event_id = int(withdraw.parameter.eventId)
