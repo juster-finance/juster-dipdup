@@ -210,7 +210,7 @@ pytz = "*"
 
 [[package]]
 name = "dipdup"
-version = "1.0.1"
+version = "1.0.2"
 description = "Python SDK for developing indexers of Tezos smart contracts inspired by The Graph"
 category = "main"
 optional = false
@@ -316,16 +316,17 @@ six = "*"
 
 [[package]]
 name = "isort"
-version = "5.8.0"
+version = "5.9.1"
 description = "A Python utility / library to sort Python imports."
 category = "main"
 optional = false
-python-versions = ">=3.6,<4.0"
+python-versions = ">=3.6.1,<4.0"
 
 [package.extras]
 pipfile_deprecated_finder = ["pipreqs", "requirementslib"]
 requirements_deprecated_finder = ["pipreqs", "pip-api"]
 colors = ["colorama (>=0.4.3,<0.5.0)"]
+plugins = ["setuptools"]
 
 [[package]]
 name = "jinja2"
@@ -824,8 +825,8 @@ dateutils = [
     {file = "dateutils-0.6.12.tar.gz", hash = "sha256:03dd90bcb21541bd4eb4b013637e4f1b5f944881c46cc6e4b67a6059e370e3f1"},
 ]
 dipdup = [
-    {file = "dipdup-1.0.1-py3-none-any.whl", hash = "sha256:9a1894dca309e9e492ba4efc57f523d41eb8ca051607935b5956c31895cbd387"},
-    {file = "dipdup-1.0.1.tar.gz", hash = "sha256:67b56b9e433d5155f81024af8fe028a78bb6476a303bde1d3799aa1b8f5ac494"},
+    {file = "dipdup-1.0.2-py3-none-any.whl", hash = "sha256:f1a2bad262642386e63223b12ae26ee3256c3ccb5a5b420f591b48f61a8f1d0b"},
+    {file = "dipdup-1.0.2.tar.gz", hash = "sha256:05a48d2b61053aaf3d4cd3fc112cf4371f5998dd01da3d403788b0dcb1cacb16"},
 ]
 dnspython = [
     {file = "dnspython-2.1.0-py3-none-any.whl", hash = "sha256:95d12f6ef0317118d2a1a6fc49aac65ffec7eb8087474158f42f26a639135216"},
@@ -859,8 +860,8 @@ isodate = [
     {file = "isodate-0.6.0.tar.gz", hash = "sha256:2e364a3d5759479cdb2d37cce6b9376ea504db2ff90252a2e5b7cc89cc9ff2d8"},
 ]
 isort = [
-    {file = "isort-5.8.0-py3-none-any.whl", hash = "sha256:2bb1680aad211e3c9944dbce1d4ba09a989f04e238296c87fe2139faa26d655d"},
-    {file = "isort-5.8.0.tar.gz", hash = "sha256:0a943902919f65c5684ac4e0154b1ad4fac6dcaa5d9f3426b732f1c8b5419be6"},
+    {file = "isort-5.9.1-py3-none-any.whl", hash = "sha256:8e2c107091cfec7286bc0f68a547d0ba4c094d460b732075b6fba674f1035c0c"},
+    {file = "isort-5.9.1.tar.gz", hash = "sha256:83510593e07e433b77bd5bff0f6f607dbafa06d1a89022616f02d8b699cfcd56"},
 ]
 jinja2 = [
     {file = "Jinja2-2.11.3-py2.py3-none-any.whl", hash = "sha256:03e47ad063331dd6a3f04a43eddca8a966a26ba0c5b7207a9a9e4e08f1b29419"},
