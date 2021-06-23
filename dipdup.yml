@@ -78,6 +78,13 @@ templates:
             entrypoint: withdraw
           - type: transaction
             source: <juster>
+      - callback: on_force_majeure
+        pattern:
+          - type: transaction
+            destination: <juster>
+            entrypoint: triggerForceMajeure
+          - type: transaction
+            source: <juster>
 
 indexes:
   # harbinger_mainnet:
