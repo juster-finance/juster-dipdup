@@ -1,6 +1,6 @@
 from dipdup.models import OperationData, Transaction
 from dipdup.context import HandlerContext
-
+from datetime import datetime
 import juster.models as models
 
 from juster.types.juster.parameter.start_measurement_callback import StartMeasurementCallbackParameter
@@ -16,7 +16,7 @@ async def on_start_measurement(
     event_id, event_diff = get_event(start_measurement_callback.storage)
 
     event = await models.Event.filter(id=event_id).get()
-    event.measure_oracle_start_time = event_diff.measureOracleStartTime  # type: ignore
+    event.measure_oracle_start_time = datetime.fromisoformat(event_diff.measureOracleStartTime[:-1])  # type: ignore
     event.start_rate = models.to_ratio(event_diff.startRate)
     event.status = models.EventStatus.STARTED
     await event.save()

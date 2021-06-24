@@ -72,7 +72,7 @@ class Event(Model):
     # Calculate: potentialReward(for) =
     # [1 - liquidityPercent * (now - createdTime) / (betsCloseTime - createdTime)] * (poolAgainst / (poolFor + amount))
 
-    total_liquidity_shares = fields.DecimalField(10, share_precision, default=Decimal('0'))
+    total_liquidity_shares = fields.DecimalField(16, share_precision, default=Decimal('0'))
     # Calculate: incomingShare = amount / (poolFor + poolAgainst)
     # Calculate: finalReward(for) = poolAgainst * (shares[own] / totalLiquidityShares) + providedLiquidityFor[own]
     
@@ -117,7 +117,7 @@ class Deposit(Model):
     id = fields.IntField(pk=True)
     amount_above_eq = fields.DecimalField(10, 6)
     amount_below = fields.DecimalField(10, 6)
-    shares = fields.DecimalField(10, share_precision)
+    shares = fields.DecimalField(16, share_precision)
     event = fields.ForeignKeyField('models.Event', 'deposits')
     user = fields.ForeignKeyField('models.User', 'deposits')
 
@@ -135,7 +135,7 @@ class Position(Model):
     reward_below = fields.DecimalField(10, 6, default=Decimal('0'))
     liquidity_provided_above_eq = fields.DecimalField(10, 6, default=Decimal('0'))
     liquidity_provided_below = fields.DecimalField(10, 6, default=Decimal('0'))
-    shares = fields.DecimalField(10, share_precision, default=Decimal('0'))
+    shares = fields.DecimalField(16, share_precision, default=Decimal('0'))
     withdrawn = fields.BooleanField(default=False)
     event = fields.ForeignKeyField('models.Event', 'positions')
     user = fields.ForeignKeyField('models.User', 'positions')
