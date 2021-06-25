@@ -5,7 +5,7 @@ services:
     build: .
     depends_on:
       - db
-    restart: always
+    restart: "no"
     environment:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-changeme}
       - ADMIN_SECRET=${ADMIN_SECRET:-changeme}
@@ -13,6 +13,7 @@ services:
       - ./dipdup.yml:/home/dipdup/dipdup.yml
       - ./dipdup.prod.yml:/home/dipdup/dipdup.prod.yml
     command: ["-c", "dipdup.yml", "-c", "dipdup.prod.yml", "run"]
+    # command: ["-c", "dipdup.yml", "-c", "dipdup.prod.yml", "run", "--reindex"]
   
   db:
     image: postgres:13

@@ -78,6 +78,9 @@ templates:
             entrypoint: withdraw
           - type: transaction
             source: <juster>
+          - type: transaction
+            source: <juster>
+            optional: True
       - callback: on_force_majeure
         pattern:
           - type: transaction
