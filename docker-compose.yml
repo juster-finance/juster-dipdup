@@ -9,7 +9,11 @@ services:
     environment:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-changeme}
       - ADMIN_SECRET=${ADMIN_SECRET:-changeme}
-
+    volumes:
+      - ./dipdup.yml:/home/dipdup/dipdup.yml
+      - ./dipdup.prod.yml:/home/dipdup/dipdup.prod.yml
+    command: ["-c", "dipdup.yml", "-c", "dipdup.prod.yml", "run"]
+  
   db:
     image: postgres:13
     ports:
