@@ -12,6 +12,7 @@ services:
     volumes:
       - ./dipdup.yml:/home/dipdup/dipdup.yml
       - ./dipdup.prod.yml:/home/dipdup/dipdup.prod.yml
+      - ./juster:/home/dipdup/juster
     command: ["-c", "dipdup.yml", "-c", "dipdup.prod.yml", "run"]
     # command: ["-c", "dipdup.yml", "-c", "dipdup.prod.yml", "run", "--reindex"]
   
