@@ -5,7 +5,7 @@ description = ""
 authors = ["Lev Gorodetskiy <github@droserasprout.space>"]
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.8"
 dateutils = "^0.6.12"
 dipdup = "^1.1.1"
 
