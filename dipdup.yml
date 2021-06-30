@@ -26,6 +26,8 @@ datasources:
   tzkt_florencenet:
     kind: tzkt
     url: https://api.florencenet.tzkt.io
+  coinbase:
+    kind: coinbase
 
 templates:
   harbinger_normalizer:
@@ -96,14 +98,24 @@ indexes:
   #     datasource: tzkt_staging_mainnet
   #     normalizer: coinbase_normalizer_mainnet
 
-  harbinger_florencenet:
-    template: harbinger_normalizer
-    values:
-      datasource: tzkt_florencenet
-      harbinger_normalizer: harbinger_normalizer_florencenet
+  # harbinger_florencenet:
+  #   template: harbinger_normalizer
+  #   values:
+  #     datasource: tzkt_florencenet
+  #     harbinger_normalizer: harbinger_normalizer_florencenet
 
   juster_florencenet:
     template: juster
     values:
       datasource: tzkt_florencenet
       juster: juster_florencenet
+
+jobs:
+  minute_candles_xtz:
+    callback: fetch_candles
+    crontab: "* * * * *"
+    args:
+      datasource: coinbase
+      currency_pair: XTZ-USD
+      candle_interval: ONE_MINUTE
+      since: 2021-06-29T00:00:00

@@ -2,6 +2,7 @@ from decimal import Decimal
 from enum import Enum
 
 from tortoise import Model, fields
+from dipdup.datasources.coinbase.models import CandleInterval
 
 liquidity_precision = 6
 ratio_precision = 8
@@ -75,7 +76,7 @@ class Event(Model):
     total_liquidity_shares = fields.DecimalField(16, share_precision, default=Decimal('0'))
     # Calculate: incomingShare = amount / (poolFor + poolAgainst)
     # Calculate: finalReward(for) = poolAgainst * (shares[own] / totalLiquidityShares) + providedLiquidityFor[own]
-    
+
     total_bets_amount = fields.DecimalField(10, 6, default=Decimal('0'))
     total_liquidity_provided = fields.DecimalField(10, 6, default=Decimal('0'))
 
@@ -155,3 +156,14 @@ class User(Model):
     total_reward = fields.DecimalField(10, 6, default=Decimal('0'))
     total_withdrawn = fields.DecimalField(10, 6, default=Decimal('0'))
     total_fees_collected = fields.DecimalField(10, 6, default=Decimal('0'))
+
+
+class Candle(Model):
+    currency_pair = fields.ForeignKeyField("models.CurrencyPair", "candles")
+    timestamp = fields.DatetimeField()
+    interval = fields.CharEnumField(CandleInterval)
+    open = fields.DecimalField(10, 4)
+    close = fields.DecimalField(10, 4)
+    high = fields.DecimalField(10, 4)
+    low = fields.DecimalField(10, 4)
+    volume = fields.DecimalField(16, 4)

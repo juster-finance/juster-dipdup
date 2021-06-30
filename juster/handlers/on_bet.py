@@ -9,6 +9,7 @@ from juster.utils import from_mutez, get_event
 
 BetAboveEq = BetItem
 
+
 async def on_bet(
     ctx: HandlerContext,
     bet: Transaction[BetParameter, JusterStorage],
@@ -47,10 +48,4 @@ async def on_bet(
 
     await position.save()
 
-    await models.Bet(
-        event=event,
-        user=user,
-        amount=amount,
-        reward=bet_reward,
-        side=bet_side
-    ).save()
+    await models.Bet(event=event, user=user, amount=amount, reward=bet_reward, side=bet_side).save()

@@ -30,11 +30,7 @@ async def on_withdraw(
     position.withdrawn = True  # type: ignore
     await position.save()
 
-    await models.Withdrawal(
-        event=event,
-        user=user,
-        amount=amount
-    ).save()
+    await models.Withdrawal(event=event, user=user, amount=amount).save()
 
     if fee_tx:
         fee_collector, _ = await models.User.get_or_create(address=fee_tx.target_address)

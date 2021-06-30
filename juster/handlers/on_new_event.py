@@ -24,6 +24,6 @@ async def on_new_event(
         measure_period=int(event_diff.measurePeriod),
         bets_close_time=event_diff.betsCloseTime,
         start_rate=None,
-        liquidity_percent=models.to_liquidity(event_diff.liquidityPercent)
+        liquidity_percent=models.to_liquidity(event_diff.liquidityPercent),
     )
     await event.save()
