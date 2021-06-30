@@ -43,7 +43,6 @@ async def fetch_candles(ctx: DipDupContext, args: Dict[str, Any]) -> None:
         )
         await candle.save()
         candles.append(candle)
-    print(len(candles))
 
     logger.info('Calculating quotes normalized by %s points', points)
     if len(candles) < points:
@@ -57,16 +56,14 @@ async def fetch_candles(ctx: DipDupContext, args: Dict[str, Any]) -> None:
             .limit(points - len(candles))
             .all()
         )
-    print(len(candles))
 
     index = points
     while index < len(candles):
         candles_batch = candles[index - points : index]
-        print(candles_batch)
         prices = [(c.high + c.low + c.close) / 3 * c.volume for c in candles_batch]
         volumes = [c.volume for c in candles_batch]
         await models.Quote(
-            price=sum(prices) / sum(volumes),
+            price=sum(prices) / sum(volumes) * 1000000,
             timestamp=candles_batch[-1].timestamp,
             currency_pair=currency_pair,
             source=models.QuoteSource.COINBASE,
