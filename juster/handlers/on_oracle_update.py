@@ -21,5 +21,6 @@ async def on_oracle_update(
         currency_pair=currency_pair,
         price=asset_map.value.computedPrice,
         timestamp=asset_map.value.lastUpdateTime,
+        source=models.QuoteSource.HARBINGER,
     )
     await quote.save()

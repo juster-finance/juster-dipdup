@@ -37,6 +37,8 @@ templates:
       - callback: on_oracle_update
         contract: <harbinger_normalizer>
         path: assetMap
+    # NOTE: 28 jun on florence
+    first_block: 302700
 
   juster:
     kind: operation
@@ -98,11 +100,11 @@ indexes:
   #     datasource: tzkt_staging_mainnet
   #     normalizer: coinbase_normalizer_mainnet
 
-  # harbinger_florencenet:
-  #   template: harbinger_normalizer
-  #   values:
-  #     datasource: tzkt_florencenet
-  #     harbinger_normalizer: harbinger_normalizer_florencenet
+  harbinger_florencenet:
+    template: harbinger_normalizer
+    values:
+      datasource: tzkt_florencenet
+      harbinger_normalizer: harbinger_normalizer_florencenet
 
   juster_florencenet:
     template: juster
@@ -119,3 +121,4 @@ jobs:
       currency_pair: XTZ-USD
       candle_interval: ONE_MINUTE
       since: 2021-06-29T00:00:00
+      points: 7

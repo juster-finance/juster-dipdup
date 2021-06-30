@@ -38,8 +38,16 @@ class BetSide(Enum):
     BELOW = "BELOW"
 
 
+class QuoteSource(Enum):
+    HARBINGER = 'HARBINGER'
+    COINBASE = 'COINBASE'
+
+
 class CurrencyPair(Model):
     symbol = fields.CharField(max_length=16)
+
+    class Meta:
+        table = 'currency_pairs'
 
 
 class Quote(Model):
@@ -47,6 +55,10 @@ class Quote(Model):
     price = fields.BigIntField()
     timestamp = fields.DatetimeField()
     currency_pair = fields.ForeignKeyField("models.CurrencyPair", "quotes")
+    source = fields.CharEnumField(QuoteSource)
+
+    class Meta:
+        table = 'quotes'
 
 
 class Event(Model):
@@ -82,6 +94,9 @@ class Event(Model):
 
     positions: fields.ReverseRelation['Position']
 
+    class Meta:
+        table = 'events'
+
     @property
     def winning_pool(self):
         return {
@@ -113,6 +128,9 @@ class Bet(Model):
     event = fields.ForeignKeyField('models.Event', 'bets')
     user = fields.ForeignKeyField('models.User', 'bets')
 
+    class Meta:
+        table = 'bets'
+
 
 class Deposit(Model):
     id = fields.IntField(pk=True)
@@ -122,12 +140,18 @@ class Deposit(Model):
     event = fields.ForeignKeyField('models.Event', 'deposits')
     user = fields.ForeignKeyField('models.User', 'deposits')
 
+    class Meta:
+        table = 'deposits'
+
 
 class Withdrawal(Model):
     id = fields.IntField(pk=True)
     amount = fields.DecimalField(10, 6)
     event = fields.ForeignKeyField('models.Event', 'withdrawals')
     user = fields.ForeignKeyField('models.User', 'withdrawals')
+
+    class Meta:
+        table = 'withdrawals'
 
 
 class Position(Model):
@@ -140,6 +164,9 @@ class Position(Model):
     withdrawn = fields.BooleanField(default=False)
     event = fields.ForeignKeyField('models.Event', 'positions')
     user = fields.ForeignKeyField('models.User', 'positions')
+
+    class Meta:
+        table = 'positions'
 
     def get_reward(self, side: BetSide) -> Decimal:
         return {
@@ -157,6 +184,9 @@ class User(Model):
     total_withdrawn = fields.DecimalField(10, 6, default=Decimal('0'))
     total_fees_collected = fields.DecimalField(10, 6, default=Decimal('0'))
 
+    class Meta:
+        table = 'users'
+
 
 class Candle(Model):
     currency_pair = fields.ForeignKeyField("models.CurrencyPair", "candles")
@@ -167,3 +197,6 @@ class Candle(Model):
     high = fields.DecimalField(10, 4)
     low = fields.DecimalField(10, 4)
     volume = fields.DecimalField(16, 4)
+
+    class Meta:
+        table = 'candles'
