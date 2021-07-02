@@ -6,7 +6,7 @@ authors = ["Lev Gorodetskiy <github@droserasprout.space>"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
-dipdup = {git = "https://github.com/dipdup-net/dipdup-py.git", branch = "fix/remove-bigmap-action"}
+dipdup = {git = "https://github.com/dipdup-net/dipdup-py.git"}
 
 [tool.poetry.dev-dependencies]
 mypy = "^0.812"
