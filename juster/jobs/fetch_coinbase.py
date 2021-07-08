@@ -9,7 +9,7 @@ from dipdup.context import DipDupContext
 from juster import models
 
 
-async def fetch_candles(ctx: DipDupContext, args: Dict[str, Any]) -> None:
+async def fetch_coinbase(ctx: DipDupContext, args: Dict[str, Any]) -> None:
     logger = logging.getLogger('fetch_candles')
     datasource = cast(CoinbaseDatasource, ctx.datasources[args['datasource']])
     currency_pair, _ = await models.CurrencyPair.get_or_create(symbol=args['currency_pair'])
@@ -43,6 +43,13 @@ async def fetch_candles(ctx: DipDupContext, args: Dict[str, Any]) -> None:
         )
         await candle.save()
         candles.append(candle)
+        await models.Quote(
+            price=raw_candle.close * 1000000,
+            timestamp=raw_candle.timestamp,
+            currency_pair=currency_pair,
+            source=models.QuoteSource.COINBASE_RAW,
+        ).save()
+
 
     logger.info('Calculating quotes normalized by %s points', points)
     if len(candles) < points:
@@ -58,14 +65,18 @@ async def fetch_candles(ctx: DipDupContext, args: Dict[str, Any]) -> None:
         )
 
     index = points
-    while index < len(candles):
+    while index <= len(candles):
         candles_batch = candles[index - points : index]
+        print(candles_batch)
         prices = [(c.high + c.low + c.close) / 3 * c.volume for c in candles_batch]
         volumes = [c.volume for c in candles_batch]
-        await models.Quote(
+        print(prices)
+        model = models.Quote(
             price=sum(prices) / sum(volumes) * 1000000,
-            timestamp=candles_batch[-1].timestamp,
+            timestamp=candles_batch[0].timestamp,
             currency_pair=currency_pair,
             source=models.QuoteSource.COINBASE,
-        ).save()
+        )
+        print(model.__dict__)
+        await model.save()
         index += 1

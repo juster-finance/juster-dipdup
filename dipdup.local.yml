@@ -8,5 +8,9 @@ database:
   schema_name: juster
 
 hasura:
-  url: http://hasura:8080
+  url: http://127.0.0.1:8080
   admin_secret: ${ADMIN_SECRET:-changeme}
+  select_limit: 99999
+
+sentry:
+  dsn: https://27d26eb33f1b4633852c2a0e9855bd3a@sentry.baking-bad.org/9

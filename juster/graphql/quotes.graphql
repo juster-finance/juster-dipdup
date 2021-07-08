@@ -1,0 +1,8 @@
+query introspectionQuery {
+  juster_quotes(where: {currency_pair: {symbol: {_eq: "XTZ-USD"}}}) {
+    id
+    price
+    source
+    timestamp
+  }
+}

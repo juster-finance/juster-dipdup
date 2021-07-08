@@ -41,6 +41,8 @@ class BetSide(Enum):
 class QuoteSource(Enum):
     HARBINGER = 'HARBINGER'
     COINBASE = 'COINBASE'
+    COINBASE_RAW = 'COINBASE_RAW'
+    KOLIBRI = 'KOLIBRI'
 
 
 class CurrencyPair(Model):
