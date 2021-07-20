@@ -1,7 +1,7 @@
 database:
   kind: postgres
   host: 127.0.0.1
-  port: 6423
+  port: 5432
   user: ${POSTGRES_USER:-dipdup}
   password: ${POSTGRES_PASSWORD:-changeme}
   database: ${POSTGRES_DB:-dipdup}
@@ -14,3 +14,4 @@ hasura:
 
 sentry:
   dsn: https://27d26eb33f1b4633852c2a0e9855bd3a@sentry.baking-bad.org/9
+  environment: juster-local

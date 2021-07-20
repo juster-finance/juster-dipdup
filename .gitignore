@@ -145,4 +145,4 @@ cython_debug/
 
 .noseids
 
-secrets.env
+*.env

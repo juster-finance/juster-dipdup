@@ -3,7 +3,7 @@ package: juster
 
 database:
   kind: sqlite
-  path: juster.sqlite3
+  path: ":memory:"
 
 contracts:
   coinbase_storage_mainnet:
@@ -15,6 +15,9 @@ contracts:
   harbinger_normalizer_florencenet:
     address: KT1SUP27JhX24Kvr11oUdWswk7FnCW78ZyUn
     typename: harbinger_normalizer
+  harbinger_storage_florencenet:
+    address: KT1PuT2NwwNjnxKy5XZEDZGHQNgdtLgN69i9
+    typename: harbinger_storage
   juster_florencenet:
     address: KT1CepDBrMg73d7LHm773KAsunjAjgLYituP
     typename: juster
@@ -34,11 +37,17 @@ templates:
     kind: big_map
     datasource: <datasource>
     handlers:
-      - callback: on_oracle_update
+      - callback: on_oracle_normalizer_update
         contract: <harbinger_normalizer>
         path: assetMap
-    # NOTE: 28 jun on florence
-    first_block: 302700
+
+  harbinger_storage:
+    kind: big_map
+    datasource: <datasource>
+    handlers:
+      - callback: on_oracle_storage_update
+        contract: <harbinger_storage>
+        path: oracleData
 
   juster:
     kind: operation
@@ -105,6 +114,12 @@ indexes:
     values:
       datasource: tzkt_florencenet
       harbinger_normalizer: harbinger_normalizer_florencenet
+
+  harbinger_raw_florencenet:
+    template: harbinger_storage
+    values:
+      datasource: tzkt_florencenet
+      harbinger_storage: harbinger_storage_florencenet
 
   juster_florencenet:
     template: juster

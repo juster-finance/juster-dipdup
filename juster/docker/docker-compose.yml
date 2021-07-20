@@ -3,12 +3,14 @@ version: "3.8"
 services:
 
   indexer:
-    build: .
+    build:
+      context: ../..
+      dockerfile: juster/docker/Dockerfile
     depends_on:
       - db
     volumes:
-      - ./dipdup.yml:/home/dipdup/dipdup.yml
-      - ./dipdup.prod.yml:/home/dipdup/dipdup.prod.yml
+      - ../juster/dipdup.yml:/home/dipdup/dipdup.yml
+      - ../juster/dipdup.prod.yml:/home/dipdup/dipdup.prod.yml
     command: ['-c', 'dipdup.yml', '-c', 'dipdup.prod.yml', 'run']
     restart: always
     env_file: dipdup.env
@@ -16,7 +18,7 @@ services:
   db:
     image: postgres:13
     ports:
-      - 127.0.0.1:6423:5432
+      - 127.0.0.1:5432:5432
     restart: always
     volumes:
       - db:/var/lib/postgres/data
@@ -30,7 +32,7 @@ services:
   hasura:
     image: hasura/graphql-engine:v2.0.1
     ports:
-      - 127.0.0.1:44000:8080
+      - 127.0.0.1:8080:8080
     depends_on:
       - db
     restart: always
