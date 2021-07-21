@@ -9,17 +9,17 @@ from dipdup.context import DipDupContext
 from juster import models
 
 
-async def fetch_coinbase(ctx: DipDupContext, args: Dict[str, Any]) -> None:
+async def fetch_coinbase_candles(ctx: DipDupContext, args: Dict[str, Any]) -> None:
     logger = logging.getLogger('fetch_candles')
     datasource = cast(CoinbaseDatasource, ctx.datasources[args['datasource']])
     currency_pair, _ = await models.CurrencyPair.get_or_create(symbol=args['currency_pair'])
     candle_interval = CandleInterval[args['candle_interval']]
     since = datetime.fromisoformat(args['since']).replace(tzinfo=timezone.utc)
-    points = int(args['points'])
+    # points = int(args['points'])
 
     logger.info('Fetching %s %s candles', currency_pair, candle_interval.value)
-    last_candle = await models.Candle.filter(currency_pair=currency_pair, interval=candle_interval).order_by('-timestamp').first()
-    request_since = last_candle.timestamp + timedelta(seconds=1) if last_candle else since
+    last_candle = await models.Candle.filter(currency_pair=currency_pair, interval=candle_interval).order_by('-until').first()
+    request_since = last_candle.until + timedelta(seconds=1) if last_candle else since
     request_until = datetime.utcnow().replace(tzinfo=timezone.utc) + timedelta(seconds=1)
     logger.info('Since %s until %s', request_since.isoformat(), request_until.isoformat())
     raw_candles = await datasource.get_candles(
@@ -33,50 +33,51 @@ async def fetch_coinbase(ctx: DipDupContext, args: Dict[str, Any]) -> None:
     for raw_candle in raw_candles:
         candle = models.Candle(
             currency_pair=currency_pair,
-            timestamp=raw_candle.timestamp,
+            since=raw_candle.timestamp - timedelta(seconds=candle_interval.seconds),
+            until=raw_candle.timestamp,
             interval=candle_interval,
             open=raw_candle.open,
             close=raw_candle.close,
             high=raw_candle.high,
             low=raw_candle.low,
             volume=raw_candle.volume,
+            source=models.Source.COINBASE,
         )
         await candle.save()
         candles.append(candle)
         await models.Quote(
-            price=raw_candle.close * 1000000,
+            price=raw_candle.close,
             timestamp=raw_candle.timestamp,
             currency_pair=currency_pair,
-            source=models.QuoteSource.COINBASE_RAW,
+            source=models.Source.COINBASE,
         ).save()
 
 
-    logger.info('Calculating quotes normalized by %s points', points)
-    if len(candles) < points:
-        candles += (
-            await models.Candle.filter(
-                currency_pair=currency_pair,
-                interval=candle_interval,
-                timestamp__lt=candles[0].timestamp,
-            )
-            .order_by('-timestamp')
-            .limit(points - len(candles))
-            .all()
-        )
+    # logger.info('Calculating quotes normalized by %s points', points)
+    # if len(candles) < points:
+    #     candles += (
+    #         await models.Candle.filter(
+    #             currency_pair=currency_pair,
+    #             interval=candle_interval,
+    #             timestamp__lt=candles[0].timestamp,
+    #         )
+    #         .order_by('-timestamp')
+    #         .limit(points - len(candles))
+    #         .all()
+    #     )
 
-    index = points
-    while index <= len(candles):
-        candles_batch = candles[index - points : index]
-        print(candles_batch)
-        prices = [(c.high + c.low + c.close) / 3 * c.volume for c in candles_batch]
-        volumes = [c.volume for c in candles_batch]
-        print(prices)
-        model = models.Quote(
-            price=sum(prices) / sum(volumes) * 1000000,
-            timestamp=candles_batch[0].timestamp,
-            currency_pair=currency_pair,
-            source=models.QuoteSource.COINBASE,
-        )
-        print(model.__dict__)
-        await model.save()
-        index += 1
+    # index = points
+    # while index <= len(candles):
+    #     candles_batch = candles[index - points : index]
+    #     print(candles_batch)
+    #     prices = [(c.high + c.low + c.close) / 3 * c.volume for c in candles_batch]
+    #     volumes = [c.volume for c in candles_batch]
+    #     print(prices)
+    #     model = models.Quote(
+    #         price=sum(prices) / sum(volumes),
+    #         timestamp=candles_batch[0].timestamp,
+    #         currency_pair=currency_pair,
+    #         source=models.Source.COINBASE,
+    #     )
+    #     await model.save()
+    #     index += 1

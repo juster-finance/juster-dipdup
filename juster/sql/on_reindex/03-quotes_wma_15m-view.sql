@@ -1,0 +1,17 @@
+-- CREATE MATERIALIZED VIEW quotes_wma_15m WITH (timescaledb.continuous) AS
+-- SELECT
+--   token_id,
+--   public.time_bucket(INTERVAL '15 minutes', timestamp) AS bucket,
+--   COUNT(id) AS trades,
+--   (MIN(ARRAY [id, price])) [2] AS open,
+--   (MAX(ARRAY [id, price])) [2] AS close,
+--   SUM(token_qty) AS volume,
+--   SUM(tez_qty) AS xtz_volume,
+--   AVG(price)::REAL AS average,
+--   MAX(price) AS high,
+--   MIN(price) AS low
+-- FROM
+--   dex.trade
+-- GROUP BY
+--   token_id,
+--   bucket;

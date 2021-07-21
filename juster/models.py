@@ -26,6 +26,10 @@ def to_dynamics(value):
     return int(value) / Decimal(10 ** target_dynamics_precision)
 
 
+def to_decimal(value):
+    return Decimal(value) / Decimal(10 ** 6)
+
+
 class EventStatus(Enum):
     NEW = "NEW"
     STARTED = "STARTED"
@@ -38,13 +42,9 @@ class BetSide(Enum):
     BELOW = "BELOW"
 
 
-class QuoteSource(Enum):
+class Source(Enum):
     HARBINGER = 'HARBINGER'
-    HARBINGER_RAW = 'HARBINGER_RAW'
     COINBASE = 'COINBASE'
-    COINBASE_RAW = 'COINBASE_RAW'
-    COINBASE_ORACLE = 'COINBASE_ORACLE'
-    KOLIBRI = 'KOLIBRI'
 
 
 class CurrencyPair(Model):
@@ -53,10 +53,23 @@ class CurrencyPair(Model):
 
 class Quote(Model):
     id = fields.IntField(pk=True)
-    price = fields.BigIntField()
+    price = fields.DecimalField(16, 6)
     timestamp = fields.DatetimeField()
     currency_pair = fields.ForeignKeyField("models.CurrencyPair", "quotes")
-    source = fields.CharEnumField(QuoteSource)
+    source = fields.CharEnumField(Source)
+
+
+class Candle(Model):
+    currency_pair = fields.ForeignKeyField("models.CurrencyPair", "candles")
+    source = fields.CharEnumField(Source)
+    since = fields.DatetimeField()
+    until = fields.DatetimeField()
+    interval = fields.CharEnumField(CandleInterval)
+    open = fields.DecimalField(16, 6)
+    high = fields.DecimalField(16, 6)
+    low = fields.DecimalField(16, 6)
+    close = fields.DecimalField(16, 6)
+    volume = fields.DecimalField(16, 6)
 
 
 class Event(Model):
@@ -166,14 +179,3 @@ class User(Model):
     total_reward = fields.DecimalField(10, 6, default=Decimal('0'))
     total_withdrawn = fields.DecimalField(10, 6, default=Decimal('0'))
     total_fees_collected = fields.DecimalField(10, 6, default=Decimal('0'))
-
-
-class Candle(Model):
-    currency_pair = fields.ForeignKeyField("models.CurrencyPair", "candles")
-    timestamp = fields.DatetimeField()
-    interval = fields.CharEnumField(CandleInterval)
-    open = fields.DecimalField(10, 4)
-    close = fields.DecimalField(10, 4)
-    high = fields.DecimalField(10, 4)
-    low = fields.DecimalField(10, 4)
-    volume = fields.DecimalField(16, 4)

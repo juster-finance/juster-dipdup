@@ -1,16 +1,8 @@
-database:
-  kind: postgres
-  host: 127.0.0.1
-  port: 6423
-  user: ${POSTGRES_USER:-dipdup}
-  password: ${POSTGRES_PASSWORD:-changeme}
-  database: ${POSTGRES_DB:-dipdup}
-  schema_name: juster
-
 hasura:
-  url: http://127.0.0.1:44000
+  url: http://127.0.0.1:8080
   admin_secret: ${ADMIN_SECRET:-changeme}
-  select_limit: 99999999
+  select_limit: ${SELECT_LIMIT:-99999999}
+  allow_aggregations: ${AGGREGATIONS:-True}
 
 sentry:
   dsn: https://27d26eb33f1b4633852c2a0e9855bd3a@sentry.baking-bad.org/9

@@ -9,6 +9,21 @@ services:
     volumes:
       - ./dipdup.yml:/home/dipdup/dipdup.yml
       - ./dipdup.docker.yml:/home/dipdup/dipdup.docker.yml
+    command: [
+      '-c', 'dipdup.yml',
+      '-c', 'dipdup.docker.yml',
+      'run', '--reindex'
+    ]
+    restart: always
+    env_file: dipdup.env
+
+  indexer-prod:
+    build: .
+    depends_on:
+      - db
+    volumes:
+      - ./dipdup.yml:/home/dipdup/dipdup.yml
+      - ./dipdup.docker.yml:/home/dipdup/dipdup.docker.yml
       - ./dipdup.prod.yml:/home/dipdup/dipdup.prod.yml
     command: [
       '-c', 'dipdup.yml',
@@ -19,25 +34,8 @@ services:
     restart: always
     env_file: dipdup.env
 
-  indexer-local:
-      build: .
-      depends_on:
-        - db
-      volumes:
-        - ./dipdup.yml:/home/dipdup/dipdup.yml
-        - ./dipdup.docker.yml:/home/dipdup/dipdup.docker.yml
-        - ./dipdup.local.yml:/home/dipdup/dipdup.local.yml
-      command: [
-        '-c', 'dipdup.yml',
-        '-c', 'dipdup.docker.yml',
-        '-c', 'dipdup.prod.yml',
-        'run'
-      ]
-      restart: always
-      env_file: dipdup.env
-
   db:
-    image: postgres:13
+    image: timescale/timescaledb:latest-pg12
     ports:
       - 127.0.0.1:6423:5432
     restart: always

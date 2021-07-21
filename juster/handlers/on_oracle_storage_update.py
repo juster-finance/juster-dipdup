@@ -15,10 +15,16 @@ async def on_oracle_storage_update(
     assert oracle_data.key
     symbol = oracle_data.key.__root__
     currency_pair, _ = await models.CurrencyPair.get_or_create(symbol=symbol)
-    quote = models.Quote(
+    quote = models.Candle(
         currency_pair=currency_pair,
-        price=oracle_data.value.nat_3,
-        timestamp=oracle_data.value.timestamp_1,
-        source=models.QuoteSource.HARBINGER_RAW,
+        source=models.Source.HARBINGER,
+        since=oracle_data.value.timestamp_0,
+        until=oracle_data.value.timestamp_1,
+        interval=models.CandleInterval.ONE_MINUTE,
+        open=models.to_decimal(oracle_data.value.nat_0),
+        high=models.to_decimal(oracle_data.value.nat_1),
+        low=models.to_decimal(oracle_data.value.nat_2),
+        close=models.to_decimal(oracle_data.value.nat_3),
+        volume=models.to_decimal(oracle_data.value.nat_4),
     )
     await quote.save()
