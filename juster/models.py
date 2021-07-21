@@ -69,8 +69,8 @@ class Event(Model):
     measure_period = fields.BigIntField()  # interval in seconds
     bets_close_time = fields.DatetimeField()  # countdown
 
-    start_rate = fields.DecimalField(10, ratio_precision, null=True)
-    closed_rate = fields.DecimalField(10, ratio_precision, null=True)
+    start_rate = fields.DecimalField(14, ratio_precision, null=True)
+    closed_rate = fields.DecimalField(14, ratio_precision, null=True)
     closed_dynamics = fields.DecimalField(10, target_dynamics_precision, null=True)
 
     measure_oracle_start_time = fields.DatetimeField(null=True)  # actual start time
