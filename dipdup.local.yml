@@ -10,7 +10,7 @@ database:
 hasura:
   url: http://127.0.0.1:44000
   admin_secret: ${ADMIN_SECRET:-changeme}
-  select_limit: 99999
+  select_limit: 99999999
 
 sentry:
   dsn: https://27d26eb33f1b4633852c2a0e9855bd3a@sentry.baking-bad.org/9
