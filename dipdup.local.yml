@@ -1,14 +1,14 @@
 database:
   kind: postgres
   host: 127.0.0.1
-  port: 5432
+  port: 6423
   user: ${POSTGRES_USER:-dipdup}
   password: ${POSTGRES_PASSWORD:-changeme}
   database: ${POSTGRES_DB:-dipdup}
   schema_name: juster
 
 hasura:
-  url: http://127.0.0.1:8080
+  url: http://127.0.0.1:44000
   admin_secret: ${ADMIN_SECRET:-changeme}
   select_limit: 99999
 
