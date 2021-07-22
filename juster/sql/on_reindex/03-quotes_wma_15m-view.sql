@@ -1,8 +1,8 @@
--- CREATE MATERIALIZED VIEW quotes_wma_15m WITH (timescaledb.continuous) AS
--- SELECT
---   avg(qw.price) as price,
---   public.time_bucket(INTERVAL '15 minutes', timestamp) AS bucket
--- FROM
---   juster.quotes_wma qw
--- GROUP BY
---   bucket;
+create view quotes_wma_15m as
+select
+    qw.timestamp,
+    qw.currency_pair_id,
+    qw.price
+from juster.quotes_wma qw
+where mod(extract(epoch from qw.timestamp)::int4, 900) = 0
+order by qw.timestamp

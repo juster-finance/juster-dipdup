@@ -9,13 +9,7 @@ contracts:
   coinbase_storage_mainnet:
     address: KT1Jr5t9UvGiqkvvsuUbPJHaYx24NzdUwNW9
     typename: harbinger_storage
-  coinbase_normalizer_mainnet:
-    address: KT1AdbYiPYb5hDuEuVrfxmFehtnBCXv4Np7r
-    typename: harbinger_normalizer
-  harbinger_normalizer_florencenet:
-    address: KT1SUP27JhX24Kvr11oUdWswk7FnCW78ZyUn
-    typename: harbinger_normalizer
-  harbinger_storage_florencenet:
+  coinbase_storage_florencenet:
     address: KT1PuT2NwwNjnxKy5XZEDZGHQNgdtLgN69i9
     typename: harbinger_storage
   juster_florencenet:
@@ -33,16 +27,6 @@ datasources:
     kind: coinbase
 
 templates:
-  harbinger_normalizer:
-    kind: big_map
-    datasource: <datasource>
-    handlers:
-      - callback: on_oracle_normalizer_update
-        contract: <harbinger_normalizer>
-        path: assetMap
-    # NOTE: Jul 5, 1:27:36 AM on florencenet
-    first_block: 318700
-
   harbinger_storage:
     kind: big_map
     datasource: <datasource>
@@ -107,37 +91,30 @@ templates:
             source: <juster>
 
 indexes:
-  # harbinger_mainnet:
-  #   template: harbinger_normalizer
-  #   values:
-  #     datasource: tzkt_staging_mainnet
-  #     normalizer: coinbase_normalizer_mainnet
-
-  # harbinger_quotes_florencenet:
-  #   template: harbinger_normalizer
-  #   values:
-  #     datasource: tzkt_florencenet
-  #     harbinger_normalizer: harbinger_normalizer_florencenet
-
-  harbinger_candles_florencenet:
+  harbinger_florencenet:
     template: harbinger_storage
     values:
       datasource: tzkt_florencenet
-      harbinger_storage: harbinger_storage_florencenet
+      harbinger_storage: coinbase_storage_florencenet
 
-  # juster_florencenet:
-  #   template: juster
-  #   values:
-  #     datasource: tzkt_florencenet
-  #     juster: juster_florencenet
 
 jobs:
-  coinbase_1m_candles:
+  coinbase_xtz_usd_1m_candles:
     callback: fetch_coinbase_candles
     crontab: "* * * * *"
     atomic: True
     args:
       datasource: coinbase
       currency_pair: XTZ-USD
+      candle_interval: ONE_MINUTE
+      since: 2021-07-05T01:27:36
+
+  coinbase_btc_usd_1m_candles:
+    callback: fetch_coinbase_candles
+    crontab: "* * * * *"
+    atomic: True
+    args:
+      datasource: coinbase
+      currency_pair: BTC-USD
       candle_interval: ONE_MINUTE
       since: 2021-07-05T01:27:36

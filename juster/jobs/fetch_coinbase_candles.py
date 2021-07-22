@@ -1,11 +1,10 @@
-import asyncio
 import logging
-from sqlite3 import Timestamp
 from typing import Any, Dict, cast
+from datetime import datetime, timedelta, timezone
 from dipdup.datasources.coinbase.models import CandleInterval
 from dipdup.datasources.coinbase.datasource import CoinbaseDatasource
-from datetime import datetime, timedelta, timezone
 from dipdup.context import DipDupContext
+
 from juster import models
 
 
@@ -15,21 +14,25 @@ async def fetch_coinbase_candles(ctx: DipDupContext, args: Dict[str, Any]) -> No
     currency_pair, _ = await models.CurrencyPair.get_or_create(symbol=args['currency_pair'])
     candle_interval = CandleInterval[args['candle_interval']]
     since = datetime.fromisoformat(args['since']).replace(tzinfo=timezone.utc)
-    # points = int(args['points'])
+    logger.info('Fetching %s %s candles from coinbase', currency_pair.symbol, candle_interval.value)
 
-    logger.info('Fetching %s %s candles', currency_pair, candle_interval.value)
-    last_candle = await models.Candle.filter(currency_pair=currency_pair, interval=candle_interval).order_by('-until').first()
+    last_candle = await models.Candle.filter(
+        currency_pair=currency_pair,
+        interval=candle_interval,
+        source=models.Source.COINBASE
+    ).order_by('-until').first()
     request_since = last_candle.until + timedelta(seconds=1) if last_candle else since
     request_until = datetime.utcnow().replace(tzinfo=timezone.utc) + timedelta(seconds=1)
     logger.info('Since %s until %s', request_since.isoformat(), request_until.isoformat())
+
     raw_candles = await datasource.get_candles(
         since=request_since,
         until=request_until,
         interval=candle_interval,
         ticker=currency_pair.symbol,
     )
-    logger.info('%s candles fetched', len(raw_candles))
-    candles = []
+    logger.info('%s %s %s candles fetched', len(raw_candles), currency_pair.symbol, candle_interval.value)
+
     for raw_candle in raw_candles:
         candle = models.Candle(
             currency_pair=currency_pair,
@@ -44,40 +47,3 @@ async def fetch_coinbase_candles(ctx: DipDupContext, args: Dict[str, Any]) -> No
             source=models.Source.COINBASE,
         )
         await candle.save()
-        candles.append(candle)
-        await models.Quote(
-            price=raw_candle.close,
-            timestamp=raw_candle.timestamp,
-            currency_pair=currency_pair,
-            source=models.Source.COINBASE,
-        ).save()
-
-
-    # logger.info('Calculating quotes normalized by %s points', points)
-    # if len(candles) < points:
-    #     candles += (
-    #         await models.Candle.filter(
-    #             currency_pair=currency_pair,
-    #             interval=candle_interval,
-    #             timestamp__lt=candles[0].timestamp,
-    #         )
-    #         .order_by('-timestamp')
-    #         .limit(points - len(candles))
-    #         .all()
-    #     )
-
-    # index = points
-    # while index <= len(candles):
-    #     candles_batch = candles[index - points : index]
-    #     print(candles_batch)
-    #     prices = [(c.high + c.low + c.close) / 3 * c.volume for c in candles_batch]
-    #     volumes = [c.volume for c in candles_batch]
-    #     print(prices)
-    #     model = models.Quote(
-    #         price=sum(prices) / sum(volumes),
-    #         timestamp=candles_batch[0].timestamp,
-    #         currency_pair=currency_pair,
-    #         source=models.Source.COINBASE,
-    #     )
-    #     await model.save()
-    #     index += 1
