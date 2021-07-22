@@ -1,0 +1,8 @@
+-- CREATE MATERIALIZED VIEW quotes_wma_1m WITH (timescaledb.continuous) AS
+-- SELECT
+--   avg(qw.price) as price,
+--   public.time_bucket(INTERVAL '1 minutes', timestamp) AS bucket
+-- FROM
+--   juster.quotes_wma qw
+-- GROUP BY
+--   bucket;

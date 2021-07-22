@@ -1,6 +1,6 @@
--- FIXME: Full table joins
+CREATE VIEW quotes_wma AS
 SELECT
-  mc.until AS until,
+  mc.until AS timestamp,
   SUM(
     (mc7.high + mc7.low + mc7.close) / 3 * mc7.volume
   ) / SUM(mc7.volume) as price

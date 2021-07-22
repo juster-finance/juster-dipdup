@@ -45,6 +45,7 @@ class BetSide(Enum):
 class Source(Enum):
     HARBINGER = 'HARBINGER'
     COINBASE = 'COINBASE'
+    MERGED = 'MERGED'
 
 
 class CurrencyPair(Model):
