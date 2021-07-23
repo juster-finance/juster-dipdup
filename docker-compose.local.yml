@@ -1,0 +1,15 @@
+version: "3.8"
+
+services:
+  indexer:
+    image: dipdup/dipdup:latest
+    depends_on:
+      - db
+      - hasura
+    command: [ "-c", "dipdup.yml", "-c", "dipdup.prod.yml", "run", "--reindex" ]
+    restart: "no"
+    env_file: dipdup.env
+    volumes:
+      - ./dipdup.yml:/home/dipdup/dipdup.yml
+      - ./dipdup.prod.yml:/home/dipdup/dipdup.prod.yml
+      - ./generic_dex:/home/dipdup/generic_dex

@@ -2,6 +2,7 @@ from decimal import Decimal
 from enum import Enum
 
 from tortoise import Model, fields
+from dipdup.datasources.coinbase.models import CandleInterval
 
 liquidity_precision = 6
 ratio_precision = 8
@@ -25,6 +26,10 @@ def to_dynamics(value):
     return int(value) / Decimal(10 ** target_dynamics_precision)
 
 
+def to_decimal(value):
+    return Decimal(value) / Decimal(10 ** 6)
+
+
 class EventStatus(Enum):
     NEW = "NEW"
     STARTED = "STARTED"
@@ -37,15 +42,30 @@ class BetSide(Enum):
     BELOW = "BELOW"
 
 
+class Source(Enum):
+    HARBINGER = 'HARBINGER'
+    COINBASE = 'COINBASE'
+    MERGED = 'MERGED'
+
+
 class CurrencyPair(Model):
     symbol = fields.CharField(max_length=16)
+    total_events = fields.IntField(default=0)
+    total_volume = fields.DecimalField(16, 6, default=0)
+    total_value_locked = fields.DecimalField(16, 6, default=0)
 
 
-class Quote(Model):
-    id = fields.IntField(pk=True)
-    price = fields.BigIntField()
-    timestamp = fields.DatetimeField()
-    currency_pair = fields.ForeignKeyField("models.CurrencyPair", "quotes")
+class Candle(Model):
+    currency_pair = fields.ForeignKeyField("models.CurrencyPair", "candles")
+    source = fields.CharEnumField(Source)
+    since = fields.DatetimeField()
+    until = fields.DatetimeField()
+    interval = fields.CharEnumField(CandleInterval)
+    open = fields.DecimalField(16, 6)
+    high = fields.DecimalField(16, 6)
+    low = fields.DecimalField(16, 6)
+    close = fields.DecimalField(16, 6)
+    volume = fields.DecimalField(16, 6)
 
 
 class Event(Model):
@@ -59,8 +79,8 @@ class Event(Model):
     measure_period = fields.BigIntField()  # interval in seconds
     bets_close_time = fields.DatetimeField()  # countdown
 
-    start_rate = fields.DecimalField(10, ratio_precision, null=True)
-    closed_rate = fields.DecimalField(10, ratio_precision, null=True)
+    start_rate = fields.DecimalField(14, ratio_precision, null=True)
+    closed_rate = fields.DecimalField(14, ratio_precision, null=True)
     closed_dynamics = fields.DecimalField(10, target_dynamics_precision, null=True)
 
     measure_oracle_start_time = fields.DatetimeField(null=True)  # actual start time
@@ -76,7 +96,7 @@ class Event(Model):
     total_liquidity_shares = fields.DecimalField(16, share_precision, default=Decimal('0'))
     # Calculate: incomingShare = amount / (poolFor + poolAgainst)
     # Calculate: finalReward(for) = poolAgainst * (shares[own] / totalLiquidityShares) + providedLiquidityFor[own]
-    
+
     total_bets_amount = fields.DecimalField(10, 6, default=Decimal('0'))
     total_liquidity_provided = fields.DecimalField(10, 6, default=Decimal('0'))
 
@@ -147,6 +167,22 @@ class Position(Model):
             BetSide.BELOW: self.reward_below,
         }[side]
 
+    def get_provider_reward(self, side: BetSide, event: Event) -> Decimal:
+        if side == BetSide.ABOVE_EQ:
+            profit = (
+                self.shares * event.pool_below / event.total_liquidity_shares
+                - self.liquidity_provided_below
+            )  # type: ignore
+        else:
+            profit = (
+                self.shares * event.pool_above_eq / event.total_liquidity_shares
+                - self.liquidity_provided_above_eq
+            )  # type: ignore
+
+        profit *= 1 - event.liquidity_percent  # type: ignore
+        profit += max(self.liquidity_provided_below, self.liquidity_provided_above_eq)  # type: ignore
+        return profit
+
 
 class User(Model):
     address = fields.TextField(pk=True)
@@ -154,5 +190,6 @@ class User(Model):
     total_bets_amount = fields.DecimalField(10, 6, default=Decimal('0'))
     total_liquidity_provided = fields.DecimalField(10, 6, default=Decimal('0'))
     total_reward = fields.DecimalField(10, 6, default=Decimal('0'))
+    total_provider_reward = fields.DecimalField(10, 6, default=Decimal('0'))
     total_withdrawn = fields.DecimalField(10, 6, default=Decimal('0'))
     total_fees_collected = fields.DecimalField(10, 6, default=Decimal('0'))

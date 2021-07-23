@@ -5,28 +5,18 @@ services:
     build: .
     depends_on:
       - db
+      - hasura
     restart: "no"
-    environment:
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-changeme}
-      - ADMIN_SECRET=${ADMIN_SECRET:-changeme}
-    volumes:
-      - ./dipdup.yml:/home/dipdup/dipdup.yml
-      - ./dipdup.prod.yml:/home/dipdup/dipdup.prod.yml
-      - ./juster:/home/dipdup/juster
-    command: ["-c", "dipdup.yml", "-c", "dipdup.prod.yml", "run"]
-    # command: ["-c", "dipdup.yml", "-c", "dipdup.prod.yml", "run", "--reindex"]
-  
+    env_file: dipdup.env
+
   db:
-    image: postgres:13
+    image: timescale/timescaledb:latest-pg12
     ports:
       - 127.0.0.1:6423:5432
     restart: always
     volumes:
       - db:/var/lib/postgres/data
-    environment: 
-      - POSTGRES_USER=dipdup
-      - POSTGRES_DB=dipdup
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-changeme}
+    env_file: dipdup.env 
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
@@ -34,19 +24,13 @@ services:
       retries: 5
 
   hasura:
-    image: hasura/graphql-engine:v1.3.3
+    image: hasura/graphql-engine:v2.0.1
     ports:
       - 127.0.0.1:44000:8080
     depends_on:
       - db
     restart: always
-    environment:
-      - HASURA_GRAPHQL_DATABASE_URL=postgres://dipdup:${POSTGRES_PASSWORD:-changeme}@db:5432/dipdup
-      - HASURA_GRAPHQL_ENABLE_CONSOLE=true
-      - HASURA_GRAPHQL_DEV_MODE=true
-      - HASURA_GRAPHQL_ENABLED_LOG_TYPES=startup, http-log, webhook-log, websocket-log, query-log
-      - HASURA_GRAPHQL_ADMIN_SECRET=${ADMIN_SECRET:-changeme}
-      - HASURA_GRAPHQL_UNAUTHORIZED_ROLE=user
+    env_file: dipdup.env
   
 volumes:
   db:

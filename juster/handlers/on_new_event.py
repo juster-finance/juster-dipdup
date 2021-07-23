@@ -15,6 +15,8 @@ async def on_new_event(
     event_id, event_diff = get_event(new_event.storage)
 
     currency_pair, _ = await models.CurrencyPair.get_or_create(symbol=event_diff.currencyPair)
+    currency_pair.total_events += 1  # type: ignore
+    await currency_pair.save()
 
     creator, _ = await models.User.get_or_create(address=new_event.data.sender_address)
     await creator.save()
@@ -28,6 +30,6 @@ async def on_new_event(
         measure_period=int(event_diff.measurePeriod),
         bets_close_time=event_diff.betsCloseTime,
         start_rate=None,
-        liquidity_percent=models.to_liquidity(event_diff.liquidityPercent)
+        liquidity_percent=models.to_liquidity(event_diff.liquidityPercent),
     )
     await event.save()
