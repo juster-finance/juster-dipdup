@@ -76,7 +76,7 @@ docs/_build/
 target/
 
 # Jupyter Notebook
-*.ipynb
+# *.ipynb
 .ipynb_checkpoints
 
 # IPython
@@ -145,4 +145,4 @@ cython_debug/
 
 .noseids
 
-secrets.env
+*.env

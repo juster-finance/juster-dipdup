@@ -10,7 +10,6 @@ from juster.types.juster.parameter.trigger_force_majeure import TriggerForceMaje
 from juster.types.juster.storage import JusterStorage
 
 
-
 async def on_force_majeure(
     ctx: HandlerContext,
     trigger_force_majeure: Transaction[TriggerForceMajeureParameter, JusterStorage],
