@@ -45,7 +45,17 @@ async def on_bet(
         bet_reward = reward - position.reward_below
         position.reward_below = reward  # type: ignore
         bet_side = models.BetSide.BELOW
-
     await position.save()
 
-    await models.Bet(event=event, user=user, amount=amount, reward=bet_reward, side=bet_side).save()
+    await models.Bet(
+        event=event,
+        user=user,
+        amount=amount,
+        reward=bet_reward,
+        side=bet_side
+    ).save()
+
+    currency_pair = await event.currency_pair
+    currency_pair.total_volume += amount  # type: ignore
+    currency_pair.total_value_locked += amount  # type: ignore
+    await currency_pair.save()

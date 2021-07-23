@@ -41,54 +41,54 @@ templates:
     kind: operation
     datasource: <datasource>
     contracts:
-      - <juster>
+      - <juster_contract>
     handlers:
       - callback: on_new_event
         pattern:
           - type: transaction
-            destination: <juster>
+            destination: <juster_contract>
             entrypoint: newEvent
       - callback: on_provide_liquidity
         pattern:
           - type: transaction
-            destination: <juster>
+            destination: <juster_contract>
             entrypoint: provideLiquidity
       - callback: on_bet
         pattern:
           - type: transaction
-            destination: <juster>
+            destination: <juster_contract>
             entrypoint: bet
       - callback: on_start_measurement
         pattern:
           - type: transaction
-            destination: <juster>
+            destination: <juster_contract>
             entrypoint: startMeasurementCallback
           - type: transaction
-            source: <juster>
+            source: <juster_contract>
       - callback: on_close
         pattern:
           - type: transaction
-            destination: <juster>
+            destination: <juster_contract>
             entrypoint: closeCallback
           - type: transaction
-            source: <juster>
+            source: <juster_contract>
       - callback: on_withdraw
         pattern:
           - type: transaction
-            destination: <juster>
+            destination: <juster_contract>
             entrypoint: withdraw
           - type: transaction
-            source: <juster>
+            source: <juster_contract>
           - type: transaction
-            source: <juster>
+            source: <juster_contract>
             optional: True
       - callback: on_force_majeure
         pattern:
           - type: transaction
-            destination: <juster>
+            destination: <juster_contract>
             entrypoint: triggerForceMajeure
           - type: transaction
-            source: <juster>
+            source: <juster_contract>
 
 indexes:
   harbinger_florencenet:
@@ -96,7 +96,11 @@ indexes:
     values:
       datasource: tzkt_florencenet
       harbinger_storage: coinbase_storage_florencenet
-
+  juster_florencenet:
+    template: juster
+    values:
+      datasource: tzkt_florencenet
+      juster_contract: juster_florencenet
 
 jobs:
   coinbase_xtz_usd_1m_candles:
@@ -108,7 +112,6 @@ jobs:
       currency_pair: XTZ-USD
       candle_interval: ONE_MINUTE
       since: 2021-07-05T01:27:36
-
   coinbase_btc_usd_1m_candles:
     callback: fetch_coinbase_candles
     crontab: "* * * * *"

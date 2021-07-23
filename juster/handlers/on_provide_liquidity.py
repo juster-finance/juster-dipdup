@@ -47,3 +47,8 @@ async def on_provide_liquidity(
         amount_below=amount_below,
         shares=liquidity_shares_added,
     ).save()
+
+    currency_pair = await event.currency_pair
+    currency_pair.total_volume += amount  # type: ignore
+    currency_pair.total_value_locked += amount  # type: ignore
+    await currency_pair.save()

@@ -50,14 +50,9 @@ class Source(Enum):
 
 class CurrencyPair(Model):
     symbol = fields.CharField(max_length=16)
-
-
-class Quote(Model):
-    id = fields.IntField(pk=True)
-    price = fields.DecimalField(16, 6)
-    timestamp = fields.DatetimeField()
-    currency_pair = fields.ForeignKeyField("models.CurrencyPair", "quotes")
-    source = fields.CharEnumField(Source)
+    total_events = fields.IntField(default=0)
+    total_volume = fields.DecimalField(16, 6, default=0)
+    total_value_locked = fields.DecimalField(16, 6, default=0)
 
 
 class Candle(Model):
@@ -171,6 +166,22 @@ class Position(Model):
             BetSide.BELOW: self.reward_below,
         }[side]
 
+    def get_provider_reward(self, side: BetSide, event: Event) -> Decimal:
+        if side == BetSide.ABOVE_EQ:
+            profit = (
+                self.shares * event.pool_below / event.total_liquidity_shares
+                - self.liquidity_provided_below
+            )  # type: ignore
+        else:
+            profit = (
+                self.shares * event.pool_above_eq / event.total_liquidity_shares
+                - self.liquidity_provided_above_eq
+            )  # type: ignore
+
+        profit *= 1 - event.liquidity_percent  # type: ignore
+        profit += max(self.liquidity_provided_below, self.liquidity_provided_above_eq)  # type: ignore
+        return profit
+
 
 class User(Model):
     address = fields.TextField(pk=True)
@@ -178,5 +189,6 @@ class User(Model):
     total_bets_amount = fields.DecimalField(10, 6, default=Decimal('0'))
     total_liquidity_provided = fields.DecimalField(10, 6, default=Decimal('0'))
     total_reward = fields.DecimalField(10, 6, default=Decimal('0'))
+    total_provider_reward = fields.DecimalField(10, 6, default=Decimal('0'))
     total_withdrawn = fields.DecimalField(10, 6, default=Decimal('0'))
     total_fees_collected = fields.DecimalField(10, 6, default=Decimal('0'))
