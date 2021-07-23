@@ -51,6 +51,7 @@ class Quote(Model):
 class Event(Model):
     id = fields.IntField(pk=True)
     currency_pair = fields.ForeignKeyField("models.CurrencyPair", "events")
+    creator = fields.ForeignKeyField('models.User', 'events')
     status = fields.CharEnumField(EventStatus)
     winner_bets = fields.CharEnumField(BetSide, null=True)
 

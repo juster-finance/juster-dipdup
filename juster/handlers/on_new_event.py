@@ -16,8 +16,12 @@ async def on_new_event(
 
     currency_pair, _ = await models.CurrencyPair.get_or_create(symbol=event_diff.currencyPair)
 
+    creator, _ = await models.User.get_or_create(address=new_event.data.sender_address)
+    await creator.save()
+
     event = models.Event(
         id=event_id,
+        creator=creator,
         currency_pair=currency_pair,
         status=models.EventStatus.NEW,
         target_dynamics=models.to_dynamics(event_diff.targetDynamics),
