@@ -79,6 +79,7 @@ templates:
             entrypoint: withdraw
           - type: transaction
             source: <juster_contract>
+            optional: True
           - type: transaction
             source: <juster_contract>
             optional: True
