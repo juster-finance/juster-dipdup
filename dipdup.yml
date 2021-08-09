@@ -122,3 +122,12 @@ jobs:
       currency_pair: BTC-USD
       candle_interval: ONE_MINUTE
       since: 2021-07-05T01:27:36
+  coinbase_eth_usd_1m_candles:
+    callback: fetch_coinbase_candles
+    crontab: "* * * * *"
+    atomic: True
+    args:
+      datasource: coinbase
+      currency_pair: ETH-USD
+      candle_interval: ONE_MINUTE
+      since: 2021-07-05T01:27:36
