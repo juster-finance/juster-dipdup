@@ -99,21 +99,21 @@ templates:
             source: <juster_contract>
 
 indexes:
-  harbinger_florencenet:
-    template: harbinger_storage
-    values:
-      datasource: tzkt_florencenet
-      harbinger_storage: coinbase_storage_florencenet
+  # harbinger_florencenet:
+  #   template: harbinger_storage
+  #   values:
+  #     datasource: tzkt_florencenet
+  #     harbinger_storage: coinbase_storage_florencenet
   harbinger_granadanet:
     template: harbinger_storage
     values:
       datasource: tzkt_granadanet
       harbinger_storage: coinbase_storage_granadanet
-  juster_florencenet:
-    template: juster
-    values:
-      datasource: tzkt_florencenet
-      juster_contract: juster_florencenet
+  # juster_florencenet:
+  #   template: juster
+  #   values:
+  #     datasource: tzkt_florencenet
+  #     juster_contract: juster_florencenet
   juster_granadanet:
     template: juster
     values:
