@@ -100,25 +100,21 @@ templates:
 
 indexes:
   harbinger_florencenet:
-    last_block: 458100
     template: harbinger_storage
     values:
       datasource: tzkt_florencenet
       harbinger_storage: coinbase_storage_florencenet
   harbinger_granadanet:
-    last_block: 1000000
     template: harbinger_storage
     values:
       datasource: tzkt_granadanet
       harbinger_storage: coinbase_storage_granadanet
   juster_florencenet:
-    last_block: 458100
     template: juster
     values:
       datasource: tzkt_florencenet
       juster_contract: juster_florencenet
   juster_granadanet:
-    last_block: 1000000
     template: juster
     values:
       datasource: tzkt_granadanet
