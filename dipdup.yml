@@ -12,8 +12,14 @@ contracts:
   coinbase_storage_florencenet:
     address: KT1PuT2NwwNjnxKy5XZEDZGHQNgdtLgN69i9
     typename: harbinger_storage
+  coinbase_storage_granadanet:
+    address: KT1MwuujtBodVQFm1Jk1KTGNc49wygqoLvpe
+    typename: harbinger_storage
   juster_florencenet:
     address: KT1CepDBrMg73d7LHm773KAsunjAjgLYituP
+    typename: juster
+  juster_granadanet:
+    address: KT1T1w1E2iMyQpogneqR2552pvrEpF7AZ8kL
     typename: juster
 
 datasources:
@@ -23,6 +29,9 @@ datasources:
   tzkt_florencenet:
     kind: tzkt
     url: https://api.florencenet.tzkt.io
+  tzkt_granadanet:
+    kind: tzkt
+    url: https://api.granadanet.tzkt.io
   coinbase:
     kind: coinbase
 
@@ -34,8 +43,6 @@ templates:
       - callback: on_oracle_storage_update
         contract: <harbinger_storage>
         path: oracleData
-    # NOTE: Jul 5, 1:27:36 AM on florencenet
-    first_block: 318700
 
   juster:
     kind: operation
@@ -93,15 +100,29 @@ templates:
 
 indexes:
   harbinger_florencenet:
+    last_block: 458100
     template: harbinger_storage
     values:
       datasource: tzkt_florencenet
       harbinger_storage: coinbase_storage_florencenet
+  harbinger_granadanet:
+    last_block: 1000000
+    template: harbinger_storage
+    values:
+      datasource: tzkt_granadanet
+      harbinger_storage: coinbase_storage_granadanet
   juster_florencenet:
+    last_block: 458100
     template: juster
     values:
       datasource: tzkt_florencenet
       juster_contract: juster_florencenet
+  juster_granadanet:
+    last_block: 1000000
+    template: juster
+    values:
+      datasource: tzkt_granadanet
+      juster_contract: juster_granadanet
 
 jobs:
   coinbase_xtz_usd_1m_candles:
