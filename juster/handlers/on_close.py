@@ -1,12 +1,11 @@
 from dipdup.models import OperationData, Transaction
 from dipdup.context import HandlerContext
 from typing import List
-from datetime import datetime
 import juster.models as models
 
 from juster.types.juster.parameter.close_callback import CloseCallbackParameter
 from juster.types.juster.storage import JusterStorage
-from juster.utils import from_mutez, get_event
+from juster.utils import from_mutez, get_event, parse_datetime
 
 
 async def on_close(
@@ -18,7 +17,7 @@ async def on_close(
 
     event = await models.Event.filter(id=event_id).get()
     event.closed_rate = models.to_ratio(event_diff.closedRate)  # type: ignore
-    event.closed_oracle_time = datetime.fromisoformat(event_diff.closedOracleTime[:-1])  # type: ignore
+    event.closed_oracle_time = parse_datetime(event_diff.closedOracleTime)  # type: ignore
     event.closed_dynamics = event.closed_rate / event.start_rate  # type: ignore
     event.status = models.EventStatus.FINISHED
 

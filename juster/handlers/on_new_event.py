@@ -5,7 +5,7 @@ import juster.models as models
 
 from juster.types.juster.parameter.new_event import NewEventParameter
 from juster.types.juster.storage import JusterStorage
-from juster.utils import get_event
+from juster.utils import get_event, parse_datetime
 
 
 async def on_new_event(
@@ -28,7 +28,7 @@ async def on_new_event(
         status=models.EventStatus.NEW,
         target_dynamics=models.to_dynamics(event_diff.targetDynamics),
         measure_period=int(event_diff.measurePeriod),
-        bets_close_time=event_diff.betsCloseTime,
+        bets_close_time=parse_datetime(event_diff.betsCloseTime),
         start_rate=None,
         liquidity_percent=models.to_liquidity(event_diff.liquidityPercent),
     )

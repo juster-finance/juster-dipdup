@@ -5,7 +5,7 @@ import juster.models as models
 
 from juster.types.juster.parameter.start_measurement_callback import StartMeasurementCallbackParameter
 from juster.types.juster.storage import JusterStorage
-from juster.utils import from_mutez, get_event
+from juster.utils import from_mutez, get_event, parse_datetime
 
 
 async def on_start_measurement(
@@ -16,7 +16,7 @@ async def on_start_measurement(
     event_id, event_diff = get_event(start_measurement_callback.storage)
 
     event = await models.Event.filter(id=event_id).get()
-    event.measure_oracle_start_time = datetime.fromisoformat(event_diff.measureOracleStartTime[:-1])  # type: ignore
+    event.measure_oracle_start_time = parse_datetime(event_diff.measureOracleStartTime)  # type: ignore
     event.start_rate = models.to_ratio(event_diff.startRate)
     event.status = models.EventStatus.STARTED
     await event.save()
