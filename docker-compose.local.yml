@@ -12,3 +12,22 @@ services:
     volumes:
       - ./dipdup.yml:/home/dipdup/dipdup.yml
       - ./dipdup.prod.yml:/home/dipdup/dipdup.prod.yml
+
+    db:
+      image: timescale/timescaledb:latest-pg12
+      restart: always
+      volumes:
+        - db:/var/lib/postgres/data
+      env_file: dipdup.env 
+      healthcheck:
+        test: ["CMD-SHELL", "pg_isready -U postgres"]
+        interval: 10s
+        timeout: 5s
+        retries: 5
+  
+    hasura:
+      image: hasura/graphql-engine:v2.0.1
+      depends_on:
+        - db
+      restart: always
+      env_file: dipdup.env
