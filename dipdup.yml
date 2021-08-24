@@ -39,6 +39,7 @@ templates:
   harbinger_storage:
     kind: big_map
     datasource: <datasource>
+    first_block: 318700
     handlers:
       - callback: on_oracle_storage_update
         contract: <harbinger_storage>
