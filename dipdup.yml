@@ -125,7 +125,7 @@ jobs:
   coinbase_xtz_usd_1m_candles:
     callback: fetch_coinbase_candles
     crontab: "* * * * *"
-    atomic: True
+    atomic: false
     args:
       datasource: coinbase
       currency_pair: XTZ-USD
@@ -134,7 +134,7 @@ jobs:
   coinbase_btc_usd_1m_candles:
     callback: fetch_coinbase_candles
     crontab: "* * * * *"
-    atomic: True
+    atomic: false
     args:
       datasource: coinbase
       currency_pair: BTC-USD
@@ -143,7 +143,7 @@ jobs:
   coinbase_eth_usd_1m_candles:
     callback: fetch_coinbase_candles
     crontab: "* * * * *"
-    atomic: True
+    atomic: false
     args:
       datasource: coinbase
       currency_pair: ETH-USD

@@ -86,7 +86,7 @@ class Event(Model):
     measure_oracle_start_time = fields.DatetimeField(null=True)  # actual start time
     closed_oracle_time = fields.DatetimeField(null=True)  # actual stop time
 
-    created_time = fields.DatetimeField(auto_now_add=True)
+    created_time = fields.DatetimeField()
     pool_above_eq = fields.DecimalField(decimal_places=6, max_digits=16, default=Decimal('0'))  # available liquidity
     pool_below = fields.DecimalField(decimal_places=6, max_digits=16, default=Decimal('0'))  # and current ratio
     liquidity_percent = fields.DecimalField(max_digits=18, decimal_places=liquidity_precision)  # used to calculate potential reward

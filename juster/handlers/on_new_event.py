@@ -29,6 +29,7 @@ async def on_new_event(
         target_dynamics=models.to_dynamics(event_diff.targetDynamics),
         measure_period=int(event_diff.measurePeriod),
         bets_close_time=parse_datetime(event_diff.betsCloseTime),
+        created_time=parse_datetime(event_diff.createdTime),
         start_rate=None,
         liquidity_percent=models.to_liquidity(event_diff.liquidityPercent),
     )
