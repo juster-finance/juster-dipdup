@@ -30,7 +30,12 @@ async def on_close(
 
     positions: List[models.Position] = await event.positions
     for position in positions:
+        reward = position.get_reward(event.winner_bets)
+        provider_reward = position.get_provider_reward(event.winner_bets, event)
+        position.value = reward + provider_reward
+        await position.save()
+
         user: models.User = await position.user
-        user.total_reward += position.get_reward(event.winner_bets)  # type: ignore
-        user.total_provider_reward += position.get_provider_reward(event.winner_bets, event)  # type: ignore
+        user.total_reward += reward  # type: ignore
+        user.total_provider_reward += provider_reward  # type: ignore
         await user.save()

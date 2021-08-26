@@ -47,6 +47,10 @@ class Source(Enum):
     COINBASE = 'COINBASE'
     MERGED = 'MERGED'
 
+class WithdrawalType(Enum):
+    MANUAL = 'MANUAL'
+    THIRD_PARTY = 'THIRD_PARTY'
+
 
 class CurrencyPair(Model):
     symbol = fields.CharField(max_length=16)
@@ -99,6 +103,7 @@ class Event(Model):
 
     total_bets_amount = fields.DecimalField(decimal_places=6, max_digits=16, default=Decimal('0'))
     total_liquidity_provided = fields.DecimalField(decimal_places=6, max_digits=16, default=Decimal('0'))
+    total_value_locked = fields.DecimalField(decimal_places=6, max_digits=16, default=Decimal('0'))
 
     positions: fields.ReverseRelation['Position']
 
@@ -148,6 +153,8 @@ class Withdrawal(Model):
     amount = fields.DecimalField(decimal_places=6, max_digits=16)
     event = fields.ForeignKeyField('models.Event', 'withdrawals')
     user = fields.ForeignKeyField('models.User', 'withdrawals')
+    fee_collector = fields.ForeignKeyField('models.User', 'third_party_withdrawals', null=True)
+    type = fields.CharEnumField(WithdrawalType)
 
 
 class Position(Model):
@@ -160,6 +167,7 @@ class Position(Model):
     withdrawn = fields.BooleanField(default=False)
     event = fields.ForeignKeyField('models.Event', 'positions')
     user = fields.ForeignKeyField('models.User', 'positions')
+    value = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'))
 
     def get_reward(self, side: BetSide) -> Decimal:
         return {

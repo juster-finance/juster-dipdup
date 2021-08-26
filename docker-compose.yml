@@ -3,6 +3,7 @@ version: "3.8"
 services:
   indexer:
     image: ${SWARMLET_REGISTRY}/juster:latest
+    command: "-c dipdup.yml -c dipdup.prod.yml run"
     build: .
     depends_on:
       - db

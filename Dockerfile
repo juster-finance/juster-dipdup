@@ -16,4 +16,4 @@ RUN chown -R dipdup /home/dipdup/
 USER dipdup
 
 ENTRYPOINT ["dipdup"]
-CMD ["-c", "dipdup.yml", "-c", "dipdup.prod.yml", "run"]
+CMD ["run"]
