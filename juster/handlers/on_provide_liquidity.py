@@ -25,6 +25,7 @@ async def on_provide_liquidity(
     event.pool_above_eq = from_mutez(event_diff.poolAboveEq)  # type: ignore
     event.pool_below = from_mutez(event_diff.poolBelow)  # type: ignore
     event.total_liquidity_provided += amount  # type: ignore
+    event.total_value_locked += amount  # type: ignore
     await event.save()
 
     user, _ = await models.User.get_or_create(address=provide_liquidity.data.sender_address)

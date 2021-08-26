@@ -40,22 +40,35 @@ async def on_withdraw(
         position.withdrawn = True  # type: ignore
         await position.save()
 
-    if fee_tx:
-        # Third-party withdrawal is rewarded
-        amount = from_mutez(fee_tx.amount)
-        currency_pair.total_value_locked -= amount  # type: ignore
-
-        fee_collector, _ = await models.User.get_or_create(address=fee_tx.target_address)
-        fee_collector.total_fees_collected += amount  # type: ignore
-        await fee_collector.save()
-
     if withdraw_tx:
         amount = from_mutez(withdraw_tx.amount)
         currency_pair.total_value_locked -= amount  # type: ignore
 
         user, _ = await models.User.get_or_create(address=withdraw.parameter.participantAddress)
         user.total_withdrawn += amount  # type: ignore
+
+        withdrawal = models.Withdrawal(
+            event=event, 
+            user=user, 
+            amount=amount
+        )
+
+        if fee_tx:
+            # Third-party withdrawal is rewarded
+            amount = from_mutez(fee_tx.amount)
+            currency_pair.total_value_locked -= amount  # type: ignore
+
+            fee_collector, _ = await models.User.get_or_create(address=fee_tx.target_address)
+            fee_collector.total_fees_collected += amount  # type: ignore
+
+            withdrawal.fee_collector = fee_collector
+            withdrawal.type = models.WithdrawalType.THIRD_PARTY
+
+            await fee_collector.save()
+        else:
+            withdrawal.type = models.WithdrawalType.MANUAL
+
         await user.save()
-        await models.Withdrawal(event=event, user=user, amount=amount).save()
+        await withdrawal.save()
 
     await currency_pair.save()

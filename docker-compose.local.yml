@@ -2,13 +2,32 @@ version: "3.8"
 
 services:
   indexer:
-    image: dipdup/dipdup:latest
+    build: .
     depends_on:
       - db
       - hasura
     command: [ "-c", "dipdup.yml", "-c", "dipdup.prod.yml", "run", "--reindex" ]
     restart: "no"
     env_file: dipdup.env
+
+  db:
+    image: timescale/timescaledb:latest-pg12
+    restart: always
     volumes:
-      - ./dipdup.yml:/home/dipdup/dipdup.yml
-      - ./dipdup.prod.yml:/home/dipdup/dipdup.prod.yml
+      - db:/var/lib/postgres/data
+    env_file: dipdup.env 
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  hasura:
+    image: hasura/graphql-engine:v2.0.1
+    depends_on:
+      - db
+    restart: always
+    env_file: dipdup.env
+
+volumes:
+  db:
