@@ -48,6 +48,7 @@ async def on_withdraw(
         user.total_withdrawn += amount  # type: ignore
 
         withdrawal = models.Withdrawal(
+            created_time=withdraw.data.timestamp,
             event=event, 
             user=user, 
             amount=amount

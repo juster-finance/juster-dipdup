@@ -42,6 +42,7 @@ async def on_provide_liquidity(
     await position.save()
 
     await models.Deposit(
+        created_time=provide_liquidity.data.timestamp,
         event=event,
         user=user,
         amount_above_eq=amount_above_eq,

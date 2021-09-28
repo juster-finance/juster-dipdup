@@ -47,6 +47,7 @@ class Source(Enum):
     COINBASE = 'COINBASE'
     MERGED = 'MERGED'
 
+
 class WithdrawalType(Enum):
     MANUAL = 'MANUAL'
     THIRD_PARTY = 'THIRD_PARTY'
@@ -132,6 +133,7 @@ class Event(Model):
 
 class Bet(Model):
     id = fields.IntField(pk=True)
+    created_time = fields.DatetimeField()
     side = fields.CharEnumField(BetSide)
     amount = fields.DecimalField(decimal_places=6, max_digits=16)
     reward = fields.DecimalField(decimal_places=6, max_digits=16)
@@ -141,6 +143,7 @@ class Bet(Model):
 
 class Deposit(Model):
     id = fields.IntField(pk=True)
+    created_time = fields.DatetimeField()
     amount_above_eq = fields.DecimalField(decimal_places=6, max_digits=16)
     amount_below = fields.DecimalField(decimal_places=6, max_digits=16)
     shares = fields.DecimalField(16, share_precision)
@@ -150,6 +153,7 @@ class Deposit(Model):
 
 class Withdrawal(Model):
     id = fields.IntField(pk=True)
+    created_time = fields.DatetimeField()
     amount = fields.DecimalField(decimal_places=6, max_digits=16)
     event = fields.ForeignKeyField('models.Event', 'withdrawals')
     user = fields.ForeignKeyField('models.User', 'withdrawals')

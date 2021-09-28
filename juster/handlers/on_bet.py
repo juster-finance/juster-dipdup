@@ -49,6 +49,7 @@ async def on_bet(
     await position.save()
 
     await models.Bet(
+        created_time=bet.data.timestamp,
         event=event,
         user=user,
         amount=amount,
