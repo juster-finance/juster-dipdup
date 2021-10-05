@@ -58,7 +58,8 @@ services:
         - traefik.http.services.juster.loadbalancer.server.port=8080
         - traefik.http.routers.juster.rule=Host(`api.granadanet.juster.fi`)
         - traefik.http.routers.juster.entrypoints=http,https
-        - traefik.http.routers.juster.middlewares=redirect@file
+        - traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https
+        - traefik.http.routers.juster.middlewares=redirect-to-https
     networks:
       - juster-network
       - traefik-public
