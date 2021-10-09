@@ -19,7 +19,7 @@ contracts:
     address: KT1CepDBrMg73d7LHm773KAsunjAjgLYituP
     typename: juster
   juster_granadanet:
-    address: KT1T1w1E2iMyQpogneqR2552pvrEpF7AZ8kL
+    address: KT1JPehwEkAhg1z5RVA8wAccYbDgF2E2itDv
     typename: juster
 
 datasources:
