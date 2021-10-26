@@ -20,7 +20,7 @@ services:
       - cache:/home/dipdup/.cache
 
   db:
-    image: timescale/timescaledb:2.4.1-pg12
+    image: postgres:12
     volumes:
       - db:/var/lib/postgresql/data
       - backup:/var/lib/postgresql/backup
