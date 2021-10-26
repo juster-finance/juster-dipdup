@@ -8,10 +8,10 @@ from pydantic import BaseModel
 
 
 class OracleDataValue(BaseModel):
-    timestamp_0: str # since
-    timestamp_1: str # until
-    nat_0: str # O
-    nat_1: str # H
-    nat_2: str # L
-    nat_3: str # C
-    nat_4: str # V
+    timestamp_0: str  # since
+    timestamp_1: str  # until
+    nat_0: str  # O
+    nat_1: str  # H
+    nat_2: str  # L
+    nat_3: str  # C
+    nat_4: str  # V

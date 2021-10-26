@@ -1,8 +1,8 @@
 from decimal import Decimal
 from enum import Enum
 
-from tortoise import Model, fields
 from dipdup.datasources.coinbase.models import CandleInterval
+from tortoise import Model, fields
 
 liquidity_precision = 6
 ratio_precision = 8
@@ -181,15 +181,9 @@ class Position(Model):
 
     def get_provider_reward(self, side: BetSide, event: Event) -> Decimal:
         if side == BetSide.ABOVE_EQ:
-            profit = (
-                self.shares * event.pool_below / event.total_liquidity_shares
-                - self.liquidity_provided_below
-            )  # type: ignore
+            profit = self.shares * event.pool_below / event.total_liquidity_shares - self.liquidity_provided_below  # type: ignore
         else:
-            profit = (
-                self.shares * event.pool_above_eq / event.total_liquidity_shares
-                - self.liquidity_provided_above_eq
-            )  # type: ignore
+            profit = self.shares * event.pool_above_eq / event.total_liquidity_shares - self.liquidity_provided_above_eq  # type: ignore
 
         profit *= 1 - event.liquidity_percent  # type: ignore
         profit += max(self.liquidity_provided_below, self.liquidity_provided_above_eq)  # type: ignore

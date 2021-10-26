@@ -1,8 +1,9 @@
-from dipdup.models import OperationData, Transaction
-from dipdup.context import HandlerContext
 from typing import List
-import juster.models as models
 
+from dipdup.context import HandlerContext
+from dipdup.models import OperationData, Transaction
+
+import juster.models as models
 from juster.types.juster.parameter.close_callback import CloseCallbackParameter
 from juster.types.juster.storage import JusterStorage
 from juster.utils import from_mutez, get_event, parse_datetime
@@ -32,7 +33,7 @@ async def on_close(
     for position in positions:
         reward = position.get_reward(event.winner_bets)
         provider_reward = position.get_provider_reward(event.winner_bets, event)
-        position.value = reward + provider_reward
+        position.value = reward + provider_reward  # type: ignore
         await position.save()
 
         user: models.User = await position.user
