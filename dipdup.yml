@@ -1,4 +1,4 @@
-spec_version: 1.1
+spec_version: 1.2
 package: juster
 
 database:
@@ -19,16 +19,16 @@ contracts:
     address: KT1CepDBrMg73d7LHm773KAsunjAjgLYituP
     typename: juster
   juster_granadanet:
-    address: KT1T1w1E2iMyQpogneqR2552pvrEpF7AZ8kL
+    address: KT1JPehwEkAhg1z5RVA8wAccYbDgF2E2itDv
     typename: juster
 
 datasources:
-  tzkt_mainnet:
-    kind: tzkt
-    url: https://api.tzkt.io
-  tzkt_florencenet:
-    kind: tzkt
-    url: https://api.florencenet.tzkt.io
+#  tzkt_mainnet:
+#    kind: tzkt
+#    url: https://api.tzkt.io
+#  tzkt_florencenet:
+#    kind: tzkt
+#    url: https://api.florencenet.tzkt.io
   tzkt_granadanet:
     kind: tzkt
     url: https://api.granadanet.tzkt.io
@@ -39,7 +39,7 @@ templates:
   harbinger_storage:
     kind: big_map
     datasource: <datasource>
-    first_block: 318700
+#    first_level: 318700
     handlers:
       - callback: on_oracle_storage_update
         contract: <harbinger_storage>
@@ -100,52 +100,60 @@ templates:
             source: <juster_contract>
 
 indexes:
-  harbinger_florencenet:
+#  harbinger_florencenet:
+#    template: harbinger_storage
+#    values:
+#      datasource: tzkt_florencenet
+#      harbinger_storage: coinbase_storage_florencenet
+  harbinger_granadanet:
     template: harbinger_storage
     values:
-      datasource: tzkt_florencenet
-      harbinger_storage: coinbase_storage_florencenet
-  # harbinger_granadanet:
-  #   template: harbinger_storage
-  #   values:
-  #     datasource: tzkt_granadanet
-  #     harbinger_storage: coinbase_storage_granadanet
-  juster_florencenet:
+      datasource: tzkt_granadanet
+      harbinger_storage: coinbase_storage_granadanet
+#  juster_florencenet:
+#    template: juster
+#    values:
+#      datasource: tzkt_florencenet
+#      juster_contract: juster_florencenet
+  juster_granadanet:
     template: juster
     values:
-      datasource: tzkt_florencenet
-      juster_contract: juster_florencenet
-  # juster_granadanet:
-  #   template: juster
-  #   values:
-  #     datasource: tzkt_granadanet
-  #     juster_contract: juster_granadanet
+      datasource: tzkt_granadanet
+      juster_contract: juster_granadanet
+
+
+hooks:
+  fetch_coinbase_candles:
+    callback: fetch_coinbase_candles
+    atomic: false
+    args:
+      datasource: str
+      candle_interval: str
+      since: str
+      currency_pair: str
 
 jobs:
   coinbase_xtz_usd_1m_candles:
-    callback: fetch_coinbase_candles
+    hook: fetch_coinbase_candles
     crontab: "* * * * *"
-    atomic: false
     args:
       datasource: coinbase
+      candle_interval: ONE_MINUTE
+      since: 2021-07-05T01:27:36
       currency_pair: XTZ-USD
-      candle_interval: ONE_MINUTE
-      since: 2021-07-05T01:27:36
   coinbase_btc_usd_1m_candles:
-    callback: fetch_coinbase_candles
+    hook: fetch_coinbase_candles
     crontab: "* * * * *"
-    atomic: false
     args:
       datasource: coinbase
+      candle_interval: ONE_MINUTE
+      since: 2021-07-05T01:27:36
       currency_pair: BTC-USD
-      candle_interval: ONE_MINUTE
-      since: 2021-07-05T01:27:36
   coinbase_eth_usd_1m_candles:
-    callback: fetch_coinbase_candles
+    hook: fetch_coinbase_candles
     crontab: "* * * * *"
-    atomic: false
     args:
       datasource: coinbase
-      currency_pair: ETH-USD
       candle_interval: ONE_MINUTE
       since: 2021-07-05T01:27:36
+      currency_pair: ETH-USD

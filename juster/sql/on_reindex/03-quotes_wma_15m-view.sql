@@ -1,4 +1,4 @@
-create view quotes_wma_15m as
+create or replace view quotes_wma_15m as
 select
     qw.timestamp,
     qw.currency_pair_id,
