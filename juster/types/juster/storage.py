@@ -5,30 +5,45 @@ from __future__ import annotations
 
 from typing import Dict, List, Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Extra
 
 
 class Key(BaseModel):
+    class Config:
+        extra = Extra.forbid
+
     address: str
     nat: str
 
 
 class BetsAboveEqItem(BaseModel):
+    class Config:
+        extra = Extra.forbid
+
     key: Key
     value: str
 
 
 class Key1(BaseModel):
+    class Config:
+        extra = Extra.forbid
+
     address: str
     nat: str
 
 
 class BetsBelowItem(BaseModel):
+    class Config:
+        extra = Extra.forbid
+
     key: Key1
     value: str
 
 
 class Config(BaseModel):
+    class Config:
+        extra = Extra.forbid
+
     expirationFee: str
     isEventCreationPaused: bool
     maxAllowedMeasureLag: str
@@ -46,16 +61,41 @@ class Config(BaseModel):
 
 
 class Key2(BaseModel):
+    class Config:
+        extra = Extra.forbid
+
     address: str
     nat: str
 
 
 class DepositedBet(BaseModel):
+    class Config:
+        extra = Extra.forbid
+
     key: Key2
     value: str
 
 
+class Key3(BaseModel):
+    class Config:
+        extra = Extra.forbid
+
+    address: str
+    nat: str
+
+
+class DepositedLiquidityItem(BaseModel):
+    class Config:
+        extra = Extra.forbid
+
+    key: Key3
+    value: str
+
+
 class Events(BaseModel):
+    class Config:
+        extra = Extra.forbid
+
     betsCloseTime: str
     closedDynamics: Optional[str]
     closedOracleTime: Optional[str]
@@ -81,43 +121,65 @@ class Events(BaseModel):
     totalLiquidityShares: str
 
 
-class Key3(BaseModel):
+class Key4(BaseModel):
+    class Config:
+        extra = Extra.forbid
+
     address: str
     nat: str
 
 
 class LiquidityShare(BaseModel):
-    key: Key3
-    value: str
+    class Config:
+        extra = Extra.forbid
 
-
-class Key4(BaseModel):
-    address: str
-    nat: str
-
-
-class ProvidedLiquidityAboveEqItem(BaseModel):
     key: Key4
     value: str
 
 
 class Key5(BaseModel):
+    class Config:
+        extra = Extra.forbid
+
+    address: str
+    nat: str
+
+
+class ProvidedLiquidityAboveEqItem(BaseModel):
+    class Config:
+        extra = Extra.forbid
+
+    key: Key5
+    value: str
+
+
+class Key6(BaseModel):
+    class Config:
+        extra = Extra.forbid
+
     address: str
     nat: str
 
 
 class ProvidedLiquidityBelowItem(BaseModel):
-    key: Key5
+    class Config:
+        extra = Extra.forbid
+
+    key: Key6
     value: str
 
 
 class JusterStorage(BaseModel):
+    class Config:
+        extra = Extra.forbid
+
     bakingRewards: str
     betsAboveEq: List[BetsAboveEqItem]
     betsBelow: List[BetsBelowItem]
     closeCallId: Optional[str]
     config: Config
     depositedBets: List[DepositedBet]
+    depositedLiquidity: List[DepositedLiquidityItem]
     events: Dict[str, Events]
     liquidityPrecision: str
     liquidityShares: List[LiquidityShare]

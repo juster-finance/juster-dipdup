@@ -1,4 +1,4 @@
-CREATE OR REPLACE VIEW merged_candles AS
+CREATE MATERIALIZED VIEW merged_candles AS
 SELECT
     coalesce(hb.currency_pair_id, cb.currency_pair_id) AS currency_pair_id,
     coalesce(hb.source, cb.source) AS source,
@@ -9,7 +9,8 @@ SELECT
     coalesce(hb.close, cb.close) AS close,
     coalesce(hb.volume, cb.volume) AS volume
 FROM
-    (SELECT * FROM juster.candle WHERE source = 'HARBINGER') hb
-    FULL OUTER JOIN (SELECT * FROM juster.candle WHERE source = 'COINBASE') cb
+    (SELECT * FROM candle WHERE source = 'HARBINGER') hb
+    FULL OUTER JOIN (SELECT * FROM candle WHERE source = 'COINBASE') cb
     ON hb.until = cb.until and hb.currency_pair_id = cb.currency_pair_id
-ORDER BY until
+ORDER BY until;
+CREATE UNIQUE INDEX merged_candles_id ON merged_candles (currency_pair_id, source, until);

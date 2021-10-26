@@ -3,10 +3,13 @@
 
 from __future__ import annotations
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Extra
 
 
 class ProvideLiquidityParameter(BaseModel):
+    class Config:
+        extra = Extra.forbid
+
     eventId: str
     expectedRatioAboveEq: str
     expectedRatioBelow: str

@@ -3,10 +3,13 @@
 
 from __future__ import annotations
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Extra
 
 
 class CloseCallbackParameter(BaseModel):
+    class Config:
+        extra = Extra.forbid
+
     currencyPair: str
     lastUpdate: str
     rate: str

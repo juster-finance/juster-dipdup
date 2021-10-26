@@ -17,7 +17,7 @@ services:
       - ./juster:/home/dipdup/juster
 
   db:
-    image: timescale/timescaledb:2.4.1-pg12
+    image: postgres:12
     ports:
       - 5432
     volumes:
