@@ -26,29 +26,38 @@ async def fetch_coinbase_candles(ctx: HookContext, datasource: str, candle_inter
         .order_by('-until')
         .first()
     )
-    request_since = last_candle.until + timedelta(seconds=1) if last_candle else since_datetime
+    batch_since = last_candle.until + timedelta(seconds=1) if last_candle else since_datetime
     request_until = datetime.utcnow().replace(tzinfo=timezone.utc) + timedelta(seconds=1)
-    logger.info('Since %s until %s', request_since.isoformat(), request_until.isoformat())
+    if candle_interval_enum != CandleInterval.ONE_MINUTE:
+        raise NotImplementedError
+    interval = timedelta(hours=6)
+    batch_until = batch_since + interval
 
-    raw_candles = await coinbase.get_candles(
-        since=request_since,
-        until=request_until,
-        interval=candle_interval_enum,
-        ticker=currency_pair_model.symbol,
-    )
-    logger.info('%s %s %s candles fetched', len(raw_candles), currency_pair_model.symbol, candle_interval_enum.value)
+    while batch_until < request_until + interval:
+        logger.info('Since %s until %s', batch_since.isoformat(),batch_until.isoformat())
 
-    for raw_candle in raw_candles:
-        candle = models.Candle(
-            currency_pair=currency_pair_model,
-            since=raw_candle.timestamp - timedelta(seconds=candle_interval_enum.seconds),
-            until=raw_candle.timestamp,
+        raw_candles = await coinbase.get_candles(
+            since=batch_since,
+            until=batch_until,
             interval=candle_interval_enum,
-            open=raw_candle.open,
-            close=raw_candle.close,
-            high=raw_candle.high,
-            low=raw_candle.low,
-            volume=raw_candle.volume,
-            source=models.Source.COINBASE,
+            ticker=currency_pair_model.symbol,
         )
-        await candle.save()
+        logger.info('%s %s %s candles fetched', len(raw_candles), currency_pair_model.symbol, candle_interval_enum.value)
+
+        for raw_candle in raw_candles:
+            candle = models.Candle(
+                currency_pair=currency_pair_model,
+                since=raw_candle.timestamp - timedelta(seconds=candle_interval_enum.seconds),
+                until=raw_candle.timestamp,
+                interval=candle_interval_enum,
+                open=raw_candle.open,
+                close=raw_candle.close,
+                high=raw_candle.high,
+                low=raw_candle.low,
+                volume=raw_candle.volume,
+                source=models.Source.COINBASE,
+            )
+            await candle.save()
+
+        batch_since += interval
+        batch_until += interval
