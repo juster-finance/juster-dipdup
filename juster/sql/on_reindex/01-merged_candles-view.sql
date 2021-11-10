@@ -11,6 +11,7 @@ SELECT
 FROM
     (SELECT * FROM candle WHERE source = 'HARBINGER') hb
     FULL OUTER JOIN (SELECT * FROM candle WHERE source = 'COINBASE') cb
-    ON hb.until = cb.until and hb.currency_pair_id = cb.currency_pair_id
-ORDER BY until;
+    ON hb.until = cb.until and hb.currency_pair_id = cb.currency_pair_id;
+-- sorted in the window function
+-- ORDER BY until;
 CREATE UNIQUE INDEX merged_candles_id ON merged_candles (currency_pair_id, source, until);

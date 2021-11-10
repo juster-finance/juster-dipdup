@@ -43,6 +43,9 @@ up:
 down:
 	docker-compose -f docker-compose.local.yml down -v
 
+run:
+	TZ=Europe/Moscow poetry run dipdup -c dipdup.yml -c dipdup.local.yml run
+
 bump:
 	poetry run pip uninstall -y dipdup
 	poetry update dipdup

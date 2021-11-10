@@ -5,7 +5,7 @@ services:
     build: .
     depends_on:
       - db
-    command: ["-c", "dipdup.yml", "-c", "dipdup.prod.yml", "run", "--reindex"]
+    command: ["-c", "dipdup.yml", "-c", "dipdup.prod.yml", "run"]
     restart: "no"
     environment:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-changeme}
@@ -19,7 +19,7 @@ services:
   db:
     image: postgres:12
     ports:
-      - 5432
+      - 127.0.0.1:49179:5432
     volumes:
       - db:/var/lib/postgresql/data
     environment:
@@ -38,7 +38,7 @@ services:
   hasura:
     image: hasura/graphql-engine:v2.0.9
     ports:
-      - 8080
+      - 127.0.0.1:49180:8080
     depends_on:
       - db
     restart: always
