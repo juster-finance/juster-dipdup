@@ -9,13 +9,13 @@ from dipdup.datasources.coinbase.models import CandleInterval
 from juster import models
 
 
-async def fetch_coinbase_candles(ctx: HookContext, datasource: str, candle_interval: str, since: str, currency_pair: str,) -> None:
+async def fetch_coinbase_candles(ctx: HookContext, datasource: str, candle_interval: str, since: str, currency_pair: str) -> None:
     logger = logging.getLogger('fetch_candles')
     coinbase = cast(CoinbaseDatasource, ctx.datasources[datasource])
     currency_pair_model, _ = await models.CurrencyPair.get_or_create(symbol=currency_pair)
     candle_interval_enum = CandleInterval[candle_interval]
     since_datetime = datetime.fromisoformat(since).replace(tzinfo=timezone.utc)
-    logger.info('Fetching %s %s candles from coinbase', currency_pair_model.symbol, candle_interval_enum.value)
+    logger.info('[%s] Fetching %s candles from coinbase', currency_pair_model.symbol, candle_interval_enum.value)
 
     last_candle = (
         await models.Candle.filter(
@@ -34,7 +34,7 @@ async def fetch_coinbase_candles(ctx: HookContext, datasource: str, candle_inter
     batch_until = batch_since + interval
 
     while batch_until < request_until + interval:
-        logger.info('Since %s until %s', batch_since.isoformat(),batch_until.isoformat())
+        logger.info('[%s] Since %s until %s',  currency_pair_model.symbol, batch_since.isoformat(), batch_until.isoformat())
 
         raw_candles = await coinbase.get_candles(
             since=batch_since,
@@ -42,7 +42,7 @@ async def fetch_coinbase_candles(ctx: HookContext, datasource: str, candle_inter
             interval=candle_interval_enum,
             ticker=currency_pair_model.symbol,
         )
-        logger.info('%s %s %s candles fetched', len(raw_candles), currency_pair_model.symbol, candle_interval_enum.value)
+        logger.info('[%s] %d %s candles fetched', currency_pair_model.symbol, len(raw_candles), candle_interval_enum.value)
 
         for raw_candle in raw_candles:
             candle = models.Candle(
