@@ -1,9 +1,8 @@
-from dipdup.models import Transaction
 from dipdup.context import HandlerContext
+from dipdup.models import Transaction
 
 import juster.models as models
-
-from juster.types.juster.parameter.bet import BetParameter, BetItem
+from juster.types.juster.parameter.bet import BetItem, BetParameter
 from juster.types.juster.storage import JusterStorage
 from juster.utils import from_mutez, get_event
 
@@ -48,14 +47,7 @@ async def on_bet(
         bet_side = models.BetSide.BELOW
     await position.save()
 
-    await models.Bet(
-        created_time=bet.data.timestamp,
-        event=event,
-        user=user,
-        amount=amount,
-        reward=bet_reward,
-        side=bet_side
-    ).save()
+    await models.Bet(created_time=bet.data.timestamp, event=event, user=user, amount=amount, reward=bet_reward, side=bet_side,).save()
 
     currency_pair = await event.currency_pair
     currency_pair.total_volume += amount  # type: ignore

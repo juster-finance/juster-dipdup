@@ -10,11 +10,16 @@ async def on_oracle_storage_update(
     ctx: HandlerContext,
     oracle_data: BigMapDiff[OracleDataKey, OracleDataValue],
 ) -> None:
-    if not oracle_data.value:
+    if not oracle_data.action.has_value:
         return
     assert oracle_data.key
+    assert oracle_data.value
+    if not int(oracle_data.value.nat_0):
+        return
+
     symbol = oracle_data.key.__root__
     currency_pair, _ = await models.CurrencyPair.get_or_create(symbol=symbol)
+
     quote = models.Candle(
         currency_pair=currency_pair,
         source=models.Source.HARBINGER,

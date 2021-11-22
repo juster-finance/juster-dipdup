@@ -5,18 +5,27 @@ from __future__ import annotations
 
 from typing import Any, Dict, Union
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Extra
 
 
 class BetItem(BaseModel):
+    class Config:
+        extra = Extra.forbid
+
     aboveEq: Dict[str, Any]
 
 
 class BetItem1(BaseModel):
+    class Config:
+        extra = Extra.forbid
+
     below: Dict[str, Any]
 
 
 class BetParameter(BaseModel):
+    class Config:
+        extra = Extra.forbid
+
     bet: Union[BetItem, BetItem1]
     eventId: str
     minimalWinAmount: str

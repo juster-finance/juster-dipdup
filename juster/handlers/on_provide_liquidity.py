@@ -1,11 +1,10 @@
-from dipdup.models import Transaction
 from dipdup.context import HandlerContext
+from dipdup.models import Transaction
 
 import juster.models as models
-
 from juster.types.juster.parameter.provide_liquidity import ProvideLiquidityParameter
 from juster.types.juster.storage import JusterStorage
-from juster.utils import get_event, from_mutez
+from juster.utils import from_mutez, get_event
 
 
 async def on_provide_liquidity(

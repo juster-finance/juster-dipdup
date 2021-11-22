@@ -1,9 +1,10 @@
-from decimal import Decimal
-from typing import Union, Tuple
 from datetime import datetime
-import strict_rfc3339
+from decimal import Decimal
+from typing import Tuple, Union
 
-from juster.types.juster.storage import JusterStorage, Events
+import strict_rfc3339  # type: ignore
+
+from juster.types.juster.storage import Events, JusterStorage
 
 
 def from_mutez(mutez: Union[str, int]) -> Decimal:
@@ -18,4 +19,4 @@ def get_event(storage: JusterStorage) -> Tuple[int, Events]:
 
 
 def parse_datetime(value: str) -> datetime:
-    return  datetime.utcfromtimestamp(strict_rfc3339.rfc3339_to_timestamp(value))
+    return datetime.utcfromtimestamp(strict_rfc3339.rfc3339_to_timestamp(value))

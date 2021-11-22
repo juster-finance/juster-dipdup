@@ -1,19 +1,20 @@
-create or replace view quotes_wma as
-select
+CREATE MATERIALIZED VIEW quotes_wma AS
+SELECT
     x.timestamp,
     x.currency_pair_id,
-    x.weighted_price / x.total_volume as price
-from (
-	select
-		mc.until as timestamp,
-		mc.currency_pair_id as currency_pair_id,
-		sum((mc.close + mc.high + mc.low) * mc.volume / 3) over seven as weighted_price,
-		sum(mc.volume) over seven as total_volume
-	from juster.merged_candles mc
-	window seven as (
+    x.weighted_price / x.total_volume AS price
+FROM (
+	SELECT
+		mc.until AS timestamp,
+		mc.currency_pair_id AS currency_pair_id,
+		sum((mc.close + mc.high + mc.low) * mc.volume / 3) OVER seven AS weighted_price,
+		sum(mc.volume) OVER seven AS total_volume
+	FROM merged_candles mc
+	WINDOW seven AS (
 	    partition by mc.currency_pair_id
-	    order by mc.until
-	    rows between 6 preceding and current row
+	    ORDER BY mc.until
+	    ROWS BETWEEN 6 PRECEDING AND CURRENT ROW
 	)
-) as x
-order by x.timestamp
+) AS x
+ORDER BY x.timestamp;
+CREATE UNIQUE INDEX quotes_wma_id ON quotes_wma (currency_pair_id, timestamp);

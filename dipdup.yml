@@ -13,7 +13,7 @@ contracts:
     address: KT1PuT2NwwNjnxKy5XZEDZGHQNgdtLgN69i9
     typename: harbinger_storage
   coinbase_storage_granadanet:
-    address: KT1MwuujtBodVQFm1Jk1KTGNc49wygqoLvpe
+    address: KT1ENR6CK7cBWCtZt1G3PovwTw3FgSW472mS
     typename: harbinger_storage
   juster_florencenet:
     address: KT1CepDBrMg73d7LHm773KAsunjAjgLYituP
@@ -34,93 +34,94 @@ datasources:
     url: https://api.granadanet.tzkt.io
   coinbase:
     kind: coinbase
+    http:
+      cache: False
 
 templates:
-  harbinger_storage:
+  harbinger:
     kind: big_map
     datasource: <datasource>
 #    first_level: 318700
     handlers:
       - callback: on_oracle_storage_update
-        contract: <harbinger_storage>
+        contract: <contract>
         path: oracleData
 
   juster:
     kind: operation
     datasource: <datasource>
     contracts:
-      - <juster_contract>
+      - <contract>
     handlers:
       - callback: on_new_event
         pattern:
           - type: transaction
-            destination: <juster_contract>
+            destination: <contract>
             entrypoint: newEvent
       - callback: on_provide_liquidity
         pattern:
           - type: transaction
-            destination: <juster_contract>
+            destination: <contract>
             entrypoint: provideLiquidity
       - callback: on_bet
         pattern:
           - type: transaction
-            destination: <juster_contract>
+            destination: <contract>
             entrypoint: bet
       - callback: on_start_measurement
         pattern:
           - type: transaction
-            destination: <juster_contract>
+            destination: <contract>
             entrypoint: startMeasurementCallback
           - type: transaction
-            source: <juster_contract>
+            source: <contract>
       - callback: on_close
         pattern:
           - type: transaction
-            destination: <juster_contract>
+            destination: <contract>
             entrypoint: closeCallback
           - type: transaction
-            source: <juster_contract>
+            source: <contract>
       - callback: on_withdraw
         pattern:
           - type: transaction
-            destination: <juster_contract>
+            destination: <contract>
             entrypoint: withdraw
           - type: transaction
-            source: <juster_contract>
+            source: <contract>
             optional: True
           - type: transaction
-            source: <juster_contract>
+            source: <contract>
             optional: True
       - callback: on_force_majeure
         pattern:
           - type: transaction
-            destination: <juster_contract>
+            destination: <contract>
             entrypoint: triggerForceMajeure
           - type: transaction
-            source: <juster_contract>
+            source: <contract>
 
 indexes:
 #  harbinger_florencenet:
-#    template: harbinger_storage
+#    template: harbinger
 #    values:
 #      datasource: tzkt_florencenet
-#      harbinger_storage: coinbase_storage_florencenet
-  harbinger_granadanet:
-    template: harbinger_storage
-    values:
-      datasource: tzkt_granadanet
-      harbinger_storage: coinbase_storage_granadanet
+#      contract: coinbase_storage_florencenet
 #  juster_florencenet:
 #    template: juster
 #    values:
 #      datasource: tzkt_florencenet
-#      juster_contract: juster_florencenet
+#      contract: juster_florencenet
+  harbinger_granadanet:
+    template: harbinger
+    values:
+      datasource: tzkt_granadanet
+      contract: coinbase_storage_granadanet
   juster_granadanet:
     template: juster
     values:
       datasource: tzkt_granadanet
-      juster_contract: juster_granadanet
-
+      contract: juster_granadanet
 
 hooks:
   fetch_coinbase_candles:
@@ -131,6 +132,9 @@ hooks:
       candle_interval: str
       since: str
       currency_pair: str
+  refresh_views:
+    callback: refresh_views
+    atomic: false
 
 jobs:
   coinbase_xtz_usd_1m_candles:
@@ -157,3 +161,6 @@ jobs:
       candle_interval: ONE_MINUTE
       since: 2021-07-05T01:27:36
       currency_pair: ETH-USD
+  refresh_views:
+    hook: refresh_views
+    crontab: "* * * * *"

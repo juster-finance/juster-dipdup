@@ -1,10 +1,9 @@
 from typing import Optional
-from dipdup.models import OperationData, Transaction
-from dipdup.context import HandlerContext
 
+from dipdup.context import HandlerContext
+from dipdup.models import OperationData, Transaction
 
 import juster.models as models
-
 from juster.types.juster.parameter.withdraw import WithdrawParameter
 from juster.types.juster.storage import JusterStorage
 from juster.utils import from_mutez
@@ -18,6 +17,8 @@ async def on_withdraw(
 ) -> None:
     event_id = int(withdraw.parameter.eventId)
 
+    withdraw_tx: Optional[OperationData]
+    fee_tx: Optional[OperationData]
     if tx_2 is not None:
         assert tx_1
         assert tx_2.target_address == withdraw.parameter.participantAddress
@@ -41,6 +42,7 @@ async def on_withdraw(
         await position.save()
 
     if withdraw_tx:
+        assert withdraw_tx.amount
         amount = from_mutez(withdraw_tx.amount)
         currency_pair.total_value_locked -= amount  # type: ignore
 
@@ -49,13 +51,14 @@ async def on_withdraw(
 
         withdrawal = models.Withdrawal(
             created_time=withdraw.data.timestamp,
-            event=event, 
-            user=user, 
-            amount=amount
+            event=event,
+            user=user,
+            amount=amount,
         )
 
         if fee_tx:
-            # Third-party withdrawal is rewarded
+            # NOTE: Withdrawals initiated by third-parties are rewarded
+            assert fee_tx.amount
             amount = from_mutez(fee_tx.amount)
             currency_pair.total_value_locked -= amount  # type: ignore
 
