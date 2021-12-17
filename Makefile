@@ -2,7 +2,6 @@
 .DEFAULT_GOAL: all
 
 DEV=1
-TAG=latest
 
 all: install lint test cover
 lint: isort black flake mypy
@@ -31,17 +30,11 @@ test:
 cover:
 	# poetry run diff-cover coverage.xml
 
-build:
-	poetry build
-
-image:
-	docker build . -t juster:${TAG}
-
 up:
-	docker-compose -f docker-compose.local.yml up -d db hasura
+	docker-compose up -d db hasura
 
 down:
-	docker-compose -f docker-compose.local.yml down -v
+	docker-compose down -v
 
 run:
 	TZ=Europe/Moscow poetry run dipdup -c dipdup.yml -c dipdup.local.yml run
@@ -52,7 +45,3 @@ bump:
 	git add poetry.lock pyproject.toml Makefile
 	git commit -m "Bump dipdup"
 	git push
-
-deploy:
-	git pull
-	swarmlet deploy /mnt/gfs/git/data/juster-staging

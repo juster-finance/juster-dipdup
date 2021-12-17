@@ -3,7 +3,7 @@
 
 from __future__ import annotations
 
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, Extra
 
@@ -101,6 +101,7 @@ class Events(BaseModel):
     closedOracleTime: Optional[str]
     closedRate: Optional[str]
     createdTime: str
+    creator: str
     currencyPair: str
     expirationFee: str
     isBetsAboveEqWin: Optional[bool]
@@ -112,7 +113,6 @@ class Events(BaseModel):
     measurePeriod: str
     measureStartFee: str
     oracleAddress: str
-    participants: str
     poolAboveEq: str
     poolBelow: str
     rewardCallFee: str
@@ -129,12 +129,12 @@ class Key4(BaseModel):
     nat: str
 
 
-class LiquidityShare(BaseModel):
+class IsWithdrawnItem(BaseModel):
     class Config:
         extra = Extra.forbid
 
     key: Key4
-    value: str
+    value: Dict[str, Any]
 
 
 class Key5(BaseModel):
@@ -145,7 +145,7 @@ class Key5(BaseModel):
     nat: str
 
 
-class ProvidedLiquidityAboveEqItem(BaseModel):
+class LiquidityShare(BaseModel):
     class Config:
         extra = Extra.forbid
 
@@ -161,11 +161,27 @@ class Key6(BaseModel):
     nat: str
 
 
-class ProvidedLiquidityBelowItem(BaseModel):
+class ProvidedLiquidityAboveEqItem(BaseModel):
     class Config:
         extra = Extra.forbid
 
     key: Key6
+    value: str
+
+
+class Key7(BaseModel):
+    class Config:
+        extra = Extra.forbid
+
+    address: str
+    nat: str
+
+
+class ProvidedLiquidityBelowItem(BaseModel):
+    class Config:
+        extra = Extra.forbid
+
+    key: Key7
     value: str
 
 
@@ -181,6 +197,7 @@ class JusterStorage(BaseModel):
     depositedBets: List[DepositedBet]
     depositedLiquidity: List[DepositedLiquidityItem]
     events: Dict[str, Events]
+    isWithdrawn: List[IsWithdrawnItem]
     liquidityPrecision: str
     liquidityShares: List[LiquidityShare]
     manager: str
