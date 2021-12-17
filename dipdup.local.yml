@@ -11,7 +11,3 @@ hasura:
   admin_secret: ${ADMIN_SECRET:-changeme}
   select_limit: ${SELECT_LIMIT:-99999999}
   allow_aggregations: ${AGGREGATIONS:-True}
-
-sentry:
-  dsn: https://27d26eb33f1b4633852c2a0e9855bd3a@sentry.baking-bad.org/9
-  environment: juster-local

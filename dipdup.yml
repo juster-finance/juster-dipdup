@@ -9,29 +9,20 @@ contracts:
   coinbase_storage_mainnet:
     address: KT1Jr5t9UvGiqkvvsuUbPJHaYx24NzdUwNW9
     typename: harbinger_storage
-  coinbase_storage_florencenet:
-    address: KT1PuT2NwwNjnxKy5XZEDZGHQNgdtLgN69i9
+  coinbase_storage_hangzhounet:
+    address: KT19yapgDLPR3CuvK32xJHgxNJigyNxjSr4y
     typename: harbinger_storage
-  coinbase_storage_granadanet:
-    address: KT1ENR6CK7cBWCtZt1G3PovwTw3FgSW472mS
-    typename: harbinger_storage
-  juster_florencenet:
-    address: KT1CepDBrMg73d7LHm773KAsunjAjgLYituP
-    typename: juster
-  juster_granadanet:
-    address: KT1JPehwEkAhg1z5RVA8wAccYbDgF2E2itDv
+  juster_hangzhounet:
+    address: KT197iHRJaAGw3oGpQj21YYV1vK9Fa5ShoMn
     typename: juster
 
 datasources:
-#  tzkt_mainnet:
-#    kind: tzkt
-#    url: https://api.tzkt.io
-#  tzkt_florencenet:
-#    kind: tzkt
-#    url: https://api.florencenet.tzkt.io
-  tzkt_granadanet:
+  tzkt_mainnet:
     kind: tzkt
-    url: https://api.granadanet.tzkt.io
+    url: https://api.tzkt.io
+  tzkt_hangzhounet:
+    kind: tzkt
+    url: https://api.hangzhou2net.tzkt.io
   coinbase:
     kind: coinbase
     http:
@@ -102,26 +93,16 @@ templates:
             source: <contract>
 
 indexes:
-#  harbinger_florencenet:
-#    template: harbinger
-#    values:
-#      datasource: tzkt_florencenet
-#      contract: coinbase_storage_florencenet
-#  juster_florencenet:
-#    template: juster
-#    values:
-#      datasource: tzkt_florencenet
-#      contract: juster_florencenet
-  harbinger_granadanet:
+  harbinger_hangzhounet:
     template: harbinger
     values:
-      datasource: tzkt_granadanet
-      contract: coinbase_storage_granadanet
-  juster_granadanet:
+      datasource: tzkt_hangzhounet
+      contract: coinbase_storage_hangzhounet
+  juster_hangzhounet:
     template: juster
     values:
-      datasource: tzkt_granadanet
-      contract: juster_granadanet
+      datasource: tzkt_hangzhounet
+      contract: juster_hangzhounet
 
 hooks:
   fetch_coinbase_candles:
