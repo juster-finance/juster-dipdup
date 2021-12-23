@@ -17,9 +17,9 @@ contracts:
     typename: juster
 
 datasources:
-  tzkt_mainnet:
-    kind: tzkt
-    url: https://api.tzkt.io
+  # tzkt_mainnet:
+  #   kind: tzkt
+  #   url: https://api.tzkt.io
   tzkt_hangzhounet:
     kind: tzkt
     url: https://api.hangzhou2net.tzkt.io
