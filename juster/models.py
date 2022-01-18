@@ -193,7 +193,7 @@ class Position(Model):
 class User(Model):
     address = fields.TextField(pk=True)
     total_bets_count = fields.IntField(default=0)
-    total_bets_amount = fields.DecimalField(10, 6, default=Decimal('0'))
+    total_bets_amount = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'))
     total_liquidity_provided = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'))
     total_reward = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'))
     total_provider_reward = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'))
