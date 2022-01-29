@@ -1,0 +1,29 @@
+contracts:
+  coinbase_storage_mainnet:
+    address: KT1Jr5t9UvGiqkvvsuUbPJHaYx24NzdUwNW9
+    typename: harbinger_storage
+  juster_mainnet:
+    address: KT1D6XTy8oAHkUWdzuQrzySECCDMnANEchQq
+    typename: juster
+
+datasources:
+  tzkt_mainnet:
+    kind: tzkt
+    url: https://api.tzkt.io
+  coinbase:
+    kind: coinbase
+    http:
+      cache: False
+
+indexes:
+  harbinger_mainnet:
+    template: harbinger
+    first_level: 2000000
+    values:
+      datasource: tzkt_mainnet
+      contract: coinbase_storage_mainnet
+  juster_mainnet:
+    template: juster
+    values:
+      datasource: tzkt_mainnet
+      contract: juster_mainnet

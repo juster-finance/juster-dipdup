@@ -6,8 +6,10 @@ services:
     build: .
     depends_on:
       - db
-    command: ["-c", "dipdup.yml", "-c", "dipdup.prod.yml", "run"]
+    command: ["-c", "dipdup.yml", "-c", "dipdup.mainnet.yml", "-c", "dipdup.prod.yml", "run"]
     restart: "no"
+    volumes:
+      - ./juster:/home/dipdup/juster/juster
     environment:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-changeme}
       - ADMIN_SECRET=${ADMIN_SECRET:-changeme}
@@ -16,7 +18,7 @@ services:
     image: postgres:12
     restart: always
     ports:
-      - 127.0.0.1:49179:5432
+      - 127.0.0.1:5432:5432
     volumes:
       - db:/var/lib/postgresql/data
     environment:
