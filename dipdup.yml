@@ -2,8 +2,20 @@ spec_version: 1.2
 package: juster
 
 database:
-  kind: sqlite
-  path: ":memory:"
+  kind: postgres
+  host: db
+  port: 5432
+  user: ${POSTGRES_USER:-dipdup}
+  password: ${POSTGRES_PASSWORD:-changeme}
+  database: ${POSTGRES_DB:-dipdup}
+
+hasura:
+  url: http://hasura:8080
+  admin_secret: ${ADMIN_SECRET:-changeme}
+  select_limit: ${SELECT_LIMIT:-1000}
+  camel_case: true
+  allow_aggregations: false
+  rest: true
 
 contracts:
   coinbase_storage_hangzhounet:

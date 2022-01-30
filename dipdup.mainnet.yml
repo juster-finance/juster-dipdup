@@ -27,3 +27,11 @@ indexes:
     values:
       datasource: tzkt_mainnet
       contract: juster_mainnet
+
+advanced:
+  reindex:
+    manual: wipe
+    migration: exception
+    rollback: exception
+    config_modified: ignore
+    schema_modified: ignore
