@@ -31,13 +31,10 @@ cover:
 	# poetry run diff-cover coverage.xml
 
 up:
-	docker-compose up -d db hasura
+	docker-compose up -d
 
 down:
 	docker-compose down -v
-
-run:
-	TZ=Europe/Moscow poetry run dipdup -c dipdup.yml -c dipdup.local.yml run
 
 bump:
 	poetry run pip uninstall -y dipdup

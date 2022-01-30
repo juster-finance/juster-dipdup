@@ -1,13 +1,23 @@
 database:
   kind: postgres
-  host: 127.0.0.1
-  port: 49179
+  host: db
+  port: 5432
   user: ${POSTGRES_USER:-dipdup}
   password: ${POSTGRES_PASSWORD:-changeme}
   database: ${POSTGRES_DB:-dipdup}
 
 hasura:
-  url: http://127.0.0.1:49180
+  url: http://hasura:8080
   admin_secret: ${ADMIN_SECRET:-changeme}
-  select_limit: ${SELECT_LIMIT:-99999999}
-  allow_aggregations: ${AGGREGATIONS:-True}
+  select_limit: ${SELECT_LIMIT:-1000}
+  camel_case: true
+  allow_aggregations: false
+  rest: true
+
+advanced:
+  reindex:
+    manual: wipe
+    migration: ignore
+    rollback: ignore
+    config_modified: ignore
+    schema_modified: ignore

@@ -144,6 +144,7 @@ class Event(Model):
 
 class Bet(Model):
     id = fields.IntField(pk=True)
+    opg_hash = fields.CharField(max_length=51)
     created_time = fields.DatetimeField()
     side = fields.CharEnumField(BetSide)
     amount = fields.DecimalField(decimal_places=6, max_digits=16)
@@ -154,6 +155,7 @@ class Bet(Model):
 
 class Deposit(Model):
     id = fields.IntField(pk=True)
+    opg_hash = fields.CharField(max_length=51)
     created_time = fields.DatetimeField()
     amount_above_eq = fields.DecimalField(decimal_places=6, max_digits=16)
     amount_below = fields.DecimalField(decimal_places=6, max_digits=16)
@@ -164,6 +166,7 @@ class Deposit(Model):
 
 class Withdrawal(Model):
     id = fields.IntField(pk=True)
+    opg_hash = fields.CharField(max_length=51)
     created_time = fields.DatetimeField()
     amount = fields.DecimalField(decimal_places=6, max_digits=16)
     event = fields.ForeignKeyField('models.Event', 'withdrawals')
