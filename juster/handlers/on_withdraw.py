@@ -50,6 +50,7 @@ async def on_withdraw(
         user.total_withdrawn += amount  # type: ignore
 
         withdrawal = models.Withdrawal(
+            id=withdraw.data.id,  # TzKT operation ID
             opg_hash=withdraw.data.hash,
             created_time=withdraw.data.timestamp,
             event=event,

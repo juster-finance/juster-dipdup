@@ -41,6 +41,7 @@ async def on_provide_liquidity(
     await position.save()
 
     await models.Deposit(
+        id=provide_liquidity.data.id,  # TzKT operation ID
         opg_hash=provide_liquidity.data.hash,
         created_time=provide_liquidity.data.timestamp,
         event=event,

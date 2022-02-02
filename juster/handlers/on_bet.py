@@ -48,6 +48,7 @@ async def on_bet(
     await position.save()
 
     await models.Bet(
+        id=bet.data.id,  # TzKT operation ID
         opg_hash=bet.data.hash,
         created_time=bet.data.timestamp,
         event=event,
