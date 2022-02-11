@@ -202,6 +202,7 @@ class JusterStorage(BaseModel):
     liquidityShares: List[LiquidityShare]
     manager: str
     measurementStartCallId: Optional[str]
+    metadata: Dict[str, str]
     nextEventId: str
     proposedManager: Optional[str]
     providedLiquidityAboveEq: List[ProvidedLiquidityAboveEqItem]

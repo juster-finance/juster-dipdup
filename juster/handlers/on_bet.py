@@ -47,7 +47,16 @@ async def on_bet(
         bet_side = models.BetSide.BELOW
     await position.save()
 
-    await models.Bet(created_time=bet.data.timestamp, event=event, user=user, amount=amount, reward=bet_reward, side=bet_side,).save()
+    await models.Bet(
+        id=bet.data.id,  # TzKT operation ID
+        opg_hash=bet.data.hash,
+        created_time=bet.data.timestamp,
+        event=event,
+        user=user,
+        amount=amount,
+        reward=bet_reward,
+        side=bet_side
+    ).save()
 
     currency_pair = await event.currency_pair
     currency_pair.total_volume += amount  # type: ignore

@@ -2,13 +2,22 @@ spec_version: 1.2
 package: juster
 
 database:
-  kind: sqlite
-  path: ":memory:"
+  kind: postgres
+  host: db
+  port: 5432
+  user: ${POSTGRES_USER:-dipdup}
+  password: ${POSTGRES_PASSWORD:-changeme}
+  database: ${POSTGRES_DB:-dipdup}
+
+hasura:
+  url: http://hasura:8080
+  admin_secret: ${ADMIN_SECRET:-changeme}
+  select_limit: ${SELECT_LIMIT:-1000}
+  camel_case: true
+  allow_aggregations: false
+  rest: true
 
 contracts:
-  coinbase_storage_mainnet:
-    address: KT1Jr5t9UvGiqkvvsuUbPJHaYx24NzdUwNW9
-    typename: harbinger_storage
   coinbase_storage_hangzhounet:
     address: KT19yapgDLPR3CuvK32xJHgxNJigyNxjSr4y
     typename: harbinger_storage
@@ -17,9 +26,6 @@ contracts:
     typename: juster
 
 datasources:
-  # tzkt_mainnet:
-  #   kind: tzkt
-  #   url: https://api.tzkt.io
   tzkt_hangzhounet:
     kind: tzkt
     url: https://api.hangzhou2net.tzkt.io
@@ -32,7 +38,6 @@ templates:
   harbinger:
     kind: big_map
     datasource: <datasource>
-#    first_level: 318700
     handlers:
       - callback: on_oracle_storage_update
         contract: <contract>
@@ -124,7 +129,7 @@ jobs:
     args:
       datasource: coinbase
       candle_interval: ONE_MINUTE
-      since: 2021-07-05T01:27:36
+      since: ${CANDLES_SINCE:-2022-01-01T00:00:00}
       currency_pair: XTZ-USD
   coinbase_btc_usd_1m_candles:
     hook: fetch_coinbase_candles
@@ -132,7 +137,7 @@ jobs:
     args:
       datasource: coinbase
       candle_interval: ONE_MINUTE
-      since: 2021-07-05T01:27:36
+      since: ${CANDLES_SINCE:-2022-01-01T00:00:00}
       currency_pair: BTC-USD
   coinbase_eth_usd_1m_candles:
     hook: fetch_coinbase_candles
@@ -140,7 +145,7 @@ jobs:
     args:
       datasource: coinbase
       candle_interval: ONE_MINUTE
-      since: 2021-07-05T01:27:36
+      since: ${CANDLES_SINCE:-2022-01-01T00:00:00}
       currency_pair: ETH-USD
   refresh_views:
     hook: refresh_views

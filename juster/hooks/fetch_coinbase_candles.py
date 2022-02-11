@@ -45,19 +45,23 @@ async def fetch_coinbase_candles(ctx: HookContext, datasource: str, candle_inter
         logger.info('[%s] %d %s candles fetched', currency_pair_model.symbol, len(raw_candles), candle_interval_enum.value)
 
         for raw_candle in raw_candles:
-            candle = models.Candle(
-                currency_pair=currency_pair_model,
-                since=raw_candle.timestamp - timedelta(seconds=candle_interval_enum.seconds),
-                until=raw_candle.timestamp,
-                interval=candle_interval_enum,
-                open=raw_candle.open,
-                close=raw_candle.close,
-                high=raw_candle.high,
-                low=raw_candle.low,
-                volume=raw_candle.volume,
-                source=models.Source.COINBASE,
+            await models.Candle.update_or_create(
+                id=models.candle_pk(models.Source.COINBASE,
+                                    currency_pair_model.id,
+                                    raw_candle.timestamp),
+                defaults=dict(
+                    currency_pair=currency_pair_model,
+                    since=raw_candle.timestamp - timedelta(seconds=candle_interval_enum.seconds),
+                    until=raw_candle.timestamp,
+                    interval=candle_interval_enum,
+                    open=raw_candle.open,
+                    close=raw_candle.close,
+                    high=raw_candle.high,
+                    low=raw_candle.low,
+                    volume=raw_candle.volume,
+                    source=models.Source.COINBASE
+                )
             )
-            await candle.save()
 
         batch_since += interval
         batch_until += interval

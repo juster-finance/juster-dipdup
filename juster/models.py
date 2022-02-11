@@ -1,4 +1,5 @@
 from decimal import Decimal
+from datetime import datetime
 from enum import Enum
 
 from dipdup.datasources.coinbase.models import CandleInterval
@@ -54,13 +55,23 @@ class WithdrawalType(Enum):
 
 
 class CurrencyPair(Model):
+    id = fields.IntField(pk=True)
     symbol = fields.CharField(max_length=16)
     total_events = fields.IntField(default=0)
     total_volume = fields.DecimalField(decimal_places=6, max_digits=16, default=0)
     total_value_locked = fields.DecimalField(decimal_places=6, max_digits=16, default=0)
 
 
+def candle_pk(source: Source, currency_pair_id: int, until: datetime) -> int:
+    src = {
+        Source.COINBASE: 0,
+        Source.HARBINGER: 1
+    }
+    return int(until.timestamp()) * 100 + currency_pair_id * 10 + src[source]
+
+
 class Candle(Model):
+    id = fields.BigIntField(pk=True)
     currency_pair = fields.ForeignKeyField("models.CurrencyPair", "candles")
     source = fields.CharEnumField(Source)
     since = fields.DatetimeField()
@@ -133,6 +144,7 @@ class Event(Model):
 
 class Bet(Model):
     id = fields.IntField(pk=True)
+    opg_hash = fields.CharField(max_length=51)
     created_time = fields.DatetimeField()
     side = fields.CharEnumField(BetSide)
     amount = fields.DecimalField(decimal_places=6, max_digits=16)
@@ -143,6 +155,7 @@ class Bet(Model):
 
 class Deposit(Model):
     id = fields.IntField(pk=True)
+    opg_hash = fields.CharField(max_length=51)
     created_time = fields.DatetimeField()
     amount_above_eq = fields.DecimalField(decimal_places=6, max_digits=16)
     amount_below = fields.DecimalField(decimal_places=6, max_digits=16)
@@ -153,6 +166,7 @@ class Deposit(Model):
 
 class Withdrawal(Model):
     id = fields.IntField(pk=True)
+    opg_hash = fields.CharField(max_length=51)
     created_time = fields.DatetimeField()
     amount = fields.DecimalField(decimal_places=6, max_digits=16)
     event = fields.ForeignKeyField('models.Event', 'withdrawals')
