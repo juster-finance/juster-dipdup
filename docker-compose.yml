@@ -6,13 +6,14 @@ services:
     build: .
     depends_on:
       - db
-    command: ["-c", "dipdup.yml", "-c", "dipdup.${JUSTER_ENV:-mainnet}.yml", "run"]
+    command: ["-c", "dipdup.yml", "-c", "dipdup.${JUSTER_ENV:-ithacanet}.yml", "run"]
     restart: "no"
     volumes:
       - ./juster:/home/dipdup/juster/juster
       - ./dipdup.yml:/home/dipdup/juster/dipdup.yml
       - ./dipdup.mainnet.yml:/home/dipdup/juster/dipdup.mainnet.yml
       - ./dipdup.hangzhounet.yml:/home/dipdup/juster/dipdup.hangzhounet.yml
+      - ./dipdup.ithacanet.yml:/home/dipdup/juster/dipdup.ithacanet.yml
     environment:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-changeme}
       - ADMIN_SECRET=${ADMIN_SECRET:-changeme}
