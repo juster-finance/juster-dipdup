@@ -26,7 +26,6 @@ async def on_withdraw(
         withdraw_tx = tx_2
         fee_tx = tx_1
     elif tx_1 is not None:
-        assert tx_1.target_address == withdraw.data.sender_address
         if withdraw.data.sender_address == withdraw.parameter.participantAddress:
             withdraw_tx = tx_1
             fee_tx = None
