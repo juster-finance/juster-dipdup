@@ -1,7 +1,7 @@
-FROM python:3.8-slim-buster
+FROM python:3.10-slim-buster
 
 RUN apt update && \
-    apt install -y make git && \
+    apt install -y make git gcc && \
     rm -rf /var/lib/apt/lists/*
 RUN pip install poetry
 
