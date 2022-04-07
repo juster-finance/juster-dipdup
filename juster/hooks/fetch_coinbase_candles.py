@@ -1,5 +1,7 @@
 import logging
-from datetime import datetime, timedelta, timezone
+from datetime import datetime
+from datetime import timedelta
+from datetime import timezone
 from typing import cast
 
 from dipdup.context import HookContext
@@ -34,7 +36,7 @@ async def fetch_coinbase_candles(ctx: HookContext, datasource: str, candle_inter
     batch_until = batch_since + interval
 
     while batch_until < request_until + interval:
-        logger.info('[%s] Since %s until %s',  currency_pair_model.symbol, batch_since.isoformat(), batch_until.isoformat())
+        logger.info('[%s] Since %s until %s', currency_pair_model.symbol, batch_since.isoformat(), batch_until.isoformat())
 
         raw_candles = await coinbase.get_candles(
             since=batch_since,
@@ -46,21 +48,23 @@ async def fetch_coinbase_candles(ctx: HookContext, datasource: str, candle_inter
 
         for raw_candle in raw_candles:
             await models.Candle.update_or_create(
-                id=models.candle_pk(models.Source.COINBASE,
-                                    currency_pair_model.id,
-                                    raw_candle.timestamp),
-                defaults=dict(
-                    currency_pair=currency_pair_model,
-                    since=raw_candle.timestamp - timedelta(seconds=candle_interval_enum.seconds),
-                    until=raw_candle.timestamp,
-                    interval=candle_interval_enum,
-                    open=raw_candle.open,
-                    close=raw_candle.close,
-                    high=raw_candle.high,
-                    low=raw_candle.low,
-                    volume=raw_candle.volume,
-                    source=models.Source.COINBASE
-                )
+                id=models.candle_pk(
+                    models.Source.COINBASE,
+                    currency_pair_model.id,
+                    raw_candle.timestamp,
+                ),
+                defaults={
+                    'currency_pair': currency_pair_model,
+                    'since': raw_candle.timestamp - timedelta(seconds=candle_interval_enum.seconds),
+                    'until': raw_candle.timestamp,
+                    'interval': candle_interval_enum,
+                    'open': raw_candle.open,
+                    'close': raw_candle.close,
+                    'high': raw_candle.high,
+                    'low': raw_candle.low,
+                    'volume': raw_candle.volume,
+                    'source': models.Source.COINBASE,
+                },
             )
 
         batch_since += interval

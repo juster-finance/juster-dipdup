@@ -2,9 +2,11 @@ from dipdup.context import HandlerContext
 from dipdup.models import Transaction
 
 import juster.models as models
-from juster.types.juster.parameter.bet import BetItem, BetParameter
+from juster.types.juster.parameter.bet import BetItem
+from juster.types.juster.parameter.bet import BetParameter
 from juster.types.juster.storage import JusterStorage
-from juster.utils import from_mutez, get_event
+from juster.utils import from_mutez
+from juster.utils import get_event
 
 BetAboveEq = BetItem
 
@@ -55,7 +57,7 @@ async def on_bet(
         user=user,
         amount=amount,
         reward=bet_reward,
-        side=bet_side
+        side=bet_side,
     ).save()
 
     currency_pair = await event.currency_pair

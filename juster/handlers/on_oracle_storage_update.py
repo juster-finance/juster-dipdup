@@ -1,6 +1,7 @@
+from datetime import datetime
+
 from dipdup.context import HandlerContext
 from dipdup.models import BigMapDiff
-from datetime import datetime
 
 import juster.models as models
 from juster.types.harbinger_storage.big_map.oracle_data_key import OracleDataKey
@@ -22,19 +23,21 @@ async def on_oracle_storage_update(
     currency_pair, _ = await models.CurrencyPair.get_or_create(symbol=symbol)
 
     await models.Candle.update_or_create(
-        id=models.candle_pk(models.Source.HARBINGER,
-                            currency_pair.id,
-                            datetime.fromisoformat(oracle_data.value.timestamp_1[:-1])),
-        defaults=dict(
-            currency_pair=currency_pair,
-            source=models.Source.HARBINGER,
-            since=oracle_data.value.timestamp_0,
-            until=oracle_data.value.timestamp_1,
-            interval=models.CandleInterval.ONE_MINUTE,
-            open=models.to_decimal(oracle_data.value.nat_0),
-            high=models.to_decimal(oracle_data.value.nat_1),
-            low=models.to_decimal(oracle_data.value.nat_2),
-            close=models.to_decimal(oracle_data.value.nat_3),
-            volume=models.to_decimal(oracle_data.value.nat_4)
-        )
+        id=models.candle_pk(
+            models.Source.HARBINGER,
+            currency_pair.id,
+            datetime.fromisoformat(oracle_data.value.timestamp_1[:-1]),
+        ),
+        defaults={
+            'currency_pair': currency_pair,
+            'source': models.Source.HARBINGER,
+            'since': oracle_data.value.timestamp_0,
+            'until': oracle_data.value.timestamp_1,
+            'interval': models.CandleInterval.ONE_MINUTE,
+            'open': models.to_decimal(oracle_data.value.nat_0),
+            'high': models.to_decimal(oracle_data.value.nat_1),
+            'low': models.to_decimal(oracle_data.value.nat_2),
+            'close': models.to_decimal(oracle_data.value.nat_3),
+            'volume': models.to_decimal(oracle_data.value.nat_4),
+        },
     )

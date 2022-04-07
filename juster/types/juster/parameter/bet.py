@@ -3,9 +3,12 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict, Union
+from typing import Any
+from typing import Dict
+from typing import Union
 
-from pydantic import BaseModel, Extra
+from pydantic import BaseModel
+from pydantic import Extra
 
 
 class BetItem(BaseModel):
