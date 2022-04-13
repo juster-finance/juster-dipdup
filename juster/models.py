@@ -1,9 +1,10 @@
-from decimal import Decimal
 from datetime import datetime
+from decimal import Decimal
 from enum import Enum
 
 from dipdup.datasources.coinbase.models import CandleInterval
-from tortoise import Model, fields
+from tortoise import Model
+from tortoise import fields
 
 liquidity_precision = 6
 ratio_precision = 8
@@ -12,23 +13,23 @@ target_dynamics_precision = 6
 
 
 def to_liquidity(value):
-    return int(value) / Decimal(10 ** liquidity_precision)
+    return int(value) / Decimal(10**liquidity_precision)
 
 
 def to_ratio(value):
-    return int(value) / Decimal(10 ** ratio_precision)
+    return int(value) / Decimal(10**ratio_precision)
 
 
 def to_share(value):
-    return int(value) / Decimal(10 ** share_precision)
+    return int(value) / Decimal(10**share_precision)
 
 
 def to_dynamics(value):
-    return int(value) / Decimal(10 ** target_dynamics_precision)
+    return int(value) / Decimal(10**target_dynamics_precision)
 
 
 def to_decimal(value):
-    return Decimal(value) / Decimal(10 ** 6)
+    return Decimal(value) / Decimal(10**6)
 
 
 class EventStatus(Enum):
@@ -63,10 +64,7 @@ class CurrencyPair(Model):
 
 
 def candle_pk(source: Source, currency_pair_id: int, until: datetime) -> int:
-    src = {
-        Source.COINBASE: 0,
-        Source.HARBINGER: 1
-    }
+    src = {Source.COINBASE: 0, Source.HARBINGER: 1}
     return int(until.timestamp()) * 100 + currency_pair_id * 10 + src[source]
 
 

@@ -9,4 +9,4 @@ async def on_rollback(
     from_level: int,
     to_level: int,
 ) -> None:
-    await ctx.reindex(ReindexingReason.ROLLBACK)
+    await ctx.reindex(ReindexingReason.rollback)

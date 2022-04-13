@@ -4,7 +4,8 @@ from dipdup.models import Transaction
 import juster.models as models
 from juster.types.juster.parameter.new_event import NewEventParameter
 from juster.types.juster.storage import JusterStorage
-from juster.utils import get_event, parse_datetime
+from juster.utils import get_event
+from juster.utils import parse_datetime
 
 
 async def on_new_event(

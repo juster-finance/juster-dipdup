@@ -10,6 +10,7 @@ datasources:
   tzkt_ithacanet:
     kind: tzkt
     url: https://api.ithacanet.tzkt.io
+    buffer_size: 1
   coinbase:
     kind: coinbase
     http:
@@ -31,6 +32,6 @@ advanced:
   reindex:
     manual: wipe
     migration: exception
-    rollback: wipe
+    rollback: exception
     config_modified: ignore
     schema_modified: ignore

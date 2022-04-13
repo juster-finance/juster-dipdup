@@ -1,7 +1,8 @@
 from typing import Optional
 
 from dipdup.context import HandlerContext
-from dipdup.models import OperationData, Transaction
+from dipdup.models import OperationData
+from dipdup.models import Transaction
 
 import juster.models as models
 from juster.types.juster.parameter.withdraw import WithdrawParameter
