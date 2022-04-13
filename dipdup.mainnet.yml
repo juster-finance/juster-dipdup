@@ -30,7 +30,7 @@ indexes:
 
 advanced:
   reindex:
-    manual: wipe
+    manual: exception
     migration: exception
     rollback: exception
     config_modified: ignore
