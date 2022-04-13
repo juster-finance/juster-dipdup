@@ -6,7 +6,7 @@ authors = ["Lev Gorodetskiy <github@droserasprout.space>"]
 
 [tool.poetry.dependencies]
 python = "^3.10"
-dipdup = "5.0.0-rc4"
+dipdup = "^5.0.1"
 strict-rfc3339 = "^0.7"
 
 [tool.poetry.dev-dependencies]
