@@ -10,6 +10,7 @@ liquidity_precision = 6
 ratio_precision = 8
 share_precision = 8
 target_dynamics_precision = 6
+pool_share_precision = 6
 
 
 def to_liquidity(value):
@@ -211,3 +212,42 @@ class User(Model):
     total_provider_reward = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'))
     total_withdrawn = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'))
     total_fees_collected = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'))
+
+
+class EntryLiquidity(Model):
+    id = fields.IntField(pk=True)
+    user = fields.ForeignKeyField('models.User', 'entries')
+    accept_time = fields.DatetimeField()
+    amount = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'))
+
+
+class PoolPosition(Model):
+    id = fields.IntField(pk=True)
+    user = fields.ForeignKeyField('models.User', 'pool_positions')
+    shares = fields.DecimalField(decimal_places=pool_share_precision, max_digits=32, default=Decimal('0'))
+
+
+class Claim(Model):
+    id = fields.IntField(pk=True)
+    event = fields.ForeignKeyField('models.Event', 'claims')
+    position = fields.ForeignKeyField('models.PoolPosition', 'claims')
+    shares = fields.DecimalField(decimal_places=pool_share_precision, max_digits=32, default=Decimal('0'))
+    user = fields.ForeignKeyField('models.User', 'claims')
+
+
+class Pool(Model):
+    address = fields.TextField(pk=True)
+    free_liquidity = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'))
+    total_liquidity = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'))
+
+
+class PoolEvent(Model):
+    # TODO: decide if it would be better to merge this with Event?
+    # it should be probably matched 1:1 with Event
+
+    id = fields.IntField(pk=True)
+    provided = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'))
+    result = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'), null=True)
+    total_shares = fields.DecimalField(decimal_places=pool_share_precision, max_digits=32, default=Decimal('0'))
+    locked_shares = fields.DecimalField(decimal_places=pool_share_precision, max_digits=32, default=Decimal('0'))
+
