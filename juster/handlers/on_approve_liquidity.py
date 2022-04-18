@@ -4,23 +4,12 @@ from juster.types.pool.storage import PoolStorage
 from juster.types.pool.parameter.approve_liquidity import ApproveLiquidityParameter
 from dipdup.models import Transaction
 
-from decimal import Decimal
-from typing import Tuple
-from typing import Union
 import juster.models as models
-from juster.types.pool.storage import Positions
-from juster.types.pool.storage import PoolStorage
-
-
-def get_position(storage: PoolStorage) -> Tuple[int, Positions]:
-    assert len(storage.positions) == 1
-    position_id = int(next(iter(storage.positions)))
-    position_diff = storage.positions[str(position_id)]
-    return position_id, position_diff
-
-
-def process_pool_shares(raw: Union[str, int]) -> Decimal:
-    return Decimal(raw) / (10**models.pool_share_precision)
+from juster.utils import (
+    get_position,
+    get_entry,
+    process_pool_shares
+)
 
 
 async def on_approve_liquidity(
@@ -40,4 +29,10 @@ async def on_approve_liquidity(
         shares=shares,
     )
     await position.save()
+
+    # TODO: need to understand is it OK to access this __root__ or there are any other ways?
+    entry_id = int(approve_liquidity.parameter.__root__)
+    entry = await models.EntryLiquidity.filter(id=entry_id).get()
+    entry.status = models.EntryStatus.APPROVED
+    await entry.save()
 

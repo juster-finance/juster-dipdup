@@ -56,6 +56,12 @@ class WithdrawalType(Enum):
     THIRD_PARTY = 'THIRD_PARTY'
 
 
+class EntryStatus(Enum):
+    PENDING = 'PENDING'
+    APPROVED = 'APPROVED'
+    CANCELED = 'CANCELED'
+
+
 class CurrencyPair(Model):
     id = fields.IntField(pk=True)
     symbol = fields.CharField(max_length=16)
@@ -219,6 +225,7 @@ class EntryLiquidity(Model):
     user = fields.ForeignKeyField('models.User', 'entries')
     accept_time = fields.DatetimeField()
     amount = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'))
+    status = fields.CharEnumField(EntryStatus)
 
 
 class PoolPosition(Model):
@@ -233,6 +240,7 @@ class Claim(Model):
     position = fields.ForeignKeyField('models.PoolPosition', 'claims')
     shares = fields.DecimalField(decimal_places=pool_share_precision, max_digits=32, default=Decimal('0'))
     user = fields.ForeignKeyField('models.User', 'claims')
+    withdrawn = fields.BooleanField(default=False)
 
 
 class Pool(Model):
