@@ -1,14 +1,11 @@
-
-from dipdup.models import Transaction
 from dipdup.context import HandlerContext
-from juster.types.pool.storage import PoolStorage
-from juster.types.pool.parameter.pay_reward import PayRewardParameter
+from dipdup.models import Transaction
 
 import juster.models as models
-from juster.utils import (
-    get_pool_event,
-    from_mutez
-)
+from juster.types.pool.parameter.pay_reward import PayRewardParameter
+from juster.types.pool.storage import PoolStorage
+from juster.utils import from_mutez
+from juster.utils import get_pool_event
 
 
 async def on_pay_reward(
@@ -24,4 +21,3 @@ async def on_pay_reward(
     event = await models.PoolEvent.filter(id=pool_event_id).get()
     event.result = amount
     await event.save()
-

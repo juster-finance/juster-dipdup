@@ -1,10 +1,9 @@
-
 from dipdup.context import HandlerContext
-from juster.types.pool.storage import PoolStorage
-from juster.types.pool.parameter.withdraw_liquidity import WithdrawLiquidityParameter
 from dipdup.models import Transaction
 
 import juster.models as models
+from juster.types.pool.parameter.withdraw_liquidity import WithdrawLiquidityParameter
+from juster.types.pool.storage import PoolStorage
 
 
 async def on_withdraw_liquidity(
@@ -17,6 +16,5 @@ async def on_withdraw_liquidity(
         event = await models.PoolEvent.filter(id=int(claim_key.eventId)).get()
         position = await models.PoolPosition.filter(id=int(claim_key.positionId)).get()
         claim = await models.Claim.filter(event=event, position=position).get()
-        claim.withdrawn = True
+        claim.withdrawn = True  # type: ignore
         await claim.save()
-

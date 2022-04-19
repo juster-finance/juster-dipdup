@@ -5,17 +5,13 @@ from typing import Union
 
 import strict_rfc3339  # type: ignore
 
+import juster.models as models
 from juster.types.juster.storage import Events
 from juster.types.juster.storage import JusterStorage
-
-from juster.types.pool.storage import (
-    Entries,
-    Positions,
-    PoolStorage
-)
+from juster.types.pool.storage import Entries
 from juster.types.pool.storage import Events as PoolEvents
-
-import juster.models as models
+from juster.types.pool.storage import PoolStorage
+from juster.types.pool.storage import Positions
 
 
 def from_mutez(mutez: Union[str, int]) -> Decimal:
@@ -60,4 +56,3 @@ def get_active_events(storage: PoolStorage) -> list[int]:
 
 def process_pool_shares(raw: Union[str, int]) -> Decimal:
     return Decimal(raw) / (10**models.pool_share_precision)
-

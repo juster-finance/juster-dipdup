@@ -1,19 +1,16 @@
-
-from juster.types.pool.parameter.create_event import CreateEventParameter
 from dipdup.context import HandlerContext
-from juster.types.juster.parameter.provide_liquidity import ProvideLiquidityParameter
-from juster.types.pool.storage import PoolStorage
-from juster.types.juster.storage import JusterStorage
 from dipdup.models import Transaction
-from juster.types.juster.parameter.new_event import NewEventParameter
 
 import juster.models as models
-from juster.utils import (
-    get_event,
-    from_mutez,
-    process_pool_shares,
-    get_pool_event
-)
+from juster.types.juster.parameter.new_event import NewEventParameter
+from juster.types.juster.parameter.provide_liquidity import ProvideLiquidityParameter
+from juster.types.juster.storage import JusterStorage
+from juster.types.pool.parameter.create_event import CreateEventParameter
+from juster.types.pool.storage import PoolStorage
+from juster.utils import from_mutez
+from juster.utils import get_event
+from juster.utils import get_pool_event
+from juster.utils import process_pool_shares
 
 
 async def on_create_event(
@@ -40,4 +37,3 @@ async def on_create_event(
         locked_shares=locked_shares
     )
     await pool_event.save()
-

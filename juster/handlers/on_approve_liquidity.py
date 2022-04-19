@@ -1,15 +1,11 @@
-
 from dipdup.context import HandlerContext
-from juster.types.pool.storage import PoolStorage
-from juster.types.pool.parameter.approve_liquidity import ApproveLiquidityParameter
 from dipdup.models import Transaction
 
 import juster.models as models
-from juster.utils import (
-    get_position,
-    get_entry,
-    process_pool_shares
-)
+from juster.types.pool.parameter.approve_liquidity import ApproveLiquidityParameter
+from juster.types.pool.storage import PoolStorage
+from juster.utils import get_position
+from juster.utils import process_pool_shares
 
 
 async def on_approve_liquidity(
@@ -35,4 +31,3 @@ async def on_approve_liquidity(
     entry = await models.EntryLiquidity.filter(id=entry_id).get()
     entry.status = models.EntryStatus.APPROVED
     await entry.save()
-

@@ -1,15 +1,12 @@
-
 from dipdup.context import HandlerContext
-from juster.types.pool.storage import PoolStorage
 from dipdup.models import Transaction
-from juster.types.pool.parameter.claim_liquidity import ClaimLiquidityParameter
 
 import juster.models as models
-from juster.utils import (
-    get_position,
-    process_pool_shares,
-    get_active_events
-)
+from juster.types.pool.parameter.claim_liquidity import ClaimLiquidityParameter
+from juster.types.pool.storage import PoolStorage
+from juster.utils import get_active_events
+from juster.utils import get_position
+from juster.utils import process_pool_shares
 
 
 async def on_claim_liquidity(
@@ -32,12 +29,10 @@ async def on_claim_liquidity(
         pool_event = await models.PoolEvent.filter(id=event_id).get()
         user = await position.user.get()
         claim = await models.Claim(
-            # id // will it autogenerate?
             event=pool_event,
             position=position,
             shares=claimed_shares,
             user=user,
-            withdrawn=False
+            withdrawn=False,
         )
         await claim.save()
-
