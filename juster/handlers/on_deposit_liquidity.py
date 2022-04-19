@@ -29,7 +29,7 @@ async def on_deposit_liquidity(
         user=user,
         accept_time=parse_datetime(entry_diff.acceptAfter),
         amount=amount,
-        status = models.EntryStatus.PENDING
+        status=models.EntryStatus.PENDING
     )
     await entry.save()
 
