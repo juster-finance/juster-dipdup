@@ -78,6 +78,16 @@ templates:
           - type: transaction
             destination: <contract>
             entrypoint: withdrawLiquidity
+      - callback: on_create_event
+        pattern:
+          - type: transaction
+            destination: <contract>
+            entrypoint: createEvent
+      - callback: on_pay_reward
+        pattern:
+          - type: transaction
+            destination: <contract>
+            entrypoint: payReward
 
   juster:
     kind: operation
