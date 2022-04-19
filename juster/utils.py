@@ -8,9 +8,12 @@ import strict_rfc3339  # type: ignore
 from juster.types.juster.storage import Events
 from juster.types.juster.storage import JusterStorage
 
-from juster.types.pool.storage import Entries
-from juster.types.pool.storage import Positions
-from juster.types.pool.storage import PoolStorage
+from juster.types.pool.storage import (
+    Entries,
+    Positions,
+    PoolStorage
+)
+from juster.types.pool.storage import Events as PoolEvents
 
 import juster.models as models
 
@@ -42,6 +45,17 @@ def get_position(storage: PoolStorage) -> Tuple[int, Positions]:
     position_id = int(next(iter(storage.positions)))
     position_diff = storage.positions[str(position_id)]
     return position_id, position_diff
+
+
+def get_pool_event(storage: PoolStorage) -> Tuple[int, PoolEvents]:
+    assert len(storage.events) == 1
+    pool_event_id = int(next(iter(storage.events)))
+    pool_event_diff = storage.events[str(pool_event_id)]
+    return pool_event_id, pool_event_diff
+
+
+def get_active_events(storage: PoolStorage) -> list[int]:
+    return [int(event_id) for event_id in storage.activeEvents]
 
 
 def process_pool_shares(raw: Union[str, int]) -> Decimal:

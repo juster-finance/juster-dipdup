@@ -83,6 +83,14 @@ templates:
           - type: transaction
             destination: <contract>
             entrypoint: createEvent
+          - type: transaction
+            entrypoint: newEvent
+            source: <contract>
+            destination: <juster_core>
+          - type: transaction
+            entrypoint: provideLiquidity
+            source: <contract>
+            destination: <juster_core>
       - callback: on_pay_reward
         pattern:
           - type: transaction
@@ -159,6 +167,7 @@ indexes:
     values:
       datasource: tzkt_ithacanet
       contract: pool_ithacanet
+      juster_core: juster_ithacanet
 
 hooks:
   fetch_coinbase_candles:

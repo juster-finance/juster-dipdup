@@ -35,6 +35,7 @@ indexes:
     values:
       datasource: tzkt_ithacanet
       contract: pool_ithacanet
+      juster_core: juster_ithacanet
 
 advanced:
   reindex:
