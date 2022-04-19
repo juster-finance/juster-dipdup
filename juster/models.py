@@ -236,9 +236,10 @@ class PoolPosition(Model):
 
 class Claim(Model):
     id = fields.IntField(pk=True)
-    event = fields.ForeignKeyField('models.Event', 'claims')
+    event = fields.ForeignKeyField('models.PoolEvent', 'claims')
     position = fields.ForeignKeyField('models.PoolPosition', 'claims')
     shares = fields.DecimalField(decimal_places=pool_share_precision, max_digits=32, default=Decimal('0'))
+    # TODO: user is available through position foreign key, is it required directly?
     user = fields.ForeignKeyField('models.User', 'claims')
     withdrawn = fields.BooleanField(default=False)
 
