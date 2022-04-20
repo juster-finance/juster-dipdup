@@ -21,3 +21,15 @@ async def on_pay_reward(
     event = await models.PoolEvent.filter(id=pool_event_id).get()
     event.result = amount
     await event.save()
+
+    pool_address = pay_reward.data.target_address
+    pool, _ = await models.Pool.get_or_create(address=pool_address)
+    profit_loss = event.result - event.provided
+
+    active_shares = event.total_shares - event.locked_shares
+    assert active_shares >= 0
+    pool_share = profit_loss * active_shares / event.total_shares
+    pool.total_liquidity += pool_share
+    assert pool.total_liquidity >= 0
+    await pool.save()
+

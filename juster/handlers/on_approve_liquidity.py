@@ -31,3 +31,10 @@ async def on_approve_liquidity(
     entry = await models.EntryLiquidity.filter(id=entry_id).get()
     entry.status = models.EntryStatus.APPROVED
     await entry.save()
+
+    pool_address = approve_liquidity.data.target_address
+    pool, _ = await models.Pool.get_or_create(address=pool_address)
+    pool.total_liquidity += entry.amount
+    pool.total_shares += shares
+    await pool.save()
+

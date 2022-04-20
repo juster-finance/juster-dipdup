@@ -246,8 +246,8 @@ class Claim(Model):
 
 class Pool(Model):
     address = fields.TextField(pk=True)
-    free_liquidity = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'))
     total_liquidity = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'))
+    total_shares = fields.DecimalField(decimal_places=pool_share_precision, max_digits=32, default=Decimal('0'))
 
 
 class PoolEvent(Model):

@@ -36,3 +36,15 @@ async def on_claim_liquidity(
             withdrawn=False,
         )
         await claim.save()
+
+        pool_event.locked_shares += claimed_shares
+        await pool_event.save()
+
+    pool_address = claim_liquidity.data.target_address
+    pool, _ = await models.Pool.get_or_create(address=pool_address)
+    pool.total_liquidity -= claimed_shares * pool.total_liquidity / pool.total_shares
+    assert pool.total_liquidity >= 0
+    pool.total_shares -= claimed_shares
+    assert pool.total_shares >= 0
+    await pool.save()
+
