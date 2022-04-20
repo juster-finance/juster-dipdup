@@ -96,6 +96,11 @@ templates:
           - type: transaction
             destination: <contract>
             entrypoint: payReward
+      - callback: on_default
+        pattern:
+          - type: transaction
+            destination: <contract>
+            entrypoint: default
 
   juster:
     kind: operation
