@@ -21,7 +21,7 @@ async def on_create_event(
 ) -> None:
     event_id, event_diff = get_event(new_event.storage)
     amount = from_mutez(provide_liquidity.data.amount)
-    fees = from_mutez(create_event.data.amount)
+    fees = from_mutez(new_event.data.amount)
 
     pool_event_id, pool_event_diff = get_pool_event(create_event.storage)
     assert pool_event_id == event_id
