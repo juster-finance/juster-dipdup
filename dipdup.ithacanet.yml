@@ -6,7 +6,7 @@ contracts:
     address: KT1Feq9iRBBhpSBdPF1Y7Sd7iJu7uLqqRf1A
     typename: juster
   pool_ithacanet:
-    address: KT1GEfCcvPKhLe1vrpYZtua8eBpUsVjfiDRo
+    address: KT1MxPezUtdF8qn6dz1g1chHNgckb4qEtcvJ
     typename: pool
 
 datasources:
