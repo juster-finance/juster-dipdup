@@ -1,9 +1,12 @@
+from decimal import Decimal
+
 from dipdup.context import HandlerContext
 from dipdup.models import Transaction
 
 import juster.models as models
 from juster.types.pool.parameter.claim_liquidity import ClaimLiquidityParameter
 from juster.types.pool.storage import PoolStorage
+from juster.utils import from_mutez
 from juster.utils import get_active_events
 from juster.utils import get_position
 from juster.utils import process_pool_shares
@@ -25,6 +28,7 @@ async def on_claim_liquidity(
     await position.save()
 
     active_events = get_active_events(claim_liquidity.storage)
+    remainders = Decimal(0)
     for event_id in active_events:
         pool_event = await models.PoolEvent.filter(id=event_id).get()
         user = await position.user.get()
@@ -38,11 +42,15 @@ async def on_claim_liquidity(
         await claim.save()
 
         pool_event.locked_shares += claimed_shares
+        # All positive remainders are calculated in favor of Pool:
+        remainder = claimed_shares * pool_event.provided % pool_event.total_shares
+        remainders += from_mutez(1) if remainder > Decimal(0) else Decimal(0)
         await pool_event.save()
 
     pool_address = claim_liquidity.data.target_address
     pool, _ = await models.Pool.get_or_create(address=pool_address)
     pool.total_liquidity -= claimed_shares * pool.total_liquidity / pool.total_shares
+    pool.total_liquidity += remainders
     assert pool.total_liquidity >= 0
     pool.total_shares -= claimed_shares
     assert pool.total_shares >= 0
