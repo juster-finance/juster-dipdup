@@ -32,13 +32,17 @@ async def on_claim_liquidity(
     for event_id in active_events:
         pool_event = await models.PoolEvent.filter(id=event_id).get()
         user = await position.user.get()
-        claim = await models.Claim(
+        claim, _ = await models.Claim.get_or_create(
             event=pool_event,
             position=position,
-            shares=claimed_shares,
-            user=user,
-            withdrawn=False,
+            defaults={
+                'shares': 0,
+                'user': user,
+                'withdrawn': False
+            }
         )
+
+        claim.shares += claimed_shares
         await claim.save()
 
         pool_event.locked_shares += claimed_shares
