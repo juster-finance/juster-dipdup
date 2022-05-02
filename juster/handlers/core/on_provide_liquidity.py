@@ -19,6 +19,7 @@ async def on_provide_liquidity(
     event = await models.Event.filter(id=event_id).get()
     amount_above_eq = from_mutez(event_diff.poolAboveEq) - event.pool_above_eq
     amount_below = from_mutez(event_diff.poolBelow) - event.pool_below
+    # TODO: liquidity shares use 10**8 and from_mutez uses 10**6 [minor bug]:
     new_liquidity_shares = from_mutez(event_diff.totalLiquidityShares)
     liquidity_shares_added = new_liquidity_shares - event.total_liquidity_shares
     event.total_liquidity_shares = new_liquidity_shares  # type: ignore
