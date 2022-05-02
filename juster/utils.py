@@ -50,9 +50,5 @@ def get_pool_event(storage: PoolStorage) -> Tuple[int, PoolEvents]:
     return pool_event_id, pool_event_diff
 
 
-def get_active_events(storage: PoolStorage) -> list[int]:
-    return [int(event_id) for event_id in storage.activeEvents]
-
-
 def process_pool_shares(raw: Union[str, int]) -> Decimal:
     return Decimal(raw) / (10**models.pool_share_precision)

@@ -7,7 +7,6 @@ import juster.models as models
 from juster.types.pool.parameter.claim_liquidity import ClaimLiquidityParameter
 from juster.types.pool.storage import PoolStorage
 from juster.utils import from_mutez
-from juster.utils import get_active_events
 from juster.utils import get_position
 from juster.utils import process_pool_shares
 
@@ -27,9 +26,12 @@ async def on_claim_liquidity(
     assert position.shares >= 0
     await position.save()
 
-    active_events = get_active_events(claim_liquidity.storage)
     remainders = Decimal(0)
-    for event_id in active_events:
+    for claim_pair in claim_liquidity.storage.claims:
+        assert position_id == int(claim_pair.key.positionId)
+        assert claim_liquidity.data.sender_address == claim_pair.value.provider
+
+        event_id = int(claim_pair.key.eventId)
         pool_event = await models.PoolEvent.filter(id=event_id).get()
         user = await position.user.get()
         claim, _ = await models.Claim.get_or_create(
@@ -43,6 +45,7 @@ async def on_claim_liquidity(
         )
 
         claim.shares += claimed_shares
+        assert claim.shares == process_pool_shares(claim_pair.value.shares)
         await claim.save()
 
         pool_event.locked_shares += claimed_shares
