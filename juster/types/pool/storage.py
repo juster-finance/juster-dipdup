@@ -98,11 +98,11 @@ class PoolStorage(BaseModel):
         extra = Extra.forbid
 
     activeEvents: Dict[str, str]
-    activeLiquidity: str
+    activeLiquidityF: str
     claims: List[Claim]
     counter: str
     entries: Dict[str, Entries]
-    entryLiquidity: str
+    entryLiquidityF: str
     entryLockPeriod: str
     events: Dict[str, Events]
     isDepositPaused: bool
@@ -113,12 +113,12 @@ class PoolStorage(BaseModel):
     metadata: Dict[str, str]
     nextEntryId: str
     nextLineId: str
-    nextLiquidity: str
+    nextLiquidityF: str
     nextPositionId: str
     nextWithdrawalId: str
     positions: Dict[str, Positions]
     precision: str
     proposedManager: str
     totalShares: str
-    withdrawableLiquidity: str
+    withdrawableLiquidityF: str
     withdrawals: Dict[str, Withdrawals]
