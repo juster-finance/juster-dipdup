@@ -26,7 +26,6 @@ async def on_claim_liquidity(
     assert position.shares >= 0
     await position.save()
 
-    remainders = Decimal(0)
     for claim_pair in claim_liquidity.storage.claims:
         assert position_id == int(claim_pair.key.positionId)
         assert claim_liquidity.data.sender_address == claim_pair.value.provider
@@ -49,15 +48,11 @@ async def on_claim_liquidity(
         await claim.save()
 
         pool_event.locked_shares += claimed_shares
-        # All positive remainders are calculated in favor of Pool:
-        remainder = claimed_shares * pool_event.provided % pool_event.total_shares
-        remainders += from_mutez(1) if remainder > Decimal(0) else Decimal(0)
         await pool_event.save()
 
     pool_address = claim_liquidity.data.target_address
     pool, _ = await models.Pool.get_or_create(address=pool_address)
     pool.total_liquidity -= claimed_shares * pool.total_liquidity / pool.total_shares
-    pool.total_liquidity += remainders
     assert pool.total_liquidity >= 0
     pool.total_shares -= claimed_shares
     assert pool.total_shares >= 0
