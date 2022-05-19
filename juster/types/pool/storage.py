@@ -52,6 +52,7 @@ class Events(BaseModel):
     lockedShares: str
     provided: str
     result: Optional[str]
+    shares: str
     totalShares: str
 
 
@@ -113,7 +114,6 @@ class PoolStorage(BaseModel):
     metadata: Dict[str, str]
     nextEntryId: str
     nextLineId: str
-    nextLiquidityF: str
     nextPositionId: str
     nextWithdrawalId: str
     positions: Dict[str, Positions]
