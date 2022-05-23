@@ -16,10 +16,11 @@ async def on_pay_reward(
     # TODO: is it OK to access this __root__ or there are any other ways? [3]
     param_event_id = int(pay_reward.parameter.__root__)
     assert pool_event_id == param_event_id
+    assert pay_reward.data.amount is not None
     amount = from_mutez(pay_reward.data.amount)
 
     event = await models.PoolEvent.filter(id=pool_event_id).get()
-    event.result = amount
+    event.result = amount  # type: ignore
     await event.save()
 
     pool_address = pay_reward.data.target_address
@@ -29,7 +30,6 @@ async def on_pay_reward(
     active_shares = event.total_shares - event.locked_shares
     assert active_shares >= 0
     pool_profit_loss = profit_loss * active_shares / event.total_shares
-    pool.total_liquidity += pool_profit_loss
+    pool.total_liquidity += pool_profit_loss  # type: ignore
     assert pool.total_liquidity >= 0
     await pool.save()
-

@@ -24,11 +24,11 @@ async def on_claim_liquidity(
     param_shares = process_pool_shares(claim_liquidity.parameter.shares)
     claimed_shares = position.shares - new_shares
     assert claimed_shares == param_shares
-    position.shares -= claimed_shares
+    position.shares -= claimed_shares  # type: ignore
     assert position.shares >= 0
     await position.save()
 
-    user = await position.user.get()
+    user = await position.user.get()  # type: ignore
 
     claimed_active_liquidity = Decimal(0)
 
@@ -42,25 +42,17 @@ async def on_claim_liquidity(
 
         event_id = int(claim_pair.key.eventId)
         event = await models.PoolEvent.filter(id=event_id).get()
-        event.locked_shares += claimed_shares
+        event.locked_shares += claimed_shares  # type: ignore
         await event.save()
 
         claim, _ = await models.Claim.get_or_create(
-            event=event,
-            position=position,
-            defaults={
-                'shares': 0,
-                'user': user,
-                'withdrawn': False
-            }
+            event=event, position=position, defaults={'shares': 0, 'user': user, 'withdrawn': False}
         )
-        claim.shares += claimed_shares
+        claim.shares += claimed_shares  # type: ignore
         assert claim.shares == process_pool_shares(claim_pair.value.shares)
         await claim.save()
 
-        claimed_active_liquidity += (
-            event.provided * claimed_shares / event.total_shares
-        )
+        claimed_active_liquidity += event.provided * claimed_shares / event.total_shares
         active_liquidity_fraction += event.shares / event.total_shares
 
     free_liquidity_fraction = Decimal(1) - active_liquidity_fraction
@@ -73,14 +65,14 @@ async def on_claim_liquidity(
     claimed_free_liquidity = claimed_volume * free_liquidity_fraction
 
     if transaction_1 is not None:
+        assert transaction_1.amount
         payout = from_mutez(transaction_1.amount)
         assert abs(payout - claimed_free_liquidity) <= Decimal('0.000001')
 
-    pool.total_liquidity -= claimed_active_liquidity
-    pool.total_liquidity -= payout
+    pool.total_liquidity -= claimed_active_liquidity  # type: ignore
+    pool.total_liquidity -= payout  # type: ignore
 
     assert pool.total_liquidity >= 0
-    pool.total_shares -= claimed_shares
+    pool.total_shares -= claimed_shares  # type: ignore
     assert pool.total_shares >= 0
     await pool.save()
-

@@ -22,7 +22,9 @@ async def on_create_event(
     provide_liquidity: Transaction[ProvideLiquidityParameter, JusterStorage],
 ) -> None:
     event_id, event_diff = get_event(new_event.storage)
+    assert provide_liquidity.data.amount
     amount = from_mutez(provide_liquidity.data.amount)
+    assert new_event.data.amount
     fees = from_mutez(new_event.data.amount)
 
     pool_event_id, pool_event_diff = get_pool_event(create_event.storage)
@@ -32,7 +34,7 @@ async def on_create_event(
     pool_address = create_event.data.target_address
     pool, _ = await models.Pool.get_or_create(address=pool_address)
 
-    calculated_shares = (amount+fees) * pool.total_shares / pool.total_liquidity
+    calculated_shares = (amount + fees) * pool.total_shares / pool.total_liquidity
     event_shares = process_pool_shares(pool_event_diff.shares)
 
     # allowing 1 mutez difference:
@@ -47,6 +49,6 @@ async def on_create_event(
         result=None,
         shares=event_shares,
         total_shares=total_shares,
-        locked_shares=locked_shares
+        locked_shares=locked_shares,
     )
     await pool_event.save()
