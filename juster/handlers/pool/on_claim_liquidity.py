@@ -1,7 +1,10 @@
 from decimal import Decimal
+import decimal
+from typing import Optional
 
 from dipdup.context import HandlerContext
 from dipdup.models import Transaction
+from dipdup.models import OperationData
 
 import juster.models as models
 from juster.types.pool.parameter.claim_liquidity import ClaimLiquidityParameter
@@ -14,6 +17,7 @@ from juster.utils import process_pool_shares
 async def on_claim_liquidity(
     ctx: HandlerContext,
     claim_liquidity: Transaction[ClaimLiquidityParameter, PoolStorage],
+    transaction_1: Optional[OperationData] = None,
 ) -> None:
     position_id, position_diff = get_position(claim_liquidity.storage)
     position = await models.PoolPosition.filter(id=position_id).get()
@@ -77,3 +81,9 @@ async def on_claim_liquidity(
     assert pool.total_shares >= 0
     await pool.save()
 
+    if transaction_1 is not None:
+        payout = from_mutez(transaction_1.amount)
+
+        with decimal.localcontext() as ctx:
+            ctx.rounding = decimal.ROUND_DOWN
+            assert payout == round(claimed_free_liquidity, 6)
