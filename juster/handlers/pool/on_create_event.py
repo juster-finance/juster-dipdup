@@ -32,8 +32,11 @@ async def on_create_event(
     pool_address = create_event.data.target_address
     pool, _ = await models.Pool.get_or_create(address=pool_address)
 
-    event_shares = (amount+fees) * pool.total_shares / pool.total_liquidity
-    assert event_shares == process_pool_shares(pool_event_diff.shares)
+    calculated_shares = (amount+fees) * pool.total_shares / pool.total_liquidity
+    event_shares = process_pool_shares(pool_event_diff.shares)
+
+    # allowing 1 mutez difference:
+    assert abs(calculated_shares - event_shares) <= Decimal('0.000001')
 
     locked_shares = process_pool_shares(pool_event_diff.lockedShares)
     assert locked_shares == 0
