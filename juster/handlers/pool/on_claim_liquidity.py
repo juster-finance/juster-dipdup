@@ -21,20 +21,29 @@ async def on_claim_liquidity(
     param_shares = process_pool_shares(claim_liquidity.parameter.shares)
     claimed_shares = position.shares - new_shares
     assert claimed_shares == param_shares
-
     position.shares -= claimed_shares
     assert position.shares >= 0
     await position.save()
+
+    user = await position.user.get()
+
+    claimed_active_liquidity = Decimal(0)
+
+    # withdrawn total liquidity consists of active and free liquidity
+    # active_liquidity_fraction + free_liquidity_fraction = 1
+    active_liquidity_fraction = Decimal(0)
 
     for claim_pair in claim_liquidity.storage.claims:
         assert position_id == int(claim_pair.key.positionId)
         assert claim_liquidity.data.sender_address == claim_pair.value.provider
 
         event_id = int(claim_pair.key.eventId)
-        pool_event = await models.PoolEvent.filter(id=event_id).get()
-        user = await position.user.get()
+        event = await models.PoolEvent.filter(id=event_id).get()
+        event.locked_shares += claimed_shares
+        await event.save()
+
         claim, _ = await models.Claim.get_or_create(
-            event=pool_event,
+            event=event,
             position=position,
             defaults={
                 'shares': 0,
@@ -42,17 +51,27 @@ async def on_claim_liquidity(
                 'withdrawn': False
             }
         )
-
         claim.shares += claimed_shares
         assert claim.shares == process_pool_shares(claim_pair.value.shares)
         await claim.save()
 
-        pool_event.locked_shares += claimed_shares
-        await pool_event.save()
+        claimed_active_liquidity += (
+            event.provided * claimed_shares / event.total_shares
+        )
+        active_liquidity_fraction += event.shares / event.total_shares
+
+    free_liquidity_fraction = Decimal(1) - active_liquidity_fraction
+    assert free_liquidity_fraction >= Decimal(0)
 
     pool_address = claim_liquidity.data.target_address
     pool, _ = await models.Pool.get_or_create(address=pool_address)
-    pool.total_liquidity -= claimed_shares * pool.total_liquidity / pool.total_shares
+
+    claimed_volume = claimed_shares * pool.total_liquidity / pool.total_shares
+    claimed_free_liquidity = claimed_volume * free_liquidity_fraction
+
+    pool.total_liquidity -= claimed_active_liquidity
+    pool.total_liquidity -= claimed_free_liquidity
+
     assert pool.total_liquidity >= 0
     pool.total_shares -= claimed_shares
     assert pool.total_shares >= 0

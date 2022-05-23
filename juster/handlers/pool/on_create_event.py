@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from dipdup.context import HandlerContext
 from dipdup.models import Transaction
 
@@ -26,6 +28,13 @@ async def on_create_event(
     pool_event_id, pool_event_diff = get_pool_event(create_event.storage)
     assert pool_event_id == event_id
     total_shares = process_pool_shares(create_event.storage.totalShares)
+
+    pool_address = create_event.data.target_address
+    pool, _ = await models.Pool.get_or_create(address=pool_address)
+
+    event_shares = (amount+fees) * pool.total_shares / pool.total_liquidity
+    assert event_shares == process_pool_shares(pool_event_diff.shares)
+
     locked_shares = process_pool_shares(pool_event_diff.lockedShares)
     assert locked_shares == 0
 
@@ -33,6 +42,7 @@ async def on_create_event(
         id=event_id,
         provided=amount + fees,
         result=None,
+        shares=event_shares,
         total_shares=total_shares,
         locked_shares=locked_shares
     )

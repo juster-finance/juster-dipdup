@@ -28,8 +28,8 @@ async def on_pay_reward(
 
     active_shares = event.total_shares - event.locked_shares
     assert active_shares >= 0
-    pool_share = profit_loss * active_shares / event.total_shares
-    pool.total_liquidity += pool_share
+    pool_profit_loss = profit_loss * active_shares / event.total_shares
+    pool.total_liquidity += pool_profit_loss
     assert pool.total_liquidity >= 0
     await pool.save()
 
