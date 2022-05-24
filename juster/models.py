@@ -11,6 +11,7 @@ ratio_precision = 8
 share_precision = 8
 target_dynamics_precision = 6
 pool_share_precision = 6
+pool_high_precision = 12
 
 
 def to_liquidity(value):
@@ -246,7 +247,7 @@ class Claim(Model):
 
 class Pool(Model):
     address = fields.TextField(pk=True)
-    total_liquidity = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'))
+    total_liquidity = fields.DecimalField(decimal_places=pool_high_precision, max_digits=32, default=Decimal('0'))
     total_shares = fields.DecimalField(decimal_places=pool_share_precision, max_digits=32, default=Decimal('0'))
 
 
