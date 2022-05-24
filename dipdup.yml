@@ -73,6 +73,9 @@ templates:
           - type: transaction
             destination: <contract>
             entrypoint: claimLiquidity
+          - type: transaction
+            source: <contract>
+            optional: True
       - callback: pool.on_withdraw_liquidity
         pattern:
           - type: transaction
