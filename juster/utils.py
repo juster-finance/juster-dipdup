@@ -1,4 +1,6 @@
 from datetime import datetime
+from decimal import ROUND_DOWN
+from decimal import Context
 from decimal import Decimal
 from typing import Tuple
 from typing import Union
@@ -12,6 +14,8 @@ from juster.types.pool.storage import Entries
 from juster.types.pool.storage import Events as PoolEvents
 from juster.types.pool.storage import PoolStorage
 from juster.types.pool.storage import Positions
+
+default_quantize_precision = Decimal('1')
 
 
 def from_mutez(mutez: Union[str, int]) -> Decimal:
@@ -52,3 +56,7 @@ def get_pool_event(storage: PoolStorage) -> Tuple[int, PoolEvents]:
 
 def process_pool_shares(raw: Union[str, int]) -> Decimal:
     return Decimal(raw) / (10**models.pool_share_precision)
+
+
+def quantize_down(value: Decimal, precision: Decimal = default_quantize_precision) -> Decimal:
+    return Decimal(value).quantize(precision, context=Context(rounding=ROUND_DOWN))
