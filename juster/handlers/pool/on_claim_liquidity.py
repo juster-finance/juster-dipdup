@@ -64,13 +64,14 @@ async def on_claim_liquidity(
     claimed_volume = claimed_shares * pool.total_liquidity / pool.total_shares
     claimed_free_liquidity = claimed_volume * free_liquidity_fraction
 
+    pool.total_liquidity -= claimed_active_liquidity  # type: ignore
+
     if transaction_1 is not None:
         assert transaction_1.amount
         payout = from_mutez(transaction_1.amount)
         assert abs(payout - claimed_free_liquidity) <= Decimal('0.000001')
 
-    pool.total_liquidity -= claimed_active_liquidity  # type: ignore
-    pool.total_liquidity -= payout  # type: ignore
+        pool.total_liquidity -= payout  # type: ignore
 
     assert pool.total_liquidity >= 0
     pool.total_shares -= claimed_shares  # type: ignore
