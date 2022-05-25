@@ -14,7 +14,6 @@ async def on_withdraw_liquidity(
     ctx: HandlerContext,
     withdraw_liquidity: Transaction[WithdrawLiquidityParameter, PoolStorage],
 ) -> None:
-    # TODO: is it OK to access this __root__ or there are any other ways? [4]
     claims = withdraw_liquidity.parameter.__root__
     rewards: Dict[str, Decimal] = {}
 

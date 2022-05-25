@@ -26,7 +26,6 @@ async def on_approve_liquidity(
     )
     await position.save()
 
-    # TODO: need to understand is it OK to access this __root__ or there are any other ways?
     entry_id = int(approve_liquidity.parameter.__root__)
     entry = await models.EntryLiquidity.filter(id=entry_id).get()
     entry.status = models.EntryStatus.APPROVED

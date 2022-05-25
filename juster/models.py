@@ -240,7 +240,6 @@ class Claim(Model):
     event = fields.ForeignKeyField('models.PoolEvent', 'claims', index=True)
     position = fields.ForeignKeyField('models.PoolPosition', 'claims', index=True)
     shares = fields.DecimalField(decimal_places=pool_share_precision, max_digits=32, default=Decimal('0'))
-    # TODO: user is available through position foreign key, is it required directly?
     user = fields.ForeignKeyField('models.User', 'claims')
     withdrawn = fields.BooleanField(default=False)
 
@@ -252,9 +251,6 @@ class Pool(Model):
 
 
 class PoolEvent(Model):
-    # TODO: decide if it would be better to merge this with Event?
-    # it should be probably matched 1:1 with Event
-
     id = fields.IntField(pk=True)
     provided = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'))
     result = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'), null=True)

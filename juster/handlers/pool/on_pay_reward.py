@@ -13,7 +13,6 @@ async def on_pay_reward(
     pay_reward: Transaction[PayRewardParameter, PoolStorage],
 ) -> None:
     pool_event_id, pool_event_diff = get_pool_event(pay_reward.storage)
-    # TODO: is it OK to access this __root__ or there are any other ways? [3]
     param_event_id = int(pay_reward.parameter.__root__)
     assert pool_event_id == param_event_id
     assert pay_reward.data.amount is not None
