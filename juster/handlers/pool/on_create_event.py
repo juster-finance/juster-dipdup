@@ -28,7 +28,7 @@ async def on_create_event(
     fees = from_mutez(new_event.data.amount)
 
     pool_event_id, pool_event_diff = get_pool_event(create_event.storage)
-    assert pool_event_id == event_id
+    assert pool_event_id == event_id, 'wrong updated event_id in diff'
     total_shares = process_pool_shares(create_event.storage.totalShares)
 
     pool_address = create_event.data.target_address
@@ -38,10 +38,11 @@ async def on_create_event(
     event_shares = process_pool_shares(pool_event_diff.shares)
 
     # allowing 1 mutez difference:
-    assert abs(calculated_shares - event_shares) <= Decimal('0.000001')
+    diff = abs(calculated_shares - event_shares)
+    assert diff <= Decimal('0.000001'), 'wrong event shares calculation'
 
     locked_shares = process_pool_shares(pool_event_diff.lockedShares)
-    assert locked_shares == 0
+    assert locked_shares == 0, 'wrong state: event created with locked shares'
 
     pool_event = models.PoolEvent(
         id=event_id,

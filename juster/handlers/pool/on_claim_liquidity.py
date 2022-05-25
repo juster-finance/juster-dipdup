@@ -23,9 +23,9 @@ async def on_claim_liquidity(
     new_shares = process_pool_shares(position_diff.shares)
     param_shares = process_pool_shares(claim_liquidity.parameter.shares)
     claimed_shares = position.shares - new_shares
-    assert claimed_shares == param_shares
+    assert claimed_shares == param_shares, 'wrong position shares diff'
     position.shares -= claimed_shares  # type: ignore
-    assert position.shares >= 0
+    assert position.shares >= 0, 'wrong state: negative shares in position'
     await position.save()
 
     user = await position.user.get()  # type: ignore
@@ -37,8 +37,8 @@ async def on_claim_liquidity(
     active_liquidity_fraction = Decimal(0)
 
     for claim_pair in claim_liquidity.storage.claims:
-        assert position_id == int(claim_pair.key.positionId)
-        assert claim_liquidity.data.sender_address == claim_pair.value.provider
+        assert position_id == int(claim_pair.key.positionId), 'wrong position_id in added claim'
+        assert claim_liquidity.data.sender_address == claim_pair.value.provider, 'wrong provider address in added claim'
 
         event_id = int(claim_pair.key.eventId)
         event = await models.PoolEvent.filter(id=event_id).get()
@@ -49,14 +49,14 @@ async def on_claim_liquidity(
             event=event, position=position, defaults={'shares': 0, 'user': user, 'withdrawn': False}
         )
         claim.shares += claimed_shares  # type: ignore
-        assert claim.shares == process_pool_shares(claim_pair.value.shares)
+        assert claim.shares == process_pool_shares(claim_pair.value.shares), 'wrong claim shares calculation'
         await claim.save()
 
         claimed_active_liquidity += event.provided * claimed_shares / event.total_shares
         active_liquidity_fraction += event.shares / event.total_shares
 
     free_liquidity_fraction = Decimal(1) - active_liquidity_fraction
-    assert free_liquidity_fraction >= Decimal(0)
+    assert free_liquidity_fraction >= Decimal(0), 'wrong state: active liquidity fraction > 100%'
 
     pool_address = claim_liquidity.data.target_address
     pool, _ = await models.Pool.get_or_create(address=pool_address)
@@ -73,7 +73,7 @@ async def on_claim_liquidity(
 
         pool.total_liquidity -= payout  # type: ignore
 
-    assert pool.total_liquidity >= 0
+    assert pool.total_liquidity >= 0, 'wrong state: negative total pool liquidity'
     pool.total_shares -= claimed_shares  # type: ignore
-    assert pool.total_shares >= 0
+    assert pool.total_shares >= 0, 'wrong state: negative total pool shares'
     await pool.save()

@@ -14,7 +14,7 @@ async def on_pay_reward(
 ) -> None:
     pool_event_id, pool_event_diff = get_pool_event(pay_reward.storage)
     param_event_id = int(pay_reward.parameter.__root__)
-    assert pool_event_id == param_event_id
+    assert pool_event_id == param_event_id, 'wrong updated event_id in diff'
     assert pay_reward.data.amount is not None
     amount = from_mutez(pay_reward.data.amount)
 
@@ -27,8 +27,8 @@ async def on_pay_reward(
     profit_loss = event.result - event.provided
 
     active_shares = event.total_shares - event.locked_shares
-    assert active_shares >= 0
+    assert active_shares >= 0, 'wrong state: event locked_shares > total_shares'
     pool_profit_loss = profit_loss * active_shares / event.total_shares
     pool.total_liquidity += pool_profit_loss  # type: ignore
-    assert pool.total_liquidity >= 0
+    assert pool.total_liquidity >= 0, 'wrong state: negative total liquidity'
     await pool.save()
