@@ -34,12 +34,12 @@ async def on_create_event(
     pool_address = create_event.data.target_address
     pool, _ = await models.Pool.get_or_create(address=pool_address)
 
-    calculated_shares = (amount + fees) * pool.total_shares / pool.total_liquidity
-    event_shares = process_pool_shares(pool_event_diff.shares)
+    calc_fraction = process_pool_shares(create_event.storage.precision) / Decimal(create_event.storage.maxEvents)
+    active_fraction = process_pool_shares(pool_event_diff.activeFractionF)
 
-    # allowing 1 mutez difference:
-    diff = abs(calculated_shares - event_shares)
-    assert diff <= Decimal('0.000001'), 'wrong event shares calculation'
+    # allowing 1e-6 difference:
+    diff = abs(calc_fraction - active_fraction)
+    assert diff <= Decimal('0.000001'), 'wrong event fraction calculation'
 
     locked_shares = process_pool_shares(pool_event_diff.lockedShares)
     assert locked_shares == 0, 'wrong state: event created with locked shares'
@@ -48,7 +48,7 @@ async def on_create_event(
         id=event_id,
         provided=amount + fees,
         result=None,
-        shares=event_shares,
+        active_fraction=active_fraction,
         total_shares=total_shares,
         locked_shares=locked_shares,
     )

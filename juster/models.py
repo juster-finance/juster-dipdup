@@ -256,4 +256,4 @@ class PoolEvent(Model):
     result = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'), null=True)
     total_shares = fields.DecimalField(decimal_places=pool_share_precision, max_digits=32, default=Decimal('0'))
     locked_shares = fields.DecimalField(decimal_places=pool_share_precision, max_digits=32, default=Decimal('0'))
-    shares = fields.DecimalField(decimal_places=pool_share_precision, max_digits=32, default=Decimal('0'))
+    active_fraction = fields.DecimalField(decimal_places=pool_share_precision, max_digits=32, default=Decimal('0'))

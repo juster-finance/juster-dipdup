@@ -33,8 +33,8 @@ async def on_claim_liquidity(
     claimed_active_liquidity = Decimal(0)
 
     # withdrawn total liquidity consists of active and free liquidity
-    # active_liquidity_fraction + free_liquidity_fraction = 1
-    active_liquidity_fraction = Decimal(0)
+    # active_fraction + free_fraction = 1
+    active_fraction = Decimal(0)
 
     for claim_pair in claim_liquidity.storage.claims:
         assert position_id == int(claim_pair.key.positionId), 'wrong position_id in added claim'
@@ -53,16 +53,16 @@ async def on_claim_liquidity(
         await claim.save()
 
         claimed_active_liquidity += event.provided * claimed_shares / event.total_shares
-        active_liquidity_fraction += event.shares / event.total_shares
+        active_fraction += event.active_fraction
 
-    free_liquidity_fraction = Decimal(1) - active_liquidity_fraction
-    assert free_liquidity_fraction >= Decimal(0), 'wrong state: active liquidity fraction > 100%'
+    free_fraction = Decimal(1) - active_fraction
+    free_fraction = max(Decimal(0), free_fraction)
 
     pool_address = claim_liquidity.data.target_address
     pool, _ = await models.Pool.get_or_create(address=pool_address)
 
     claimed_volume = claimed_shares * pool.total_liquidity / pool.total_shares
-    claimed_free_liquidity = claimed_volume * free_liquidity_fraction
+    claimed_free_liquidity = claimed_volume * free_fraction
 
     pool.total_liquidity -= claimed_active_liquidity  # type: ignore
 
