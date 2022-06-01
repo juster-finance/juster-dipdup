@@ -48,11 +48,11 @@ class Events(BaseModel):
     class Config:
         extra = Extra.forbid
 
+    activeFractionF: str
     createdCounter: str
     lockedShares: str
     provided: str
     result: Optional[str]
-    shares: str
     totalShares: str
 
 
