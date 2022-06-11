@@ -23,8 +23,8 @@ class Value(BaseModel):
     class Config:
         extra = Extra.forbid
 
+    amount: str
     provider: str
-    shares: str
 
 
 class Claim(BaseModel):
@@ -48,12 +48,9 @@ class Events(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    activeFractionF: str
-    createdCounter: str
-    lockedShares: str
+    claimed: str
     provided: str
     result: Optional[str]
-    totalShares: str
 
 
 class Lines(BaseModel):
@@ -79,7 +76,6 @@ class Positions(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    addedCounter: str
     entryLiquidityUnits: str
     provider: str
     shares: str
@@ -101,7 +97,6 @@ class PoolStorage(BaseModel):
     activeEvents: Dict[str, str]
     activeLiquidityF: str
     claims: List[Claim]
-    counter: str
     entries: Dict[str, Entries]
     entryLiquidityF: str
     entryLockPeriod: str
