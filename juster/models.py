@@ -239,7 +239,7 @@ class Claim(Model):
     id = fields.IntField(pk=True)
     event = fields.ForeignKeyField('models.PoolEvent', 'claims', index=True)
     position = fields.ForeignKeyField('models.PoolPosition', 'claims', index=True)
-    shares = fields.DecimalField(decimal_places=pool_share_precision, max_digits=32, default=Decimal('0'))
+    amount = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'))
     user = fields.ForeignKeyField('models.User', 'claims')
     withdrawn = fields.BooleanField(default=False)
 
@@ -254,6 +254,4 @@ class PoolEvent(Model):
     id = fields.IntField(pk=True)
     provided = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'))
     result = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'), null=True)
-    total_shares = fields.DecimalField(decimal_places=pool_share_precision, max_digits=32, default=Decimal('0'))
-    locked_shares = fields.DecimalField(decimal_places=pool_share_precision, max_digits=32, default=Decimal('0'))
-    active_fraction = fields.DecimalField(decimal_places=pool_share_precision, max_digits=32, default=Decimal('0'))
+    claimed = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'))

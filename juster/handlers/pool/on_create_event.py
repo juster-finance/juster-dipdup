@@ -29,27 +29,14 @@ async def on_create_event(
 
     pool_event_id, pool_event_diff = get_pool_event(create_event.storage)
     assert pool_event_id == event_id, 'wrong updated event_id in diff'
-    total_shares = process_pool_shares(create_event.storage.totalShares)
 
-    pool_address = create_event.data.target_address
-    pool, _ = await models.Pool.get_or_create(address=pool_address)
-
-    calc_fraction = process_pool_shares(create_event.storage.precision) / Decimal(create_event.storage.maxEvents)
-    active_fraction = process_pool_shares(pool_event_diff.activeFractionF)
-
-    # allowing 1e-6 difference:
-    diff = abs(calc_fraction - active_fraction)
-    assert diff <= Decimal('0.000001'), 'wrong event fraction calculation'
-
-    locked_shares = process_pool_shares(pool_event_diff.lockedShares)
-    assert locked_shares == 0, 'wrong state: event created with locked shares'
+    claimed = process_pool_shares(pool_event_diff.claimed)
+    assert claimed == 0, 'wrong state: event created with claimed amount'
 
     pool_event = models.PoolEvent(
         id=event_id,
         provided=amount + fees,
         result=None,
-        active_fraction=active_fraction,
-        total_shares=total_shares,
-        locked_shares=locked_shares,
+        claimed=Decimal(0),
     )
     await pool_event.save()

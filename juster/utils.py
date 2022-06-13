@@ -1,5 +1,6 @@
 from datetime import datetime
 from decimal import ROUND_DOWN
+from decimal import ROUND_UP
 from decimal import Context
 from decimal import Decimal
 from typing import Tuple
@@ -16,6 +17,7 @@ from juster.types.pool.storage import PoolStorage
 from juster.types.pool.storage import Positions
 
 default_quantize_precision = Decimal('1')
+mutez = Decimal('0.000001')
 
 
 def from_mutez(mutez: Union[str, int]) -> Decimal:
@@ -60,3 +62,7 @@ def process_pool_shares(raw: Union[str, int]) -> Decimal:
 
 def quantize_down(value: Decimal, precision: Decimal = default_quantize_precision) -> Decimal:
     return Decimal(value).quantize(precision, context=Context(rounding=ROUND_DOWN))
+
+
+def quantize_up(value: Decimal, precision: Decimal = default_quantize_precision) -> Decimal:
+    return Decimal(value).quantize(precision, context=Context(rounding=ROUND_UP))

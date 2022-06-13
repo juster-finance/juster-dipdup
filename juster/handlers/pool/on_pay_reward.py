@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from dipdup.context import HandlerContext
 from dipdup.models import Transaction
 
@@ -6,6 +8,8 @@ from juster.types.pool.parameter.pay_reward import PayRewardParameter
 from juster.types.pool.storage import PoolStorage
 from juster.utils import from_mutez
 from juster.utils import get_pool_event
+from juster.utils import quantize_up
+from juster.utils import mutez
 
 
 async def on_pay_reward(
@@ -26,9 +30,9 @@ async def on_pay_reward(
     pool, _ = await models.Pool.get_or_create(address=pool_address)
     profit_loss = event.result - event.provided
 
-    active_shares = event.total_shares - event.locked_shares
-    assert active_shares >= 0, 'wrong state: event locked_shares > total_shares'
-    pool_profit_loss = profit_loss * active_shares / event.total_shares
+    left_amount = event.provided - event.claimed
+    assert left_amount >= 0, 'wrong state: event claimed > provided'
+    pool_profit_loss = profit_loss * left_amount / event.provided
     pool.total_liquidity += pool_profit_loss  # type: ignore
     assert pool.total_liquidity >= 0, 'wrong state: negative total liquidity'
     await pool.save()

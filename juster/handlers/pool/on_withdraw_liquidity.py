@@ -8,6 +8,7 @@ import juster.models as models
 from juster.types.pool.parameter.withdraw_liquidity import WithdrawLiquidityParameter
 from juster.types.pool.storage import PoolStorage
 from juster.utils import quantize_down
+from juster.utils import mutez
 
 
 async def on_withdraw_liquidity(
@@ -25,11 +26,11 @@ async def on_withdraw_liquidity(
         await claim.save()
 
         user = await claim.user.get()  # type: ignore
-        reward = event.result * claim.shares / event.total_shares
+        reward = event.result * claim.amount / event.provided
         rewards[user.address] = rewards.get(user.address, Decimal(0)) + reward
 
     def calc_dust(amount: Decimal) -> Decimal:
-        return amount - quantize_down(amount, Decimal('0.000001'))
+        return amount - quantize_down(amount, mutez)
 
     dust = sum([calc_dust(amt) for amt in rewards.values()])
     pool = await models.Pool.get(address=withdraw_liquidity.data.target_address)
