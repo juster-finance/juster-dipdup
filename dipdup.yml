@@ -18,17 +18,21 @@ hasura:
   rest: true
 
 contracts:
-  coinbase_storage_hangzhounet:
-    address: KT19yapgDLPR3CuvK32xJHgxNJigyNxjSr4y
+  coinbase_storage_ithacanet:
+    address: KT1UcwQtaztLSq8oufdXAtWpRTfFySCj7gFM
     typename: harbinger_storage
-  juster_hangzhounet:
-    address: KT197iHRJaAGw3oGpQj21YYV1vK9Fa5ShoMn
+  juster_ithacanet:
+    address: KT1Feq9iRBBhpSBdPF1Y7Sd7iJu7uLqqRf1A
     typename: juster
+  pool_ithacanet:
+    address: KT1T4zTEZQLbFeKoR8sRihozyS4DAnyicYE3
+    typename: pool
 
 datasources:
-  tzkt_hangzhounet:
+  tzkt_ithacanet:
     kind: tzkt
-    url: https://api.hangzhou2net.tzkt.io
+    url: https://api.ithacanet.tzkt.io
+    buffer_size: 1
   coinbase:
     kind: coinbase
     http:
@@ -39,9 +43,67 @@ templates:
     kind: big_map
     datasource: <datasource>
     handlers:
-      - callback: on_oracle_storage_update
+      - callback: harbinger.on_oracle_storage_update
         contract: <contract>
         path: oracleData
+
+  pool:
+    kind: operation
+    datasource: <datasource>
+    contracts:
+      - <contract>
+    handlers:
+      - callback: pool.on_deposit_liquidity
+        pattern:
+          - type: transaction
+            destination: <contract>
+            entrypoint: depositLiquidity
+      - callback: pool.on_approve_liquidity
+        pattern:
+          - type: transaction
+            destination: <contract>
+            entrypoint: approveLiquidity
+      - callback: pool.on_cancel_liquidity
+        pattern:
+          - type: transaction
+            destination: <contract>
+            entrypoint: cancelLiquidity
+      - callback: pool.on_claim_liquidity
+        pattern:
+          - type: transaction
+            destination: <contract>
+            entrypoint: claimLiquidity
+          - type: transaction
+            source: <contract>
+            optional: True
+      - callback: pool.on_withdraw_liquidity
+        pattern:
+          - type: transaction
+            destination: <contract>
+            entrypoint: withdrawLiquidity
+      - callback: pool.on_create_event
+        pattern:
+          - type: transaction
+            destination: <contract>
+            entrypoint: createEvent
+          - type: transaction
+            entrypoint: newEvent
+            source: <contract>
+            destination: <juster_core>
+          - type: transaction
+            entrypoint: provideLiquidity
+            source: <contract>
+            destination: <juster_core>
+      - callback: pool.on_pay_reward
+        pattern:
+          - type: transaction
+            destination: <contract>
+            entrypoint: payReward
+      - callback: pool.on_default
+        pattern:
+          - type: transaction
+            destination: <contract>
+            entrypoint: default
 
   juster:
     kind: operation
@@ -49,36 +111,36 @@ templates:
     contracts:
       - <contract>
     handlers:
-      - callback: on_new_event
+      - callback: core.on_new_event
         pattern:
           - type: transaction
             destination: <contract>
             entrypoint: newEvent
-      - callback: on_provide_liquidity
+      - callback: core.on_provide_liquidity
         pattern:
           - type: transaction
             destination: <contract>
             entrypoint: provideLiquidity
-      - callback: on_bet
+      - callback: core.on_bet
         pattern:
           - type: transaction
             destination: <contract>
             entrypoint: bet
-      - callback: on_start_measurement
+      - callback: core.on_start_measurement
         pattern:
           - type: transaction
             destination: <contract>
             entrypoint: startMeasurementCallback
           - type: transaction
             source: <contract>
-      - callback: on_close
+      - callback: core.on_close
         pattern:
           - type: transaction
             destination: <contract>
             entrypoint: closeCallback
           - type: transaction
             source: <contract>
-      - callback: on_withdraw
+      - callback: core.on_withdraw
         pattern:
           - type: transaction
             destination: <contract>
@@ -89,7 +151,7 @@ templates:
           - type: transaction
             source: <contract>
             optional: True
-      - callback: on_force_majeure
+      - callback: core.on_force_majeure
         pattern:
           - type: transaction
             destination: <contract>
@@ -98,16 +160,22 @@ templates:
             source: <contract>
 
 indexes:
-  harbinger_hangzhounet:
+  harbinger_ithacanet:
     template: harbinger
     values:
-      datasource: tzkt_hangzhounet
-      contract: coinbase_storage_hangzhounet
-  juster_hangzhounet:
+      datasource: tzkt_ithacanet
+      contract: coinbase_storage_ithacanet
+  juster_ithacanet:
     template: juster
     values:
-      datasource: tzkt_hangzhounet
-      contract: juster_hangzhounet
+      datasource: tzkt_ithacanet
+      contract: juster_ithacanet
+  pool_ithacanet:
+    template: pool
+    values:
+      datasource: tzkt_ithacanet
+      contract: pool_ithacanet
+      juster_core: juster_ithacanet
 
 hooks:
   fetch_coinbase_candles:

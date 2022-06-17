@@ -10,6 +10,8 @@ liquidity_precision = 6
 ratio_precision = 8
 share_precision = 8
 target_dynamics_precision = 6
+pool_share_precision = 6
+pool_high_precision = 12
 
 
 def to_liquidity(value):
@@ -53,6 +55,12 @@ class Source(Enum):
 class WithdrawalType(Enum):
     MANUAL = 'MANUAL'
     THIRD_PARTY = 'THIRD_PARTY'
+
+
+class EntryStatus(Enum):
+    PENDING = 'PENDING'
+    APPROVED = 'APPROVED'
+    CANCELED = 'CANCELED'
 
 
 class CurrencyPair(Model):
@@ -211,3 +219,39 @@ class User(Model):
     total_provider_reward = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'))
     total_withdrawn = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'))
     total_fees_collected = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'))
+
+
+class EntryLiquidity(Model):
+    id = fields.IntField(pk=True)
+    user = fields.ForeignKeyField('models.User', 'entries')
+    accept_time = fields.DatetimeField()
+    amount = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'))
+    status = fields.CharEnumField(EntryStatus)
+
+
+class PoolPosition(Model):
+    id = fields.IntField(pk=True)
+    user = fields.ForeignKeyField('models.User', 'pool_positions')
+    shares = fields.DecimalField(decimal_places=pool_share_precision, max_digits=32, default=Decimal('0'))
+
+
+class Claim(Model):
+    id = fields.IntField(pk=True)
+    event = fields.ForeignKeyField('models.PoolEvent', 'claims', index=True)
+    position = fields.ForeignKeyField('models.PoolPosition', 'claims', index=True)
+    amount = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'))
+    user = fields.ForeignKeyField('models.User', 'claims')
+    withdrawn = fields.BooleanField(default=False)
+
+
+class Pool(Model):
+    address = fields.TextField(pk=True)
+    total_liquidity = fields.DecimalField(decimal_places=pool_high_precision, max_digits=32, default=Decimal('0'))
+    total_shares = fields.DecimalField(decimal_places=pool_share_precision, max_digits=32, default=Decimal('0'))
+
+
+class PoolEvent(Model):
+    id = fields.IntField(pk=True)
+    provided = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'))
+    result = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'), null=True)
+    claimed = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'))

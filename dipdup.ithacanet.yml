@@ -5,6 +5,9 @@ contracts:
   juster_ithacanet:
     address: KT1Feq9iRBBhpSBdPF1Y7Sd7iJu7uLqqRf1A
     typename: juster
+  pool_ithacanet:
+    address: KT1T4zTEZQLbFeKoR8sRihozyS4DAnyicYE3
+    typename: pool
 
 datasources:
   tzkt_ithacanet:
@@ -27,6 +30,12 @@ indexes:
     values:
       datasource: tzkt_ithacanet
       contract: juster_ithacanet
+  pool_ithacanet:
+    template: pool
+    values:
+      datasource: tzkt_ithacanet
+      contract: pool_ithacanet
+      juster_core: juster_ithacanet
 
 advanced:
   reindex:
