@@ -30,8 +30,5 @@ indexes:
 
 advanced:
   reindex:
-    manual: exception
-    migration: exception
-    rollback: exception
     config_modified: ignore
     schema_modified: ignore

@@ -1,0 +1,17 @@
+database:
+  kind: postgres
+  host: 127.0.0.1
+  port: 41432
+  user: ${POSTGRES_USER:-dipdup}
+  password: ${POSTGRES_PASSWORD:-changeme}
+  database: ${POSTGRES_DB:-dipdup}
+
+hasura:
+  url: http://127.0.0.1:41000
+  admin_secret: ${HASURA_SECRET:-changeme}
+  allow_aggregations: false
+  camel_case: true
+
+sentry:
+  dsn: ${SENTRY_DSN:-""}
+  environment: ${SENTRY_ENVIRONMENT:-local}
