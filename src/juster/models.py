@@ -4,7 +4,7 @@ from enum import Enum
 
 from dipdup.datasources.coinbase.models import CandleInterval
 from tortoise import ForeignKeyFieldInstance
-from tortoise import Model
+from dipdup.models import Model
 from tortoise import fields
 
 liquidity_precision = 6
@@ -92,7 +92,7 @@ class Candle(Model):
 
 
 class User(Model):
-    address = fields.TextField(pk=True)
+    address = fields.CharField(36, pk=True)
     total_bets_count = fields.IntField(default=0)
     total_bets_amount = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'))
     total_liquidity_provided = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'))
@@ -231,7 +231,7 @@ class EntryLiquidity(Model):
 
 
 class Pool(Model):
-    address = fields.TextField(pk=True)
+    address = fields.CharField(36, pk=True)
     total_liquidity = fields.DecimalField(decimal_places=pool_high_precision, max_digits=32, default=Decimal('0'))
     total_shares = fields.DecimalField(decimal_places=pool_share_precision, max_digits=32, default=Decimal('0'))
 
