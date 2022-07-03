@@ -14,3 +14,5 @@ hasura:
 sentry:
   dsn: ${SENTRY_DSN:-""}
   environment: ${SENTRY_ENVIRONMENT:-local}
+
+# logging: verbose
