@@ -322,7 +322,7 @@ pytezos = ["pytezos (>=3.5.2,<4.0.0)"]
 type = "git"
 url = "https://github.com/dipdup-net/dipdup-py.git"
 reference = "feat/db-rollback"
-resolved_reference = "411393dbffac04a277f017749e282dc7daa69739"
+resolved_reference = "ffa33c887d716ef03aec509a13ce1bb724810df1"
 
 [[package]]
 name = "dnspython"

@@ -71,9 +71,6 @@ class CurrencyPair(Model):
     total_volume = fields.DecimalField(decimal_places=6, max_digits=16, default=0)
     total_value_locked = fields.DecimalField(decimal_places=6, max_digits=16, default=0)
 
-    class Meta:
-        table = 'currency_pair'
-
 
 def candle_pk(source: Source, currency_pair_id: int, until: datetime) -> int:
     src = {Source.COINBASE: 0, Source.HARBINGER: 1}
@@ -93,9 +90,6 @@ class Candle(Model):
     close = fields.DecimalField(decimal_places=6, max_digits=16)
     volume = fields.DecimalField(decimal_places=6, max_digits=16)
 
-    class Meta:
-        table = 'candle'
-
 
 class User(Model):
     address = fields.CharField(36, pk=True)
@@ -106,9 +100,6 @@ class User(Model):
     total_provider_reward = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'))
     total_withdrawn = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'))
     total_fees_collected = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'))
-
-    class Meta:
-        table = 'user'
 
 
 class Event(Model):
@@ -168,9 +159,6 @@ class Event(Model):
             False: BetSide.BELOW,
         }[self.closed_rate >= target_rate]
 
-    class Meta:
-        table = 'event'
-
 
 class Bet(Model):
     id = fields.IntField(pk=True)
@@ -181,9 +169,6 @@ class Bet(Model):
     reward = fields.DecimalField(decimal_places=6, max_digits=16)
     event: ForeignKeyFieldInstance[Event] = fields.ForeignKeyField('models.Event', 'bets')
     user: ForeignKeyFieldInstance[User] = fields.ForeignKeyField('models.User', 'bets')
-
-    class Meta:
-        table = 'bet'
 
 
 class Deposit(Model):
@@ -196,9 +181,6 @@ class Deposit(Model):
     event: ForeignKeyFieldInstance[Event] = fields.ForeignKeyField('models.Event', 'deposits')
     user: ForeignKeyFieldInstance[User] = fields.ForeignKeyField('models.User', 'deposits')
 
-    class Meta:
-        table = 'deposit'
-
 
 class Withdrawal(Model):
     id = fields.IntField(pk=True)
@@ -209,9 +191,6 @@ class Withdrawal(Model):
     user: ForeignKeyFieldInstance[User] = fields.ForeignKeyField('models.User', 'withdrawals')
     fee_collector: ForeignKeyFieldInstance[User] = fields.ForeignKeyField('models.User', 'third_party_withdrawals', null=True)
     type = fields.CharEnumField(WithdrawalType)
-
-    class Meta:
-        table = 'withdrawal'
 
 
 class Position(Model):
@@ -242,9 +221,6 @@ class Position(Model):
         profit += max(self.liquidity_provided_below, self.liquidity_provided_above_eq)
         return profit
 
-    class Meta:
-        table = 'position'
-
 
 class EntryLiquidity(Model):
     id = fields.IntField(pk=True)
@@ -253,17 +229,11 @@ class EntryLiquidity(Model):
     amount = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'))
     status = fields.CharEnumField(EntryStatus)
 
-    class Meta:
-        table = 'entry_liquidity'
-
 
 class Pool(Model):
     address = fields.CharField(36, pk=True)
     total_liquidity = fields.DecimalField(decimal_places=pool_high_precision, max_digits=32, default=Decimal('0'))
     total_shares = fields.DecimalField(decimal_places=pool_share_precision, max_digits=32, default=Decimal('0'))
-
-    class Meta:
-        table = 'pool'
 
 
 class PoolEvent(Model):
@@ -272,17 +242,11 @@ class PoolEvent(Model):
     result = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'), null=True)
     claimed = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'))
 
-    class Meta:
-        table = 'pool_event'
-
 
 class PoolPosition(Model):
     id = fields.IntField(pk=True)
     user: ForeignKeyFieldInstance[User] = fields.ForeignKeyField('models.User', 'pool_positions')
     shares = fields.DecimalField(decimal_places=pool_share_precision, max_digits=32, default=Decimal('0'))
-
-    class Meta:
-        table = 'pool_position'
 
 
 class Claim(Model):
@@ -292,6 +256,3 @@ class Claim(Model):
     amount = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'))
     user: ForeignKeyFieldInstance[User] = fields.ForeignKeyField('models.User', 'claims')
     withdrawn = fields.BooleanField(default=False)
-
-    class Meta:
-        table = 'claim'
