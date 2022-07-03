@@ -16,5 +16,5 @@ async def on_default(
     amount = from_mutez(default.data.amount)
 
     pool, _ = await models.Pool.get_or_create(address=pool_address)
-    pool.total_liquidity += amount  # type: ignore
+    pool.total_liquidity += amount
     await pool.save()

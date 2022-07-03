@@ -33,6 +33,6 @@ async def on_approve_liquidity(
 
     pool_address = approve_liquidity.data.target_address
     pool, _ = await models.Pool.get_or_create(address=pool_address)
-    pool.total_liquidity += entry.amount  # type: ignore
-    pool.total_shares += shares  # type: ignore
+    pool.total_liquidity += entry.amount
+    pool.total_shares += shares
     await pool.save()

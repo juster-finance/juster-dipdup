@@ -10,10 +10,10 @@ from juster.types.pool.parameter.claim_liquidity import ClaimLiquidityParameter
 from juster.types.pool.storage import PoolStorage
 from juster.utils import from_mutez
 from juster.utils import get_position
+from juster.utils import mutez
 from juster.utils import process_pool_shares
 from juster.utils import quantize_down
 from juster.utils import quantize_up
-from juster.utils import mutez
 
 
 async def on_claim_liquidity(
@@ -27,7 +27,7 @@ async def on_claim_liquidity(
     param_shares = process_pool_shares(claim_liquidity.parameter.shares)
     claimed_shares = position.shares - new_shares
     assert claimed_shares == param_shares, 'wrong position shares diff'
-    position.shares -= claimed_shares  # type: ignore
+    position.shares -= claimed_shares
     assert position.shares >= 0, 'wrong state: negative shares in position'
     await position.save()
 
@@ -35,7 +35,7 @@ async def on_claim_liquidity(
     pool, _ = await models.Pool.get_or_create(address=pool_address)
 
     claimed_fraction = claimed_shares / pool.total_shares
-    user = await position.user.get()  # type: ignore
+    user = await position.user.get()
     active_liquidity_sum = Decimal(0)
     claimed_sum = Decimal(0)
 
@@ -50,27 +50,27 @@ async def on_claim_liquidity(
         active_liquidity_sum += event_active
         claimed = quantize_up(event_active * claimed_fraction, mutez)
         claimed_sum += claimed
-        event.claimed += claimed  # type: ignore
+        event.claimed += claimed
         await event.save()
 
         claim, _ = await models.Claim.get_or_create(
             event=event, position=position, defaults={'amount': 0, 'user': user, 'withdrawn': False}
         )
-        claim.amount += claimed  # type: ignore
+        claim.amount += claimed
         assert claim.amount == process_pool_shares(claim_pair.value.amount), 'wrong claim shares calculation'
         await claim.save()
 
     free_liquidity = pool.total_liquidity - active_liquidity_sum
     payout = quantize_down(free_liquidity * claimed_fraction, mutez)
 
-    pool.total_liquidity -= claimed_sum  # type: ignore
-    pool.total_liquidity -= payout  # type: ignore
+    pool.total_liquidity -= claimed_sum
+    pool.total_liquidity -= payout
 
     if transaction_1 is not None:
         assert transaction_1.amount
         assert payout == from_mutez(transaction_1.amount)
 
     assert pool.total_liquidity >= 0, 'wrong state: negative total pool liquidity'
-    pool.total_shares -= claimed_shares  # type: ignore
+    pool.total_shares -= claimed_shares
     assert pool.total_shares >= 0, 'wrong state: negative total pool shares'
     await pool.save()
