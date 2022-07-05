@@ -13,6 +13,8 @@ hasura:
 
 sentry:
   dsn: ${SENTRY_DSN:-""}
-  environment: ${SENTRY_ENVIRONMENT:-local}
+  environment: ${SENTRY_ENVIRONMENT:-""}
+  server_name: ${SENTRY_SERVER_NAME:-""}
+  release: ${SENTRY_RELEASE:-"feat-db-rollback"}
 
 # logging: verbose
