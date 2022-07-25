@@ -17,4 +17,4 @@ sentry:
   server_name: ${SENTRY_SERVER_NAME:-""}
   release: ${SENTRY_RELEASE:-"feat-db-rollback"}
 
-# logging: verbose
+logging: verbose
