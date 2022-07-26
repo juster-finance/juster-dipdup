@@ -1,7 +1,4 @@
 advanced:
   reindex:
-    manual: wipe
-    migration: exception
-    rollback: wipe
     config_modified: ignore
     schema_modified: ignore
