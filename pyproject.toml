@@ -9,7 +9,7 @@ packages = [
 
 [tool.poetry.dependencies]
 python = ">=3.10,<3.11"
-dipdup = "6.0.0-rc1"
+dipdup = "6.0.0rc2"
 # dipdup = {path = "../dipdup", develop = true}
 # dipdup = {git = "https://github.com/dipdup-net/dipdup-py.git", branch = "feat/db-rollback"}
 strict-rfc3339 = "^0.7"
