@@ -34,8 +34,6 @@ datasources:
     url: https://api.ithacanet.tzkt.io
   coinbase:
     kind: coinbase
-    http:
-      cache: False
 
 templates:
   harbinger:
