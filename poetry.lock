@@ -278,7 +278,7 @@ toml = ["tomli (>=1.2.1)"]
 
 [[package]]
 name = "dipdup"
-version = "6.0.0rc2"
+version = "6.0.0"
 description = "Python SDK for developing indexers of Tezos smart contracts inspired by The Graph"
 category = "main"
 optional = false
@@ -1078,7 +1078,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.10,<3.11"
-content-hash = "35b060204e693373566a621794517ccbe9ce5167af3953a3969a1b885a8e1c62"
+content-hash = "e4bb20bb8359e492a33a4c27cc31b6fa5c559462ad1e03ad8ed3c3c05d0eb71e"
 
 [metadata.files]
 aiohttp = []
