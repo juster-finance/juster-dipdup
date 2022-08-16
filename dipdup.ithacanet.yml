@@ -5,8 +5,35 @@ contracts:
   juster_ithacanet:
     address: KT1Feq9iRBBhpSBdPF1Y7Sd7iJu7uLqqRf1A
     typename: juster
-  pool_ithacanet:
+  pool_ghostnet_multiline:
     address: KT1T4zTEZQLbFeKoR8sRihozyS4DAnyicYE3
+    typename: pool
+  pool_ghostnet_XTZ_3600:
+    address: KT1VPXd6MA7D5s4zhQXTFqujETNiaCxnpntq
+    typename: pool
+  pool_ghostnet_XTZ_21600:
+    address: KT1CF9LkzkYi2rrGS53e3c2EYkTLAiSu3WYH
+    typename: pool
+  pool_ghostnet_XTZ_86400:
+    address: KT1JugfMXqV5qq5QwwvUZ9H7cPX3FAWfJ9fp
+    typename: pool
+  pool_ghostnet_BTC_3600:
+    address: KT1NKWeBG7NX9313TAK8U3C4BZrcEj1NMdkc
+    typename: pool
+  pool_ghostnet_BTC_21600:
+    address: KT1CkLLkDeCn8AdWJ9Cq2ivb9vc6g9h39Ebr
+    typename: pool
+  pool_ghostnet_BTC_86400:
+    address: KT1McibaqeoKSjAuZge6MusWmKPDjtRr37Wq
+    typename: pool
+  pool_ghostnet_ETH_3600:
+    address: KT1CbDF1pf8uYBndMKA7UUMqN3rLE2DMKcyy
+    typename: pool
+  pool_ghostnet_ETH_21600:
+    address: KT1Feq9iRBBhpSBdPF1Y7Sd7iJu7uLqqRf1A
+    typename: pool
+  pool_ghostnet_ETH_86400:
+    address: KT1RisfEtyosPbmssdSanFqMMWzoPp3NXP5Q
     typename: pool
 
 datasources:
@@ -30,11 +57,65 @@ indexes:
     values:
       datasource: tzkt_ithacanet
       contract: juster_ithacanet
-  pool_ithacanet:
+  pool_ghostnet_multiline:
     template: pool
     values:
       datasource: tzkt_ithacanet
-      contract: pool_ithacanet
+      contract: pool_ghostnet_multiline
+      juster_core: juster_ithacanet
+  pool_ghostnet_XTZ_3600:
+    template: pool
+    values:
+      datasource: tzkt_ithacanet
+      contract: pool_ghostnet_XTZ_3600
+      juster_core: juster_ithacanet
+  pool_ghostnet_XTZ_21600:
+    template: pool
+    values:
+      datasource: tzkt_ithacanet
+      contract: pool_ghostnet_XTZ_21600
+      juster_core: juster_ithacanet
+  pool_ghostnet_XTZ_86400:
+    template: pool
+    values:
+      datasource: tzkt_ithacanet
+      contract: pool_ghostnet_XTZ_86400
+      juster_core: juster_ithacanet
+  pool_ghostnet_BTC_3600:
+    template: pool
+    values:
+      datasource: tzkt_ithacanet
+      contract: pool_ghostnet_BTC_3600
+      juster_core: juster_ithacanet
+  pool_ghostnet_BTC_21600:
+    template: pool
+    values:
+      datasource: tzkt_ithacanet
+      contract: pool_ghostnet_BTC_21600
+      juster_core: juster_ithacanet
+  pool_ghostnet_BTC_86400:
+    template: pool
+    values:
+      datasource: tzkt_ithacanet
+      contract: pool_ghostnet_BTC_86400
+      juster_core: juster_ithacanet
+  pool_ghostnet_ETH_3600:
+    template: pool
+    values:
+      datasource: tzkt_ithacanet
+      contract: pool_ghostnet_ETH_3600
+      juster_core: juster_ithacanet
+  pool_ghostnet_ETH_21600:
+    template: pool
+    values:
+      datasource: tzkt_ithacanet
+      contract: pool_ghostnet_ETH_21600
+      juster_core: juster_ithacanet
+  pool_ghostnet_ETH_86400:
+    template: pool
+    values:
+      datasource: tzkt_ithacanet
+      contract: pool_ghostnet_ETH_86400
       juster_core: juster_ithacanet
 
 advanced:
