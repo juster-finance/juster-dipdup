@@ -35,10 +35,13 @@ async def on_create_event(
 
     pool_address = create_event.data.target_address
     pool = await models.Pool.get(address=pool_address)
+    provided_amount = amount + fees
+    pool.active_liquidity += provided_amount
+    await pool.save()
 
     pool_event = models.PoolEvent(
         id=event_id,
-        provided=amount + fees,
+        provided=provided_amount,
         result=None,
         claimed=Decimal(0),
         pool=pool,

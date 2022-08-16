@@ -37,7 +37,6 @@ async def on_claim_liquidity(
 
     claimed_fraction = claimed_shares / pool.total_shares
     user = await position.user.get()  # type: ignore
-    active_liquidity_sum = Decimal(0)
     claimed_sum = Decimal(0)
 
     for claim_pair in claim_liquidity.storage.claims:
@@ -48,7 +47,6 @@ async def on_claim_liquidity(
         event = await models.PoolEvent.filter(id=event_id).get()
         event_active = event.provided - event.claimed
 
-        active_liquidity_sum += event_active
         claimed = quantize_up(event_active * claimed_fraction, mutez)
         claimed_sum += claimed
         event.claimed += claimed  # type: ignore
@@ -61,10 +59,11 @@ async def on_claim_liquidity(
         assert claim.amount == process_pool_shares(claim_pair.value.amount), 'wrong claim shares calculation'
         await claim.save()
 
-    free_liquidity = pool.total_liquidity - active_liquidity_sum
+    free_liquidity = pool.total_liquidity - pool.active_liquidity
     payout = quantize_down(free_liquidity * claimed_fraction, mutez)
 
     pool.total_liquidity -= claimed_sum  # type: ignore
+    pool.active_liquidity -= claimed_sum  # type: ignore
     pool.total_liquidity -= payout  # type: ignore
 
     if transaction_1 is not None:
@@ -72,6 +71,7 @@ async def on_claim_liquidity(
         assert payout == from_mutez(transaction_1.amount)
 
     assert pool.total_liquidity >= 0, 'wrong state: negative total pool liquidity'
+    assert pool.active_liquidity >= 0, 'wrong state: negative active pool liquidity'
     pool.total_shares -= claimed_shares  # type: ignore
     assert pool.total_shares >= 0, 'wrong state: negative total pool shares'
     await pool.save()
