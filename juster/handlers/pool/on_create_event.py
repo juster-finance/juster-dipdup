@@ -39,12 +39,15 @@ async def on_create_event(
     pool.active_liquidity += provided_amount
     await pool.save()
 
+    line_id = int(create_event.parameter.__root__)
+    line = await models.PoolLine.get(line_id=line_id, pool=pool)
+
     pool_event = models.PoolEvent(
         id=event_id,
         provided=provided_amount,
         result=None,
         claimed=Decimal(0),
         pool=pool,
-        # TODO: line=line,
+        line=line,
     )
     await pool_event.save()

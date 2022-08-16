@@ -24,7 +24,7 @@ async def on_pay_reward(
 
     pool_address = pay_reward.data.target_address
     pool = await models.Pool.get(address=pool_address)
-    pool.active_liquidity -= (event.provided - event.claimed)
+    pool.active_liquidity -= event.provided - event.claimed
     assert pool.active_liquidity >= 0, 'wrong state: negative active pool liquidity'
     profit_loss = event.result - event.provided
 
