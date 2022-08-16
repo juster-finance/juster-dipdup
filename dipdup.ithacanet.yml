@@ -30,7 +30,7 @@ contracts:
     address: KT1CbDF1pf8uYBndMKA7UUMqN3rLE2DMKcyy
     typename: pool
   pool_ghostnet_ETH_21600:
-    address: KT1Feq9iRBBhpSBdPF1Y7Sd7iJu7uLqqRf1A
+    address: KT1TjKNbR4J2hssY2RDMFFffZ7Tqj3PquJmS
     typename: pool
   pool_ghostnet_ETH_86400:
     address: KT1RisfEtyosPbmssdSanFqMMWzoPp3NXP5Q
