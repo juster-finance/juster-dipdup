@@ -264,7 +264,7 @@ class PoolEvent(Model):
     result = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'), null=True)
     claimed = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'))
     pool = fields.ForeignKeyField('models.Pool', 'events')
-    # TODO: line = fields.ForeignKeyField('models.PoolLine', 'events')
+    line = fields.ForeignKeyField('models.PoolLine', 'events')
 
 
 class PoolLine(Model):

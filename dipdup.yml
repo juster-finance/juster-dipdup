@@ -131,6 +131,11 @@ templates:
           - type: transaction
             destination: <contract>
             entrypoint: default
+      - callback: pool.on_add_line
+        pattern:
+          - type: transaction
+            destination: <contract>
+            entrypoint: addLine
 
   juster:
     kind: operation
