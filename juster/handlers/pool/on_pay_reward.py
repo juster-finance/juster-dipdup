@@ -1,5 +1,3 @@
-from decimal import Decimal
-
 from dipdup.context import HandlerContext
 from dipdup.models import Transaction
 
@@ -8,8 +6,6 @@ from juster.types.pool.parameter.pay_reward import PayRewardParameter
 from juster.types.pool.storage import PoolStorage
 from juster.utils import from_mutez
 from juster.utils import get_pool_event
-from juster.utils import mutez
-from juster.utils import quantize_up
 
 
 async def on_pay_reward(
