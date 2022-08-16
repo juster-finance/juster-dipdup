@@ -7,8 +7,8 @@ from dipdup.models import Transaction
 import juster.models as models
 from juster.types.pool.parameter.withdraw_liquidity import WithdrawLiquidityParameter
 from juster.types.pool.storage import PoolStorage
-from juster.utils import quantize_down
 from juster.utils import mutez
+from juster.utils import quantize_down
 
 
 async def on_withdraw_liquidity(
@@ -18,10 +18,15 @@ async def on_withdraw_liquidity(
     claims = withdraw_liquidity.parameter.__root__
     rewards: Dict[str, Decimal] = {}
 
+    pool_address = withdraw_liquidity.data.target_address
+    pool = await models.Pool.get(address=pool_address)
+
     for claim_key in claims:
-        event = await models.PoolEvent.filter(id=int(claim_key.eventId)).get()
-        position = await models.PoolPosition.filter(id=int(claim_key.positionId)).get()
-        claim = await models.Claim.filter(event=event, position=position).get()
+        event_id = int(claim_key.eventId)
+        event = await models.PoolEvent.filter(id=event_id).get()
+        position_id = int(claim_key.positionId)
+        position = await models.PoolPosition.filter(pool=pool, position_id=position_id).get()
+        claim = await models.Claim.filter(pool=pool, event=event, position=position).get()
         claim.withdrawn = True  # type: ignore
         await claim.save()
 
@@ -33,6 +38,5 @@ async def on_withdraw_liquidity(
         return amount - quantize_down(amount, mutez)
 
     dust = sum([calc_dust(amt) for amt in rewards.values()])
-    pool = await models.Pool.get(address=withdraw_liquidity.data.target_address)
     pool.total_liquidity += dust  # type: ignore
     await pool.save()

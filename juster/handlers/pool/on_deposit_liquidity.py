@@ -21,8 +21,12 @@ async def on_deposit_liquidity(
     entry_id, entry_diff = get_entry(deposit_liquidity.storage)
     amount = from_mutez(deposit_liquidity.data.amount)
 
+    pool_address = deposit_liquidity.data.target_address
+    pool, _ = await models.Pool.get_or_create(address=pool_address)
+
     entry = models.EntryLiquidity(
-        id=entry_id,
+        pool=pool,
+        entry_id=entry_id,
         user=user,
         accept_time=parse_datetime(entry_diff.acceptAfter),
         amount=amount,

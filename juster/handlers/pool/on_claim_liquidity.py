@@ -10,10 +10,10 @@ from juster.types.pool.parameter.claim_liquidity import ClaimLiquidityParameter
 from juster.types.pool.storage import PoolStorage
 from juster.utils import from_mutez
 from juster.utils import get_position
+from juster.utils import mutez
 from juster.utils import process_pool_shares
 from juster.utils import quantize_down
 from juster.utils import quantize_up
-from juster.utils import mutez
 
 
 async def on_claim_liquidity(
@@ -21,8 +21,12 @@ async def on_claim_liquidity(
     claim_liquidity: Transaction[ClaimLiquidityParameter, PoolStorage],
     transaction_1: Optional[OperationData] = None,
 ) -> None:
+
+    pool_address = claim_liquidity.data.target_address
+    pool = await models.Pool.get(address=pool_address)
+
     position_id, position_diff = get_position(claim_liquidity.storage)
-    position = await models.PoolPosition.filter(id=position_id).get()
+    position = await models.PoolPosition.filter(pool=pool, position_id=position_id).get()
     new_shares = process_pool_shares(position_diff.shares)
     param_shares = process_pool_shares(claim_liquidity.parameter.shares)
     claimed_shares = position.shares - new_shares
@@ -30,9 +34,6 @@ async def on_claim_liquidity(
     position.shares -= claimed_shares  # type: ignore
     assert position.shares >= 0, 'wrong state: negative shares in position'
     await position.save()
-
-    pool_address = claim_liquidity.data.target_address
-    pool, _ = await models.Pool.get_or_create(address=pool_address)
 
     claimed_fraction = claimed_shares / pool.total_shares
     user = await position.user.get()  # type: ignore
@@ -54,7 +55,7 @@ async def on_claim_liquidity(
         await event.save()
 
         claim, _ = await models.Claim.get_or_create(
-            event=event, position=position, defaults={'amount': 0, 'user': user, 'withdrawn': False}
+            pool=pool, event=event, position=position, defaults={'amount': 0, 'user': user, 'withdrawn': False}
         )
         claim.amount += claimed  # type: ignore
         assert claim.amount == process_pool_shares(claim_pair.value.amount), 'wrong claim shares calculation'

@@ -8,8 +8,8 @@ from juster.types.pool.parameter.pay_reward import PayRewardParameter
 from juster.types.pool.storage import PoolStorage
 from juster.utils import from_mutez
 from juster.utils import get_pool_event
-from juster.utils import quantize_up
 from juster.utils import mutez
+from juster.utils import quantize_up
 
 
 async def on_pay_reward(
@@ -27,7 +27,7 @@ async def on_pay_reward(
     await event.save()
 
     pool_address = pay_reward.data.target_address
-    pool, _ = await models.Pool.get_or_create(address=pool_address)
+    pool = await models.Pool.get(address=pool_address)
     profit_loss = event.result - event.provided
 
     left_amount = event.provided - event.claimed

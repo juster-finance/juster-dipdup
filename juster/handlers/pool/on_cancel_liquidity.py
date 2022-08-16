@@ -11,6 +11,9 @@ async def on_cancel_liquidity(
     cancel_liquidity: Transaction[CancelLiquidityParameter, PoolStorage],
 ) -> None:
     entry_id = int(cancel_liquidity.parameter.__root__)
-    entry = await models.EntryLiquidity.filter(id=entry_id).get()
+    pool_address = cancel_liquidity.data.target_address
+    pool = await models.Pool.get(address=pool_address)
+
+    entry = await models.EntryLiquidity.filter(pool=pool, entry_id=entry_id).get()
     entry.status = models.EntryStatus.CANCELED
     await entry.save()

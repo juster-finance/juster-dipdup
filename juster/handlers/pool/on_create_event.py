@@ -33,10 +33,15 @@ async def on_create_event(
     claimed = process_pool_shares(pool_event_diff.claimed)
     assert claimed == 0, 'wrong state: event created with claimed amount'
 
+    pool_address = create_event.data.target_address
+    pool = await models.Pool.get(address=pool_address)
+
     pool_event = models.PoolEvent(
         id=event_id,
         provided=amount + fees,
         result=None,
         claimed=Decimal(0),
+        pool=pool,
+        # TODO: line=line,
     )
     await pool_event.save()

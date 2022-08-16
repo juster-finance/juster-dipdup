@@ -19,20 +19,24 @@ async def on_approve_liquidity(
     shares = process_pool_shares(position_diff.shares)
     assert shares > 0, 'wrong state: approve liquidity with 0 shares diff'
 
+    pool_address = approve_liquidity.data.target_address
+    pool = await models.Pool.get(address=pool_address)
+
+    entry_id = int(approve_liquidity.parameter.__root__)
+    entry = await models.EntryLiquidity.filter(entry_id=entry_id, pool=pool).get()
+    assert entry.status == models.EntryStatus.PENDING, 'unexpected entry status'
+    entry.status = models.EntryStatus.APPROVED
+    await entry.save()
+
+    pool.total_liquidity += entry.amount  # type: ignore
+    pool.total_shares += shares  # type: ignore
+    await pool.save()
+
     position = models.PoolPosition(
-        id=position_id,
+        pool=pool,
+        position_id=position_id,
+        entry=entry,
         user=user,
         shares=shares,
     )
     await position.save()
-
-    entry_id = int(approve_liquidity.parameter.__root__)
-    entry = await models.EntryLiquidity.filter(id=entry_id).get()
-    entry.status = models.EntryStatus.APPROVED
-    await entry.save()
-
-    pool_address = approve_liquidity.data.target_address
-    pool, _ = await models.Pool.get_or_create(address=pool_address)
-    pool.total_liquidity += entry.amount  # type: ignore
-    pool.total_shares += shares  # type: ignore
-    await pool.save()
