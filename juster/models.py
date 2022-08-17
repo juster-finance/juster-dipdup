@@ -271,7 +271,7 @@ class PoolLine(Model):
     id = fields.IntField(pk=True)
     pool = fields.ForeignKeyField('models.Pool', 'pool_lines', index=True)
     line_id = fields.IntField(index=True)  # the key to line is (pool + line_id)
-    last_bets_close_time = fields.DatetimeField(null=True)
+    last_bets_close_time = fields.DatetimeField()
     max_events = fields.IntField()  # max events that can be run in parallel
 
     # following parameters are the same as in Event, this parameters used in new event creation:
