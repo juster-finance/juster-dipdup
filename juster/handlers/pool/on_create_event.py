@@ -12,6 +12,7 @@ from juster.types.pool.storage import PoolStorage
 from juster.utils import from_mutez
 from juster.utils import get_event
 from juster.utils import get_pool_event
+from juster.utils import parse_datetime
 from juster.utils import process_pool_shares
 
 
@@ -41,6 +42,8 @@ async def on_create_event(
 
     line_id = int(create_event.parameter.__root__)
     line = await models.PoolLine.get(line_id=line_id, pool=pool)
+    line.last_bets_close_time = parse_datetime(event_diff.betsCloseTime)
+    await line.save()
 
     pool_event = models.PoolEvent(
         id=event_id,
