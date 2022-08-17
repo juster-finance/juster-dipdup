@@ -14,8 +14,8 @@ async def on_approve_liquidity(
 ) -> None:
 
     position_id, position_diff = get_position(approve_liquidity.storage)
-    sender = approve_liquidity.data.sender_address
-    user, _ = await models.User.get_or_create(address=sender)
+    provider = position_diff.provider
+    user, _ = await models.User.get_or_create(address=provider)
     shares = process_pool_shares(position_diff.shares)
     assert shares > 0, 'wrong state: approve liquidity with 0 shares diff'
 
