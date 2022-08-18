@@ -255,7 +255,8 @@ class Pool(Model):
     total_liquidity = fields.DecimalField(decimal_places=pool_high_precision, max_digits=32, default=Decimal('0'))
     total_shares = fields.DecimalField(decimal_places=pool_share_precision, max_digits=32, default=Decimal('0'))
     active_liquidity = fields.DecimalField(decimal_places=pool_high_precision, max_digits=32, default=Decimal('0'))
-    # TODO: consider adding withdrawableLiquidity, balance and entryLiquidity too?
+    withdrawable_liquidity = fields.DecimalField(decimal_places=pool_high_precision, max_digits=32, default=Decimal('0'))
+    # TODO: consider adding balance and entryLiquidity too?
 
 
 class PoolEvent(Model):

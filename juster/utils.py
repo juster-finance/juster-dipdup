@@ -18,6 +18,7 @@ from juster.types.pool.storage import Positions
 
 default_quantize_precision = Decimal('1')
 mutez = Decimal('0.000001')
+high_precision = Decimal('0.000000000001')
 
 
 def from_mutez(mutez: Union[str, int]) -> Decimal:

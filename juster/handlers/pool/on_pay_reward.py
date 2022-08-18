@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from dipdup.context import HandlerContext
 from dipdup.models import Transaction
 
@@ -6,6 +8,19 @@ from juster.types.pool.parameter.pay_reward import PayRewardParameter
 from juster.types.pool.storage import PoolStorage
 from juster.utils import from_mutez
 from juster.utils import get_pool_event
+
+
+def calc_withdrawable(event: models.PoolEvent) -> Decimal:
+    return event.result * event.claimed / event.provided
+
+
+def calc_profit_loss(event: models.PoolEvent) -> Decimal:
+    left_amount = event.provided - event.claimed
+    assert left_amount >= 0, 'wrong state: event claimed > provided'
+
+    profit_loss = event.result - event.provided
+    pool_profit_loss = profit_loss * left_amount / event.provided
+    return pool_profit_loss
 
 
 async def on_pay_reward(
@@ -26,11 +41,7 @@ async def on_pay_reward(
     pool = await models.Pool.get(address=pool_address)
     pool.active_liquidity -= event.provided - event.claimed
     assert pool.active_liquidity >= 0, 'wrong state: negative active pool liquidity'
-    profit_loss = event.result - event.provided
-
-    left_amount = event.provided - event.claimed
-    assert left_amount >= 0, 'wrong state: event claimed > provided'
-    pool_profit_loss = profit_loss * left_amount / event.provided
-    pool.total_liquidity += pool_profit_loss  # type: ignore
+    pool.withdrawable_liquidity += calc_withdrawable(event)
+    pool.total_liquidity += calc_profit_loss(event)
     assert pool.total_liquidity >= 0, 'wrong state: negative total liquidity'
     await pool.save()

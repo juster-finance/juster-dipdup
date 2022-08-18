@@ -7,6 +7,7 @@ from dipdup.models import Transaction
 import juster.models as models
 from juster.types.pool.parameter.withdraw_liquidity import WithdrawLiquidityParameter
 from juster.types.pool.storage import PoolStorage
+from juster.utils import high_precision
 from juster.utils import mutez
 from juster.utils import quantize_down
 
@@ -31,12 +32,15 @@ async def on_withdraw_liquidity(
         await claim.save()
 
         user = await claim.user.get()  # type: ignore
-        reward = event.result * claim.amount / event.provided
+        reward = quantize_down(event.result * claim.amount / event.provided, high_precision)
         rewards[user.address] = rewards.get(user.address, Decimal(0)) + reward
 
     def calc_dust(amount: Decimal) -> Decimal:
         return amount - quantize_down(amount, mutez)
 
-    dust = sum([calc_dust(amt) for amt in rewards.values()])
+    dust = sum(calc_dust(amt) for amt in rewards.values())
     pool.total_liquidity += dust  # type: ignore
+    withdrawn = sum(amt for amt in rewards.values())
+    pool.withdrawable_liquidity -= withdrawn
+    assert pool.withdrawable_liquidity >= 0, 'wrong state: negative withdrawable liquidity'
     await pool.save()
