@@ -222,7 +222,7 @@ class User(Model):
 
 
 class EntryLiquidity(Model):
-    id = fields.IntField(pk=True)
+    pool_entry_id = fields.TextField(pk=True)
     pool = fields.ForeignKeyField('models.Pool', 'entries', index=True)
     entry_id = fields.IntField(index=True)  # the key to entry is (pool + entry_id)
     user = fields.ForeignKeyField('models.User', 'entries')
@@ -232,7 +232,7 @@ class EntryLiquidity(Model):
 
 
 class PoolPosition(Model):
-    id = fields.IntField(pk=True)
+    pool_position_id = fields.TextField(pk=True)
     pool = fields.ForeignKeyField('models.Pool', 'pool_positions', index=True)
     position_id = fields.IntField(index=True)  # the key to position is (pool + position_id)
     entry = fields.OneToOneField('models.EntryLiquidity', 'pool_position')
@@ -269,7 +269,7 @@ class PoolEvent(Model):
 
 
 class PoolLine(Model):
-    id = fields.IntField(pk=True)
+    pool_line_id = fields.TextField(pk=True)
     pool = fields.ForeignKeyField('models.Pool', 'pool_lines', index=True)
     line_id = fields.IntField(index=True)  # the key to line is (pool + line_id)
     last_bets_close_time = fields.DatetimeField()

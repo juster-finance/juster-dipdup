@@ -30,6 +30,7 @@ async def on_add_line(
     currency_pair, _ = await models.CurrencyPair.get_or_create(symbol=line_diff.currencyPair)
 
     line = models.PoolLine(
+        pool_line_id=f'{pool.address}-{line_id}',
         pool=pool,
         line_id=line_id,
         last_bets_close_time=parse_datetime(line_diff.lastBetsCloseTime),

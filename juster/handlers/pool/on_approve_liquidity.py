@@ -33,6 +33,7 @@ async def on_approve_liquidity(
     await pool.save()
 
     position = models.PoolPosition(
+        pool_position_id=f'{pool.address}-{position_id}',
         pool=pool,
         position_id=position_id,
         entry=entry,

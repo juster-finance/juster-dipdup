@@ -25,6 +25,7 @@ async def on_deposit_liquidity(
     pool, _ = await models.Pool.get_or_create(address=pool_address)
 
     entry = models.EntryLiquidity(
+        pool_entry_id=f'{pool.address}-{entry_id}',
         pool=pool,
         entry_id=entry_id,
         user=user,
