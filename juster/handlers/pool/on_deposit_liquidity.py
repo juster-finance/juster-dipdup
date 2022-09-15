@@ -23,6 +23,8 @@ async def on_deposit_liquidity(
 
     pool_address = deposit_liquidity.data.target_address
     pool, _ = await models.Pool.get_or_create(address=pool_address)
+    pool.entry_liquidity += amount  # type: ignore
+    await pool.save()
 
     entry = models.EntryLiquidity(
         pool_entry_id=f'{pool.address}-{entry_id}',

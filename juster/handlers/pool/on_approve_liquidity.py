@@ -29,6 +29,7 @@ async def on_approve_liquidity(
     await entry.save()
 
     pool.total_liquidity += entry.amount  # type: ignore
+    pool.entry_liquidity -= entry.amount  # type: ignore
     pool.total_shares += shares  # type: ignore
     await pool.save()
 

@@ -22,11 +22,6 @@ async def on_pool_origination(
             address=contract_address,
             typename='pool'
         )
-        # TODO: juster_core added in add_line process...
-        # !? bound to ctx.template_values?
-        # - bound to add_line?
-        # - do not bound to juster_core at all?
-        # - other ways?
 
         await ctx.add_index(
             name=f'pool_{contract_address}',
