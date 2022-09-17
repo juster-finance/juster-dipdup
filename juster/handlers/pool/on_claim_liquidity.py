@@ -14,6 +14,7 @@ from juster.utils import mutez
 from juster.utils import process_pool_shares
 from juster.utils import quantize_down
 from juster.utils import quantize_up
+from juster.utils import update_pool_state
 
 
 async def on_claim_liquidity(
@@ -24,6 +25,7 @@ async def on_claim_liquidity(
 
     pool_address = claim_liquidity.data.target_address
     pool = await models.Pool.get(address=pool_address)
+    pool_state = await pool.get_last_state()
 
     position_id, position_diff = get_position(claim_liquidity.storage)
     position = await models.PoolPosition.filter(pool=pool, position_id=position_id).get()
@@ -35,7 +37,7 @@ async def on_claim_liquidity(
     assert position.shares >= 0, 'wrong state: negative shares in position'
     await position.save()
 
-    claimed_fraction = claimed_shares / pool.total_shares
+    claimed_fraction = claimed_shares / pool_state.total_shares
     user = await position.user.get()  # type: ignore
     claimed_sum = Decimal(0)
 
@@ -59,19 +61,17 @@ async def on_claim_liquidity(
         assert claim.amount == process_pool_shares(claim_pair.value.amount), 'wrong claim shares calculation'
         await claim.save()
 
-    free_liquidity = pool.total_liquidity - pool.active_liquidity
+    free_liquidity = pool_state.total_liquidity - pool_state.active_liquidity
     payout = quantize_down(free_liquidity * claimed_fraction, mutez)
-
-    pool.total_liquidity -= claimed_sum  # type: ignore
-    pool.active_liquidity -= claimed_sum  # type: ignore
-    pool.total_liquidity -= payout  # type: ignore
 
     if transaction_1 is not None:
         assert transaction_1.amount
         assert payout == from_mutez(transaction_1.amount)
 
-    assert pool.total_liquidity >= 0, 'wrong state: negative total pool liquidity'
-    assert pool.active_liquidity >= 0, 'wrong state: negative active pool liquidity'
-    pool.total_shares -= claimed_shares  # type: ignore
-    assert pool.total_shares >= 0, 'wrong state: negative total pool shares'
-    await pool.save()
+    await update_pool_state(
+        pool=pool,
+        data=claim_liquidity.data,
+        total_liquidity_diff=-claimed_sum - payout,
+        active_liquidity_diff=-claimed_sum,
+        total_shares_diff=-claimed_shares,
+    )

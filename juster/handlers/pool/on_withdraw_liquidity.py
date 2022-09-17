@@ -10,6 +10,7 @@ from juster.types.pool.storage import PoolStorage
 from juster.utils import high_precision
 from juster.utils import mutez
 from juster.utils import quantize_down
+from juster.utils import update_pool_state
 
 
 async def on_withdraw_liquidity(
@@ -38,9 +39,12 @@ async def on_withdraw_liquidity(
     def calc_dust(amount: Decimal) -> Decimal:
         return amount - quantize_down(amount, mutez)
 
-    dust = sum(calc_dust(amt) for amt in rewards.values())
-    pool.total_liquidity += dust  # type: ignore
-    withdrawn = sum(amt for amt in rewards.values())
-    pool.withdrawable_liquidity -= withdrawn
-    assert pool.withdrawable_liquidity >= 0, 'wrong state: negative withdrawable liquidity'
-    await pool.save()
+    dust = Decimal(sum(calc_dust(amt) for amt in rewards.values()))
+    withdrawn = Decimal(sum(amt for amt in rewards.values()))
+
+    await update_pool_state(
+        pool=pool,
+        data=withdraw_liquidity.data,
+        total_liquidity_diff=dust,
+        withdrawable_liquidity_diff=-withdrawn,
+    )

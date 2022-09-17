@@ -7,6 +7,7 @@ from typing import Tuple
 from typing import Union
 
 import strict_rfc3339  # type: ignore
+from dipdup.models import OperationData
 
 import juster.models as models
 from juster.types.juster.storage import Events
@@ -19,10 +20,15 @@ from juster.types.pool.storage import Positions
 default_quantize_precision = Decimal('1')
 mutez = Decimal('0.000001')
 high_precision = Decimal('0.000000000001')
+default_zero = Decimal('0')
 
 
 def from_mutez(mutez: Union[str, int]) -> Decimal:
     return Decimal(mutez) / (10**6)
+
+
+def from_high_precision(value: Union[str, int]) -> Decimal:
+    return Decimal(value) * high_precision
 
 
 def get_event(storage: JusterStorage) -> Tuple[int, Events]:
@@ -67,3 +73,36 @@ def quantize_down(value: Decimal, precision: Decimal = default_quantize_precisio
 
 def quantize_up(value: Decimal, precision: Decimal = default_quantize_precision) -> Decimal:
     return Decimal(value).quantize(precision, context=Context(rounding=ROUND_UP))
+
+
+async def update_pool_state(
+    pool: models.Pool,
+    data: OperationData,
+    total_liquidity_diff: Decimal = default_zero,
+    total_shares_diff: Decimal = default_zero,
+    active_liquidity_diff: Decimal = default_zero,
+    withdrawable_liquidity_diff: Decimal = default_zero,
+    entry_liquidity_diff: Decimal = default_zero,
+):
+
+    # TODO: do not create new state if nothing changed?
+    last_state = await pool.get_last_state()
+    new_state = models.PoolState(
+        pool=pool,
+        timestamp=data.timestamp,
+        level=data.level,
+        counter=last_state.counter + 1,
+        total_liquidity=last_state.total_liquidity + total_liquidity_diff,
+        total_shares=last_state.total_shares + total_shares_diff,
+        active_liquidity=last_state.active_liquidity + active_liquidity_diff,
+        withdrawable_liquidity=last_state.withdrawable_liquidity + withdrawable_liquidity_diff,
+        entry_liquidity=last_state.entry_liquidity + entry_liquidity_diff,
+    )
+
+    assert new_state.total_liquidity >= Decimal(0), "wrong state: negative total liquidity"
+    assert new_state.total_shares >= Decimal(0), "wrong state: negative total shares"
+    assert new_state.active_liquidity >= Decimal(0), "wrong state: negative active liquidity"
+    assert new_state.withdrawable_liquidity >= Decimal(0), "wrong state: negative withdrawable liquidity"
+    assert new_state.entry_liquidity >= Decimal(0), "wrong state: negative entry liquidity"
+
+    await new_state.save()

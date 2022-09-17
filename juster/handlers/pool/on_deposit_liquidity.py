@@ -7,6 +7,7 @@ from juster.types.pool.storage import PoolStorage
 from juster.utils import from_mutez
 from juster.utils import get_entry
 from juster.utils import parse_datetime
+from juster.utils import update_pool_state
 
 
 async def on_deposit_liquidity(
@@ -22,9 +23,7 @@ async def on_deposit_liquidity(
     amount = from_mutez(deposit_liquidity.data.amount)
 
     pool_address = deposit_liquidity.data.target_address
-    pool, _ = await models.Pool.get_or_create(address=pool_address)
-    pool.entry_liquidity += amount  # type: ignore
-    await pool.save()
+    pool = await models.Pool.get(address=pool_address)
 
     entry = models.EntryLiquidity(
         pool_entry_id=f'{pool.address}-{entry_id}',
@@ -36,3 +35,9 @@ async def on_deposit_liquidity(
         status=models.EntryStatus.PENDING,
     )
     await entry.save()
+
+    await update_pool_state(
+        pool=pool,
+        data=deposit_liquidity.data,
+        entry_liquidity_diff=amount,
+    )

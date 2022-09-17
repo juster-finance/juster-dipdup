@@ -5,6 +5,7 @@ import juster.models as models
 from juster.types.pool.parameter.default import DefaultParameter
 from juster.types.pool.storage import PoolStorage
 from juster.utils import from_mutez
+from juster.utils import update_pool_state
 
 
 async def on_default(
@@ -15,6 +16,9 @@ async def on_default(
     assert default.data.amount
     amount = from_mutez(default.data.amount)
 
-    pool, _ = await models.Pool.get_or_create(address=pool_address)
-    pool.total_liquidity += amount  # type: ignore
-    await pool.save()
+    pool = await models.Pool.get(address=pool_address)
+    await update_pool_state(
+        pool=pool,
+        data=default.data,
+        total_liquidity_diff=amount,
+    )

@@ -14,6 +14,7 @@ from juster.utils import get_event
 from juster.utils import get_pool_event
 from juster.utils import parse_datetime
 from juster.utils import process_pool_shares
+from juster.utils import update_pool_state
 
 
 async def on_create_event(
@@ -36,15 +37,13 @@ async def on_create_event(
 
     pool_address = create_event.data.target_address
     pool = await models.Pool.get(address=pool_address)
-    provided_amount = amount + fees
-    pool.active_liquidity += provided_amount
-    await pool.save()
 
     line_id = int(create_event.parameter.__root__)
     line = await models.PoolLine.get(line_id=line_id, pool=pool)
     line.last_bets_close_time = parse_datetime(event_diff.betsCloseTime)
     await line.save()
 
+    provided_amount = amount + fees
     pool_event = models.PoolEvent(
         id=event_id,
         provided=provided_amount,
@@ -54,3 +53,9 @@ async def on_create_event(
         line=line,
     )
     await pool_event.save()
+
+    await update_pool_state(
+        pool=pool,
+        data=create_event.data,
+        active_liquidity_diff=provided_amount,
+    )

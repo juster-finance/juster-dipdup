@@ -25,7 +25,7 @@ async def on_add_line(
     line_id, line_diff = get_line(add_line.storage)
 
     pool_address = add_line.data.target_address
-    pool, _ = await models.Pool.get_or_create(address=pool_address)
+    pool = await models.Pool.get(address=pool_address)
 
     currency_pair, _ = await models.CurrencyPair.get_or_create(symbol=line_diff.currencyPair)
 

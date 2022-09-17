@@ -6,6 +6,7 @@ from juster.types.pool.parameter.approve_liquidity import ApproveLiquidityParame
 from juster.types.pool.storage import PoolStorage
 from juster.utils import get_position
 from juster.utils import process_pool_shares
+from juster.utils import update_pool_state
 
 
 async def on_approve_liquidity(
@@ -28,11 +29,6 @@ async def on_approve_liquidity(
     entry.status = models.EntryStatus.APPROVED
     await entry.save()
 
-    pool.total_liquidity += entry.amount  # type: ignore
-    pool.entry_liquidity -= entry.amount  # type: ignore
-    pool.total_shares += shares  # type: ignore
-    await pool.save()
-
     position = models.PoolPosition(
         pool_position_id=f'{pool.address}-{position_id}',
         pool=pool,
@@ -42,3 +38,11 @@ async def on_approve_liquidity(
         shares=shares,
     )
     await position.save()
+
+    await update_pool_state(
+        pool=pool,
+        data=approve_liquidity.data,
+        total_liquidity_diff=entry.amount,
+        entry_liquidity_diff=-entry.amount,
+        total_shares_diff=shares,
+    )

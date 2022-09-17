@@ -250,26 +250,28 @@ class Claim(Model):
     withdrawn = fields.BooleanField(default=False)
 
 
-class Pool(Model):
-    address = fields.TextField(pk=True)
+class PoolState(Model):
+    id = fields.BigIntField(pk=True)
+    pool = fields.ForeignKeyField('models.Pool', 'states')
+    timestamp = fields.DatetimeField()
+    level = fields.IntField()
+    counter = fields.IntField(default=0)
     total_liquidity = fields.DecimalField(decimal_places=pool_high_precision, max_digits=32, default=Decimal('0'))
     total_shares = fields.DecimalField(decimal_places=pool_share_precision, max_digits=32, default=Decimal('0'))
     active_liquidity = fields.DecimalField(decimal_places=pool_high_precision, max_digits=32, default=Decimal('0'))
     withdrawable_liquidity = fields.DecimalField(decimal_places=pool_high_precision, max_digits=32, default=Decimal('0'))
     entry_liquidity = fields.DecimalField(decimal_places=pool_high_precision, max_digits=32, default=Decimal('0'))
+    # TODO: consider adding CHANGE_VARIANT ? [DEPOSIT, APPROVE, CLAIM, WITHDRAW, etc for each action]
     # TODO: consider adding balance?
 
 
-class PoolHistoryState(Model):
-    id = fields.BigIntField(pk=True)
-    pool = fields.ForeignKeyField('models.Pool', 'states')
-    timestamp = fields.DatetimeField()
-    level = fields.IntField()
-    counter = fields.IntField()
-    total_liquidity = fields.DecimalField(decimal_places=pool_high_precision, max_digits=32, default=Decimal('0'))
-    total_shares = fields.DecimalField(decimal_places=pool_share_precision, max_digits=32, default=Decimal('0'))
-    active_liquidity = fields.DecimalField(decimal_places=pool_high_precision, max_digits=32, default=Decimal('0'))
-    withdrawable_liquidity = fields.DecimalField(decimal_places=pool_high_precision, max_digits=32, default=Decimal('0'))
+class Pool(Model):
+    address = fields.TextField(pk=True)
+    # NOTE: tried to add current_state as field but it raised circular reference error:
+    # current_state = fields.OneToOneField('models.PoolState', 'pools', null=True)
+
+    async def get_last_state(self) -> PoolState:
+        return await self.states.order_by('-counter').first()
 
 
 class PoolEvent(Model):
