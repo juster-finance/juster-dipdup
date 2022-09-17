@@ -34,7 +34,7 @@ async def on_pay_reward(
     amount = from_mutez(pay_reward.data.amount)
 
     event = await models.PoolEvent.filter(id=pool_event_id).get()
-    event.result = amount  # type: ignore
+    event.result = amount
     await event.save()
 
     pool_address = pay_reward.data.target_address

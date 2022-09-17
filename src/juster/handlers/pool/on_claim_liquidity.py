@@ -33,7 +33,7 @@ async def on_claim_liquidity(
     param_shares = process_pool_shares(claim_liquidity.parameter.shares)
     claimed_shares = position.shares - new_shares
     assert claimed_shares == param_shares, 'wrong position shares diff'
-    position.shares -= claimed_shares  # type: ignore
+    position.shares -= claimed_shares
     assert position.shares >= 0, 'wrong state: negative shares in position'
     await position.save()
 
@@ -51,13 +51,13 @@ async def on_claim_liquidity(
 
         claimed = quantize_up(event_active * claimed_fraction, mutez)
         claimed_sum += claimed
-        event.claimed += claimed  # type: ignore
+        event.claimed += claimed
         await event.save()
 
         claim, _ = await models.Claim.get_or_create(
             pool=pool, event=event, position=position, defaults={'amount': 0, 'user': user, 'withdrawn': False}
         )
-        claim.amount += claimed  # type: ignore
+        claim.amount += claimed
         assert claim.amount == process_pool_shares(claim_pair.value.amount), 'wrong claim shares calculation'
         await claim.save()
 

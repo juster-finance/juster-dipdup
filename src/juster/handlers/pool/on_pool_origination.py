@@ -23,14 +23,21 @@ async def on_pool_origination(
     is_approved = approved_source == creator == manager
 
     if is_approved:
-        await ctx.add_contract(name=f'pool_{contract_address}', address=contract_address, typename='pool')
+        pool_contract_sample = ctx.config.contracts['pool_contract_sample'].address
+        contract_name = f'pool_{contract_address}'
+
+        # pool_contract_sample is one of the contracts to be indexed:
+        if not contract_address == pool_contract_sample:
+            await ctx.add_contract(name=contract_name, address=contract_address, typename='pool')
+        else:
+            contract_name = 'pool_contract_sample'
 
         await ctx.add_index(
-            name=f'pool_{contract_address}',
+            name=contract_name,
             template='pool',
             values={
                 'datasource': ctx.template_values['datasource'],
-                'contract': f'pool_{contract_address}',
+                'contract': contract_name,
                 'juster_core': ctx.template_values['juster_core'],
             },
         )

@@ -12,8 +12,6 @@ datasources:
     url: ${TZKT_URL:-https://api.tzkt.io}
   coinbase:
     kind: coinbase
-    http:
-      cache: False
 
 indexes:
   harbinger_mainnet:
@@ -30,8 +28,5 @@ indexes:
 
 advanced:
   reindex:
-    manual: exception
-    migration: exception
-    rollback: exception
     config_modified: ignore
     schema_modified: ignore

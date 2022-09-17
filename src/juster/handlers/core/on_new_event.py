@@ -15,7 +15,7 @@ async def on_new_event(
     event_id, event_diff = get_event(new_event.storage)
 
     currency_pair, _ = await models.CurrencyPair.get_or_create(symbol=event_diff.currencyPair)
-    currency_pair.total_events += 1  # type: ignore
+    currency_pair.total_events += 1
     await currency_pair.save()
 
     creator, _ = await models.User.get_or_create(address=new_event.data.sender_address)

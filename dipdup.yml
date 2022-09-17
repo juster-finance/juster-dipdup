@@ -32,11 +32,8 @@ datasources:
   tzkt_ithacanet:
     kind: tzkt
     url: https://api.ithacanet.tzkt.io
-    buffer_size: 1
   coinbase:
     kind: coinbase
-    http:
-      cache: False
 
 templates:
   harbinger:

@@ -1,44 +1,54 @@
 .ONESHELL:
-.DEFAULT_GOAL: all
-
+.PHONY: $(MAKECMDGOALS)
+##
+##    🚧 DipDup developer tools
+##
+## DEV=1                Install dev dependencies
 DEV=1
+## TAG=latest           Tag for the `image` command
+TAG=latest
 
-all: install lint test cover
-lint: isort black flake mypy
+##
 
-debug:
-	pip install . --force --no-deps
+help:           ## Show this help (default)
+	@fgrep -h "##" $(MAKEFILE_LIST) | fgrep -v fgrep | sed -e 's/\\$$//' | sed -e 's/##//'
 
-install:
-	poetry install `if [ "${DEV}" = "0" ]; then echo "--no-dev"; fi`
+all:            ## Run a whole CI pipeline: lint, run tests, build docs
+	make install lint
 
-isort:
-	poetry run isort juster
+install:        ## Install project dependencies
+	poetry install \
+	`if [ "${DEV}" = "0" ]; then echo "--without dev"; fi`
 
-black:
-	poetry run black juster
+lint:           ## Lint with all tools
+	make isort black flake mypy
 
-flake:
-	poetry run flakehell lint juster
+##
 
-mypy:
-	poetry run mypy juster
+isort:          ## Format with isort
+	poetry run isort src
 
-test:
-	# poetry run pytest --cov-report=term-missing --cov=juster --cov-report=xml -v tests
+black:          ## Format with black
+	poetry run black src
 
-cover:
-	# poetry run diff-cover coverage.xml
+flake:          ## Lint with flake8
+	poetry run flakeheaven lint src
 
-up:
-	docker-compose up -d
+mypy:           ## Lint with mypy
+	poetry run mypy src
 
-down:
-	docker-compose down -v
+build:          ## Build Python wheel package
+	poetry build
 
-bump:
-	poetry run pip uninstall -y dipdup
-	poetry update dipdup
-	git add poetry.lock pyproject.toml Makefile
-	git commit -m "Bump dipdup"
-	git push
+image:          ## Build Docker image
+	docker buildx build . --progress plain -t juster-dipdup:${TAG}
+
+##
+
+clean:          ## Remove all files from .gitignore except for `.venv`
+	git clean -xdf --exclude=".venv"
+
+update:         ## Update dependencies, export requirements.txt (wait an eternity)
+	make install
+	poetry update
+	poetry export --without-hashes -o requirements.txt
