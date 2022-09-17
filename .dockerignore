@@ -6,6 +6,7 @@
 !pyproject.toml
 !poetry.lock
 !README.md
+!requirements**
 
 # Add code
 !src

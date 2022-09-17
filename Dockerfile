@@ -1,4 +1,3 @@
-FROM dipdup/dipdup:6.0.0
-# FROM ghcr.io/dipdup-net/dipdup-py:feat-db-rollback
+FROM dipdup/dipdup:6.1-slim
 COPY . .
-RUN inject_pyproject
+RUN install_dependencies requirements.txt

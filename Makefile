@@ -3,7 +3,7 @@
 ##
 ##    🚧 DipDup developer tools
 ##
-## DEV=1                Whether to install dev dependencies
+## DEV=1                Install dev dependencies
 DEV=1
 ## TAG=latest           Tag for the `image` command
 TAG=latest
@@ -18,7 +18,7 @@ all:            ## Run a whole CI pipeline: lint, run tests, build docs
 
 install:        ## Install project dependencies
 	poetry install \
-	`if [ "${DEV}" = "0" ]; then echo "--no-dev"; fi`
+	`if [ "${DEV}" = "0" ]; then echo "--without dev"; fi`
 
 lint:           ## Lint with all tools
 	make isort black flake mypy
@@ -41,12 +41,14 @@ build:          ## Build Python wheel package
 	poetry build
 
 image:          ## Build Docker image
-	docker buildx build . -t juster-dipdup:${TAG}
+	docker buildx build . --progress plain -t juster-dipdup:${TAG}
 
 ##
 
-up:
-	docker-compose -f docker-compose.yml up -d db hasura
+clean:          ## Remove all files from .gitignore except for `.venv`
+	git clean -xdf --exclude=".venv"
 
-down:
-	docker-compose -f docker-compose.yml down
+update:         ## Update dependencies, export requirements.txt (wait an eternity)
+	make install
+	poetry update
+	poetry export --without-hashes -o requirements.txt
