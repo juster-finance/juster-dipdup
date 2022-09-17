@@ -2,7 +2,7 @@ sentry:
   dsn: ${SENTRY_DSN:-"https://ef33481a853b44e39187bdf2d9eef773@newsentry.baking-bad.org/6"}
   environment: ${SENTRY_ENVIRONMENT:-""}
   server_name: ${SENTRY_SERVER_NAME:-""}
-  release: ${SENTRY_RELEASE:-"feat-db-rollback"}
+  release: ${SENTRY_RELEASE:-""}
 
 # logging: quiet
 logging: verbose

@@ -15,6 +15,6 @@ sentry:
   dsn: ${SENTRY_DSN:-""}
   environment: ${SENTRY_ENVIRONMENT:-""}
   server_name: ${SENTRY_SERVER_NAME:-""}
-  release: ${SENTRY_RELEASE:-"feat-db-rollback"}
+  release: ${SENTRY_RELEASE:-""}
 
 logging: verbose
