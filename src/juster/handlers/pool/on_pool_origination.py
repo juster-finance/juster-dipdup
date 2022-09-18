@@ -26,6 +26,7 @@ async def on_pool_origination(
         pool_contract_sample = ctx.config.contracts['pool_contract_sample'].address
         contract_name = f'pool_{contract_address}'
 
+        # TODO: get contract name if it is in ctx.config contracts? (independent on its name)
         # pool_contract_sample is one of the contracts to be indexed:
         if not contract_address == pool_contract_sample:
             await ctx.add_contract(name=contract_name, address=contract_address, typename='pool')
