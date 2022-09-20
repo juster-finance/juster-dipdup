@@ -83,7 +83,7 @@ class Candle(Model):
 
 
 class Event(Model):
-    id = fields.IntField(pk=True)
+    id = fields.BigIntField(pk=True)
     currency_pair = fields.ForeignKeyField("models.CurrencyPair", "events")
     creator = fields.ForeignKeyField('models.User', 'events')
     status = fields.CharEnumField(EventStatus)
@@ -141,7 +141,7 @@ class Event(Model):
 
 
 class Bet(Model):
-    id = fields.IntField(pk=True)
+    id = fields.BigIntField(pk=True)
     opg_hash = fields.CharField(max_length=51)
     created_time = fields.DatetimeField()
     side = fields.CharEnumField(BetSide)
@@ -152,7 +152,7 @@ class Bet(Model):
 
 
 class Deposit(Model):
-    id = fields.IntField(pk=True)
+    id = fields.BigIntField(pk=True)
     opg_hash = fields.CharField(max_length=51)
     created_time = fields.DatetimeField()
     amount_above_eq = fields.DecimalField(decimal_places=6, max_digits=16)
@@ -163,7 +163,7 @@ class Deposit(Model):
 
 
 class Withdrawal(Model):
-    id = fields.IntField(pk=True)
+    id = fields.BigIntField(pk=True)
     opg_hash = fields.CharField(max_length=51)
     created_time = fields.DatetimeField()
     amount = fields.DecimalField(decimal_places=6, max_digits=16)
@@ -174,7 +174,7 @@ class Withdrawal(Model):
 
 
 class Position(Model):
-    id = fields.IntField(pk=True)
+    id = fields.BigIntField(pk=True)
     reward_above_eq = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'))
     reward_below = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'))
     liquidity_provided_above_eq = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'))
