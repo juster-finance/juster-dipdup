@@ -42,16 +42,16 @@ async def on_withdraw(
 
     position = await models.Position.filter(event=event, user_id=withdraw.parameter.participantAddress).get_or_none()
     if position:
-        position.withdrawn = True
+        position.withdrawn = True  # type: ignore
         await position.save()
 
     if withdraw_tx:
         assert withdraw_tx.amount
         amount = from_mutez(withdraw_tx.amount)
-        currency_pair.total_value_locked -= amount
+        currency_pair.total_value_locked -= amount  # type: ignore
 
         user, _ = await models.User.get_or_create(address=withdraw.parameter.participantAddress)
-        user.total_withdrawn += amount
+        user.total_withdrawn += amount  # type: ignore
 
         withdrawal = models.Withdrawal(
             id=withdraw.data.id,  # TzKT operation ID
@@ -66,10 +66,10 @@ async def on_withdraw(
             # NOTE: Withdrawals initiated by third-parties are rewarded
             assert fee_tx.amount
             amount = from_mutez(fee_tx.amount)
-            currency_pair.total_value_locked -= amount
+            currency_pair.total_value_locked -= amount  # type: ignore
 
             fee_collector, _ = await models.User.get_or_create(address=fee_tx.target_address)
-            fee_collector.total_fees_collected += amount
+            fee_collector.total_fees_collected += amount  # type: ignore
 
             withdrawal.fee_collector = fee_collector
             withdrawal.type = models.WithdrawalType.THIRD_PARTY

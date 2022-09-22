@@ -19,17 +19,14 @@ async def on_close(
 ) -> None:
     event_id, event_diff = get_event(close_callback.storage)
 
-    assert event_diff.closedOracleTime is not None
-    assert fee_tx.amount is not None
-
     event = await models.Event.filter(id=event_id).get()
-    event.closed_rate = models.to_ratio(event_diff.closedRate)
-    event.closed_oracle_time = parse_datetime(event_diff.closedOracleTime)
-    event.closed_dynamics = event.closed_rate / event.start_rate
+    event.closed_rate = models.to_ratio(event_diff.closedRate)  # type: ignore
+    event.closed_oracle_time = parse_datetime(event_diff.closedOracleTime)  # type: ignore
+    event.closed_dynamics = event.closed_rate / event.start_rate  # type: ignore
     event.status = models.EventStatus.FINISHED
 
     fee_collector, _ = await models.User.get_or_create(address=fee_tx.target_address)
-    fee_collector.total_fees_collected += from_mutez(fee_tx.amount)
+    fee_collector.total_fees_collected += from_mutez(fee_tx.amount)  # type: ignore
     await fee_collector.save()
 
     event.set_winner_bets()
@@ -39,10 +36,10 @@ async def on_close(
     for position in positions:
         reward = position.get_reward(event.winner_bets)
         provider_reward = position.get_provider_reward(event.winner_bets, event)
-        position.value = reward + provider_reward
+        position.value = reward + provider_reward  # type: ignore
         await position.save()
 
         user: models.User = await position.user
-        user.total_reward += reward
-        user.total_provider_reward += provider_reward
+        user.total_reward += reward  # type: ignore
+        user.total_provider_reward += provider_reward  # type: ignore
         await user.save()
