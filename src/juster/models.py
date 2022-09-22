@@ -103,7 +103,7 @@ class User(Model):
 
 
 class Event(Model):
-    id = fields.IntField(pk=True)
+    id = fields.BigIntField(pk=True)
     currency_pair: ForeignKeyFieldInstance[CurrencyPair] = fields.ForeignKeyField("models.CurrencyPair", "events")
     creator: ForeignKeyFieldInstance[User] = fields.ForeignKeyField('models.User', 'events')
     status = fields.CharEnumField(EventStatus)
@@ -194,7 +194,7 @@ class Withdrawal(Model):
 
 
 class Position(Model):
-    id = fields.IntField(pk=True)
+    id = fields.BigIntField(pk=True)
     reward_above_eq = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'))
     reward_below = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'))
     liquidity_provided_above_eq = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'))
