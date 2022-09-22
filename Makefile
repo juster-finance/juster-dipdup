@@ -51,4 +51,4 @@ clean:          ## Remove all files from .gitignore except for `.venv`
 update:         ## Update dependencies, export requirements.txt (wait an eternity)
 	make install
 	poetry update
-	poetry export --without-hashes -o requirements.txt
+	# poetry export --without-hashes -o requirements.txt

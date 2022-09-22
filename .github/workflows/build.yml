@@ -45,7 +45,6 @@ jobs:
           images: ${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_IMAGE_NAME }}
           flavor: |
             latest=false
-            suffix={{ matrix.image.suffix }}
           tags: |
             type=ref,event=branch
             type=ref,event=tag
@@ -55,7 +54,7 @@ jobs:
         with:
           context: .
           push: true
-          cache-from: type=gha,scope={{ matrix.image.name }}
-          cache-to: type=gha,scope={{ matrix.image.name }},mode=max
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
