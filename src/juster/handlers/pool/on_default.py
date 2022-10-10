@@ -12,9 +12,12 @@ async def on_default(
     ctx: HandlerContext,
     default: Transaction[DefaultParameter, PoolStorage],
 ) -> None:
-    pool_address = default.data.target_address
-    assert default.data.amount
+
+    if default.data.amount == 0:
+        return
+
     amount = from_mutez(default.data.amount)
+    pool_address = default.data.target_address
 
     pool = await models.Pool.get(address=pool_address)
     await update_pool_state(
