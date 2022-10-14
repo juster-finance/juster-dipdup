@@ -249,6 +249,16 @@ class PoolEvent(Model):
     pool = fields.ForeignKeyField('models.Pool', 'events')
     line = fields.ForeignKeyField('models.PoolLine', 'events')
 
+    def calc_withdrawable(self) -> Decimal:
+        return self.result * self.claimed / self.provided
+
+    def calc_profit_loss(self) -> Decimal:
+        left_amount = self.provided - self.claimed
+        assert left_amount >= 0, 'wrong state: event claimed > provided'
+
+        profit_loss = self.result - self.provided
+        return profit_loss * left_amount / self.provided
+
 
 class PoolLine(Model):
     pool_line_id = fields.TextField(pk=True)

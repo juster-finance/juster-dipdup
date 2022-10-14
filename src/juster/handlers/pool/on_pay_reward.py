@@ -11,18 +11,6 @@ from juster.utils import get_pool_event
 from juster.utils import update_pool_state
 
 
-def calc_withdrawable(event: models.PoolEvent) -> Decimal:
-    return event.result * event.claimed / event.provided
-
-
-def calc_profit_loss(event: models.PoolEvent) -> Decimal:
-    left_amount = event.provided - event.claimed
-    assert left_amount >= 0, 'wrong state: event claimed > provided'
-
-    profit_loss = event.result - event.provided
-    return profit_loss * left_amount / event.provided
-
-
 async def on_pay_reward(
     ctx: HandlerContext,
     pay_reward: Transaction[PayRewardParameter, PoolStorage],
@@ -44,6 +32,6 @@ async def on_pay_reward(
         pool=pool,
         data=pay_reward.data,
         active_liquidity_diff=event.claimed - event.provided,
-        withdrawable_liquidity_diff=calc_withdrawable(event),
-        total_liquidity_diff=calc_profit_loss(event),
+        withdrawable_liquidity_diff=event.calc_withdrawable(),
+        total_liquidity_diff=event.calc_profit_loss(),
     )
