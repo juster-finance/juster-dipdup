@@ -239,6 +239,9 @@ class PoolPosition(Model):
     entry = fields.OneToOneField('models.EntryLiquidity', 'position')
     user: ForeignKeyFieldInstance[User] = fields.ForeignKeyField('models.User', 'pool_positions')
     shares = fields.DecimalField(decimal_places=pool_share_precision, max_digits=32, default=Decimal('0'))
+    realized_profit = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'))
+    # unrealized_profit = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'))
+    entry_share_price = fields.DecimalField(decimal_places=pool_high_precision, max_digits=32)
 
 
 class PoolEvent(Model):
@@ -299,6 +302,10 @@ class PoolState(Model):
     entry_liquidity = fields.DecimalField(decimal_places=pool_high_precision, max_digits=32, default=Decimal('0'))
     # TODO: consider adding CHANGE_VARIANT ? [DEPOSIT, APPROVE, CLAIM, WITHDRAW, etc for each action]
     # TODO: consider adding balance?
+
+    @property
+    def share_price(self) -> Decimal:
+        return self.total_liquidity / self.total_shares
 
 
 class Pool(Model):

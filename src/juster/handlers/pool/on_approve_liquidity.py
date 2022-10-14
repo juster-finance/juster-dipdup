@@ -36,6 +36,7 @@ async def on_approve_liquidity(
         entry=entry,
         user=user,
         shares=shares,
+        entry_share_price=entry.amount / shares,
     )
     await position.save()
 
