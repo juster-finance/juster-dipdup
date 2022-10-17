@@ -16,6 +16,7 @@ async def on_default(
     if default.data.amount == 0:
         return
 
+    assert default.data.amount
     amount = from_mutez(default.data.amount)
     pool_address = default.data.target_address
 
