@@ -33,5 +33,5 @@ async def on_pay_reward(
         data=pay_reward.data,
         active_liquidity_diff=event.claimed - event.provided,
         withdrawable_liquidity_diff=event.calc_withdrawable(),
-        total_liquidity_diff=event.calc_profit_loss(),
+        total_liquidity_diff=event.calc_pool_profit_loss(),
     )

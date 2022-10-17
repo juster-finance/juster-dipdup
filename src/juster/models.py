@@ -256,11 +256,13 @@ class PoolEvent(Model):
         return self.result * self.claimed / self.provided
 
     def calc_profit_loss(self) -> Decimal:
+        assert self.result
+        return self.result - self.provided
+
+    def calc_pool_profit_loss(self) -> Decimal:
         left_amount = self.provided - self.claimed
         assert left_amount >= 0, 'wrong state: event claimed > provided'
-
-        profit_loss = self.result - self.provided
-        return profit_loss * left_amount / self.provided
+        return self.calc_profit_loss() * left_amount / self.provided
 
 
 class PoolLine(Model):

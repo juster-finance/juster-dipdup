@@ -22,7 +22,7 @@ def calc_realized_profit(
     position: models.PoolPosition,
     claimed_shares: Decimal,
 ) -> Decimal:
-    return last_pool_state.share_price / position.entry_share_price * claimed_shares
+    return (last_pool_state.share_price - position.entry_share_price) * claimed_shares
 
 
 async def on_claim_liquidity(
