@@ -30,9 +30,9 @@ async def on_withdraw_liquidity(
         position = await models.PoolPosition.filter(pool=pool, position_id=position_id).get()
         claim = await models.Claim.filter(pool=pool, event=event, position=position).get()
         claim.withdrawn = True  # type: ignore
-        position.realized_profit += event.calc_profit_loss() * claim.amount / event.provided
         reward = quantize_down(event.result * claim.amount / event.provided, high_precision)
         position.withdrawn_amount += reward
+        position.realized_profit += reward - claim.amount
         await position.save()
         await claim.save()
 
