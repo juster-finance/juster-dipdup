@@ -44,7 +44,7 @@ async def on_claim_liquidity(
     position.realized_profit += calc_realized_profit(pool_state, position, claimed_shares)
     position.shares -= claimed_shares
     assert position.shares >= 0, 'wrong state: negative shares in position'
-    await position.save()
+    position.withdrawn_shares += claimed_shares
 
     claimed_fraction = claimed_shares / pool_state.total_shares
     user = await position.user.get()  # type: ignore
@@ -72,6 +72,8 @@ async def on_claim_liquidity(
 
     free_liquidity = pool_state.total_liquidity - pool_state.active_liquidity
     payout = quantize_down(free_liquidity * claimed_fraction, mutez)
+    position.withdrawn_amount += payout
+    await position.save()
 
     if transaction_1 is not None:
         assert transaction_1.amount

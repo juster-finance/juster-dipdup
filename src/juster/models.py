@@ -240,8 +240,11 @@ class PoolPosition(Model):
     user: ForeignKeyFieldInstance[User] = fields.ForeignKeyField('models.User', 'pool_positions')
     shares = fields.DecimalField(decimal_places=pool_share_precision, max_digits=32, default=Decimal('0'))
     realized_profit = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'))
-    # unrealized_profit = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'))
+
+    # TODO: add entry amount? (copy from entry.amount?)
     entry_share_price = fields.DecimalField(decimal_places=pool_high_precision, max_digits=32)
+    withdrawn_shares = fields.DecimalField(decimal_places=pool_share_precision, max_digits=32, default=Decimal('0'))
+    withdrawn_amount = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'))
 
 
 class PoolEvent(Model):
@@ -305,6 +308,7 @@ class PoolState(Model):
     # TODO: consider adding CHANGE_VARIANT ? [DEPOSIT, APPROVE, CLAIM, WITHDRAW, etc for each action]
     # TODO: consider adding balance?
 
+    # TODO: add share price as field? (total_liquidity / total_shares)
     @property
     def share_price(self) -> Decimal:
         return self.total_liquidity / self.total_shares
@@ -317,3 +321,5 @@ class Pool(Model):
 
     async def get_last_state(self) -> PoolState:
         return await self.states.order_by('-counter').first()
+
+    # TODO: add last_state field?

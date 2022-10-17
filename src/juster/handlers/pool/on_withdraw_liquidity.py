@@ -31,10 +31,12 @@ async def on_withdraw_liquidity(
         claim = await models.Claim.filter(pool=pool, event=event, position=position).get()
         claim.withdrawn = True  # type: ignore
         position.realized_profit += event.calc_profit_loss() * claim.amount / event.provided
+        reward = quantize_down(event.result * claim.amount / event.provided, high_precision)
+        position.withdrawn_amount += reward
+        await position.save()
         await claim.save()
 
         user = await claim.user.get()  # type: ignore
-        reward = quantize_down(event.result * claim.amount / event.provided, high_precision)
         rewards[user.address] = rewards.get(user.address, Decimal(0)) + reward
 
     def calc_dust(amount: Decimal) -> Decimal:
