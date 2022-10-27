@@ -34,3 +34,10 @@ async def on_new_event(
         liquidity_percent=models.to_liquidity(event_diff.liquidityPercent),
     )
     await event.save()
+
+    # As far as this handler runs after pool.on_create_event handler, pool_event
+    # created before event creation and it is bounded to event here:
+    pool_event = await models.PoolEvent.get_or_none(id=event_id)
+    if pool_event is not None:
+        pool_event.event = event
+        await pool_event.save()

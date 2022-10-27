@@ -301,6 +301,7 @@ class PoolEvent(Model):
     claimed = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'))
     pool: ForeignKeyFieldInstance[Pool] = fields.ForeignKeyField('models.Pool', 'events')
     line: ForeignKeyFieldInstance[PoolLine] = fields.ForeignKeyField('models.PoolLine', 'events')
+    event: ForeignKeyFieldInstance[Event] = fields.OneToOneField('models.Event', 'pool_event_data', null=True)
 
     def calc_withdrawable(self) -> Decimal:
         return self.result * self.claimed / self.provided
