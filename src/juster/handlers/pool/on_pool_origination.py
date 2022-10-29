@@ -43,9 +43,14 @@ async def on_pool_origination(
             },
         )
 
-        # TODO: consider adding origination with amount > 0 case
-        pool, _ = await models.Pool.get_or_create(address=contract_address)
+        # TODO: consider adding origination with amount > 0 case (adding this amt to total_liquidity)
         storage = pool_origination.data.storage
+        pool = await models.Pool(
+            address=contract_address,
+            entry_lock_period=int(storage['entryLockPeriod']),
+        )
+        await pool.save()
+
         pool_state = models.PoolState(
             pool=pool,
             timestamp=pool_origination.data.timestamp,

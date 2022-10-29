@@ -226,7 +226,7 @@ class Pool(Model):
     address = fields.CharField(36, pk=True)
     # NOTE: tried to add current_state as field but it raised circular reference error:
     # last_state = fields.OneToOneField('models.PoolState', 'pools', null=True)
-    # TODO: entry_lock_period
+    entry_lock_period = fields.BigIntField()  # interval in seconds
 
     async def get_last_state(self) -> 'PoolState':
         return await self.states.order_by('-counter').first()  # type: ignore
@@ -273,7 +273,6 @@ class PoolPosition(Model):
     shares = fields.DecimalField(decimal_places=pool_share_precision, max_digits=32, default=Decimal('0'))
     realized_profit = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'))
 
-    # TODO: add entry amount? (copy from entry.amount?)
     entry_share_price = fields.DecimalField(decimal_places=pool_high_precision, max_digits=32)
     withdrawn_shares = fields.DecimalField(decimal_places=pool_share_precision, max_digits=32, default=Decimal('0'))
     withdrawn_amount = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'))
