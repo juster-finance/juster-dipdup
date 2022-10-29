@@ -52,6 +52,10 @@ async def on_create_event(
         pool=pool,
         line=line,
     )
+
+    # Event added to PoolEvent after its creation so it is possible to reuse
+    # pool_event.id type which casted from int to BigIntField:
+    pool_event.event = await models.Event.get_or_none(id=pool_event.id)
     await pool_event.save()
 
     await update_pool_state(

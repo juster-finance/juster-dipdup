@@ -225,7 +225,8 @@ class Position(Model):
 class Pool(Model):
     address = fields.CharField(36, pk=True)
     # NOTE: tried to add current_state as field but it raised circular reference error:
-    # current_state = fields.OneToOneField('models.PoolState', 'pools', null=True)
+    # last_state = fields.OneToOneField('models.PoolState', 'pools', null=True)
+    # TODO: entry_lock_period
 
     async def get_last_state(self) -> 'PoolState':
         return await self.states.order_by('-counter').first()  # type: ignore
@@ -295,7 +296,7 @@ class PoolLine(Model):
 
 
 class PoolEvent(Model):
-    id = fields.IntField(pk=True)
+    id = fields.BigIntField(pk=True)
     provided = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'))
     result = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'), null=True)
     claimed = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'))
