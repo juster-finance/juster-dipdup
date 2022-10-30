@@ -1,9 +1,11 @@
 from dipdup.context import HandlerContext
 from dipdup.models import Origination
 
+from decimal import Decimal
 import juster.models as models
 from juster.types.pool.storage import PoolStorage
 from juster.utils import from_high_precision
+from juster.utils import from_mutez
 from juster.utils import process_pool_shares
 
 
@@ -43,7 +45,6 @@ async def on_pool_origination(
             },
         )
 
-        # TODO: consider adding origination with amount > 0 case (adding this amt to total_liquidity)
         storage = pool_origination.data.storage
         pool = await models.Pool(
             address=contract_address,
@@ -51,12 +52,16 @@ async def on_pool_origination(
         )
         await pool.save()
 
+        amt = pool_origination.data.amount
+        initial_liquidity = from_mutez(amt) if amt else Decimal(0)
+        total_liquidity = from_high_precision(storage['activeLiquidityF']) + initial_liquidity
+
         pool_state = models.PoolState(
             pool=pool,
             timestamp=pool_origination.data.timestamp,
             level=pool_origination.data.level,
             counter=0,
-            total_liquidity=from_high_precision(storage['activeLiquidityF']),
+            total_liquidity=total_liquidity,
             total_shares=process_pool_shares(storage['totalShares']),
             active_liquidity=from_high_precision(storage['activeLiquidityF']),
             withdrawable_liquidity=from_high_precision(storage['withdrawableLiquidityF']),
