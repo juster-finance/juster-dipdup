@@ -17,6 +17,9 @@ async def on_pool_origination(
     # TODO: making name from lines params // metadata?
     contract_address = pool_origination.data.originated_contract_address
     assert contract_address
+    # TODO: remove this hotfix that disables indexing for contract with >0 origination balance
+    if contract_address == 'KT18yRWV3SxjQXTHAmYMrsVCxapDjAyRc6NX':
+        return
 
     creator = pool_origination.data.sender_address
     manager = pool_origination.storage.manager
