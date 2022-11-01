@@ -42,8 +42,12 @@ async def on_approve_liquidity(
 
     await update_pool_state(
         pool=pool,
+        action=models.PoolHistoryAction.LIQUIDITY_APPROVED,
         data=approve_liquidity.data,
         total_liquidity_diff=entry.amount,
         entry_liquidity_diff=-entry.amount,
         total_shares_diff=shares,
+        affected_user=user,
+        affected_entry=entry,
+        affected_position=position,
     )

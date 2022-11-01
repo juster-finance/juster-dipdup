@@ -64,6 +64,18 @@ class EntryStatus(Enum):
     CANCELED = 'CANCELED'
 
 
+class PoolHistoryAction(Enum):
+    EVENT_CREATED = 'EVENT_CREATED'
+    EVENT_FINISHED = 'EVENT_FINISHED'
+    USER_DEPOSITED = 'USER_DEPOSITED'
+    LIQUIDITY_APPROVED = 'LIQUIDITY_APPROVED'
+    LIQUIDITY_CANCELED = 'LIQUIDITY_CANCELED'
+    USER_CLAIMED = 'USER_CLAIMED'
+    USER_WITHDRAWN = 'USER_WITHDRAWN'
+    RECEIVED_XTZ = 'RECEIVED_XTZ'
+    POOL_ORIGINATED = 'POOL_ORIGINATED'
+
+
 class CurrencyPair(Model):
     id = fields.IntField(pk=True)
     symbol = fields.CharField(max_length=16)
@@ -234,26 +246,6 @@ class Pool(Model):
     # TODO: add last_state field?
 
 
-class PoolState(Model):
-    id = fields.BigIntField(pk=True)
-    pool: ForeignKeyFieldInstance[Pool] = fields.ForeignKeyField('models.Pool', 'states')
-    timestamp = fields.DatetimeField()
-    level = fields.IntField()
-    counter = fields.IntField(default=0)
-    total_liquidity = fields.DecimalField(decimal_places=pool_high_precision, max_digits=32, default=Decimal('0'))
-    total_shares = fields.DecimalField(decimal_places=pool_share_precision, max_digits=32, default=Decimal('0'))
-    active_liquidity = fields.DecimalField(decimal_places=pool_high_precision, max_digits=32, default=Decimal('0'))
-    withdrawable_liquidity = fields.DecimalField(decimal_places=pool_high_precision, max_digits=32, default=Decimal('0'))
-    entry_liquidity = fields.DecimalField(decimal_places=pool_high_precision, max_digits=32, default=Decimal('0'))
-    # TODO: consider adding CHANGE_VARIANT ? [DEPOSIT, APPROVE, CLAIM, WITHDRAW, etc for each action]
-    # TODO: consider adding balance?
-
-    # TODO: add share price as field? (total_liquidity / total_shares)
-    @property
-    def share_price(self) -> Decimal:
-        return self.total_liquidity / self.total_shares
-
-
 class EntryLiquidity(Model):
     pool_entry_id = fields.TextField(pk=True)
     pool: ForeignKeyFieldInstance[Pool] = fields.ForeignKeyField('models.Pool', 'entries', index=True)
@@ -272,7 +264,6 @@ class PoolPosition(Model):
     user: ForeignKeyFieldInstance[User] = fields.ForeignKeyField('models.User', 'pool_positions')
     shares = fields.DecimalField(decimal_places=pool_share_precision, max_digits=32, default=Decimal('0'))
     realized_profit = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'))
-
     entry_share_price = fields.DecimalField(decimal_places=pool_high_precision, max_digits=32)
     withdrawn_shares = fields.DecimalField(decimal_places=pool_share_precision, max_digits=32, default=Decimal('0'))
     withdrawn_amount = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'))
@@ -324,3 +315,38 @@ class Claim(Model):
     amount = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'))
     user: ForeignKeyFieldInstance[User] = fields.ForeignKeyField('models.User', 'claims')
     withdrawn = fields.BooleanField(default=False)
+
+
+class PoolState(Model):
+    # TODO: consider rename to PoolAction?
+    id = fields.BigIntField(pk=True)
+    pool: ForeignKeyFieldInstance[Pool] = fields.ForeignKeyField('models.Pool', 'states')
+    timestamp = fields.DatetimeField()
+    level = fields.IntField()
+    counter = fields.IntField(default=0)
+    total_liquidity = fields.DecimalField(decimal_places=pool_high_precision, max_digits=32, default=Decimal('0'))
+    total_shares = fields.DecimalField(decimal_places=pool_share_precision, max_digits=32, default=Decimal('0'))
+    active_liquidity = fields.DecimalField(decimal_places=pool_high_precision, max_digits=32, default=Decimal('0'))
+    withdrawable_liquidity = fields.DecimalField(decimal_places=pool_high_precision, max_digits=32, default=Decimal('0'))
+    entry_liquidity = fields.DecimalField(decimal_places=pool_high_precision, max_digits=32, default=Decimal('0'))
+
+    action = fields.CharEnumField(PoolHistoryAction)
+
+    total_liquidity_diff = fields.DecimalField(decimal_places=pool_high_precision, max_digits=32, default=Decimal('0'))
+    total_shares_diff = fields.DecimalField(decimal_places=pool_share_precision, max_digits=32, default=Decimal('0'))
+    active_liquidity_diff = fields.DecimalField(decimal_places=pool_share_precision, max_digits=32, default=Decimal('0'))
+    withdrawable_liquidity_diff = fields.DecimalField(decimal_places=pool_share_precision, max_digits=32, default=Decimal('0'))
+    entry_liquidity_diff = fields.DecimalField(decimal_places=pool_share_precision, max_digits=32, default=Decimal('0'))
+
+    affected_user: ForeignKeyFieldInstance[User] = fields.ForeignKeyField('models.User', 'pool_history', null=True)
+    affected_event: ForeignKeyFieldInstance[PoolEvent] = fields.ForeignKeyField('models.PoolEvent', 'pool_history', null=True)
+    affected_entry: ForeignKeyFieldInstance[EntryLiquidity] = fields.ForeignKeyField('models.EntryLiquidity', 'pool_history', null=True)
+    affected_position: ForeignKeyFieldInstance[PoolPosition] = fields.ForeignKeyField('models.PoolPosition', 'pool_history', null=True)
+    # TODO: consider adding affected claim? affected line?
+
+    # TODO: consider adding sender: ForeignKeyFieldInstance[User] = fields.ForeignKeyField('models.User', 'history_as_sender')
+    # TODO: consider adding balance?
+    # TODO: add share price as field? (total_liquidity / total_shares)
+    @property
+    def share_price(self) -> Decimal:
+        return self.total_liquidity / self.total_shares

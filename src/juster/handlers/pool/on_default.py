@@ -23,6 +23,7 @@ async def on_default(
     pool = await models.Pool.get(address=pool_address)
     await update_pool_state(
         pool=pool,
+        action=models.PoolHistoryAction.RECEIVED_XTZ,
         data=default.data,
         total_liquidity_diff=amount,
     )

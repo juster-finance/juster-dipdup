@@ -1,7 +1,8 @@
+from decimal import Decimal
+
 from dipdup.context import HandlerContext
 from dipdup.models import Origination
 
-from decimal import Decimal
 import juster.models as models
 from juster.types.pool.storage import PoolStorage
 from juster.utils import from_high_precision
@@ -61,6 +62,7 @@ async def on_pool_origination(
 
         pool_state = models.PoolState(
             pool=pool,
+            action=models.PoolHistoryAction.POOL_ORIGINATED,
             timestamp=pool_origination.data.timestamp,
             level=pool_origination.data.level,
             counter=0,

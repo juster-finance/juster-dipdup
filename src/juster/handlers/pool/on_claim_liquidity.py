@@ -81,8 +81,11 @@ async def on_claim_liquidity(
 
     await update_pool_state(
         pool=pool,
+        action=models.PoolHistoryAction.USER_CLAIMED,
         data=claim_liquidity.data,
         total_liquidity_diff=-claimed_sum - payout,
         active_liquidity_diff=-claimed_sum,
         total_shares_diff=-claimed_shares,
+        affected_user=user,
+        affected_position=position,
     )

@@ -38,6 +38,9 @@ async def on_deposit_liquidity(
 
     await update_pool_state(
         pool=pool,
+        action=models.PoolHistoryAction.USER_DEPOSITED,
         data=deposit_liquidity.data,
         entry_liquidity_diff=amount,
+        affected_user=user,
+        affected_entry=entry,
     )

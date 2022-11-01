@@ -60,6 +60,8 @@ async def on_create_event(
 
     await update_pool_state(
         pool=pool,
+        action=models.PoolHistoryAction.EVENT_CREATED,
         data=create_event.data,
         active_liquidity_diff=provided_amount,
+        affected_event=pool_event,
     )

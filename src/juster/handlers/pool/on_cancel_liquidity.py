@@ -19,8 +19,13 @@ async def on_cancel_liquidity(
     entry.status = models.EntryStatus.CANCELED
     await entry.save()
 
+    user = await entry.user.get()
+
     await update_pool_state(
         pool=pool,
+        action=models.PoolHistoryAction.LIQUIDITY_CANCELED,
         data=cancel_liquidity.data,
         entry_liquidity_diff=-entry.amount,
+        affected_user=user,
+        affected_entry=entry,
     )

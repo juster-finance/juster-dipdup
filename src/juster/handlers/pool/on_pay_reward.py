@@ -30,8 +30,10 @@ async def on_pay_reward(
 
     await update_pool_state(
         pool=pool,
+        action=models.PoolHistoryAction.EVENT_FINISHED,
         data=pay_reward.data,
         active_liquidity_diff=event.claimed - event.provided,
         withdrawable_liquidity_diff=event.calc_withdrawable(),
         total_liquidity_diff=event.calc_pool_profit_loss(),
+        affected_event=event,
     )

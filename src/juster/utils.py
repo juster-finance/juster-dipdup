@@ -3,6 +3,7 @@ from decimal import ROUND_DOWN
 from decimal import ROUND_UP
 from decimal import Context
 from decimal import Decimal
+from typing import Optional
 from typing import Tuple
 from typing import Union
 
@@ -77,12 +78,17 @@ def quantize_up(value: Decimal, precision: Decimal = default_quantize_precision)
 
 async def update_pool_state(
     pool: models.Pool,
+    action: models.PoolHistoryAction,
     data: OperationData,
     total_liquidity_diff: Decimal = default_zero,
     total_shares_diff: Decimal = default_zero,
     active_liquidity_diff: Decimal = default_zero,
     withdrawable_liquidity_diff: Decimal = default_zero,
     entry_liquidity_diff: Decimal = default_zero,
+    affected_user: Optional[models.User] = None,
+    affected_event: Optional[models.PoolEvent] = None,
+    affected_entry: Optional[models.EntryLiquidity] = None,
+    affected_position: Optional[models.PoolPosition] = None,
 ):
 
     # TODO: do not create new state if nothing changed?
@@ -97,6 +103,16 @@ async def update_pool_state(
         active_liquidity=last_state.active_liquidity + active_liquidity_diff,
         withdrawable_liquidity=last_state.withdrawable_liquidity + withdrawable_liquidity_diff,
         entry_liquidity=last_state.entry_liquidity + entry_liquidity_diff,
+        action=action,
+        total_liquidity_diff=total_liquidity_diff,
+        total_shares_diff=total_shares_diff,
+        active_liquidity_diff=active_liquidity_diff,
+        withdrawable_liquidity_diff=withdrawable_liquidity_diff,
+        entry_liquidity_diff=entry_liquidity_diff,
+        affected_user=affected_user,
+        affected_event=affected_event,
+        affected_entry=affected_entry,
+        affected_position=affected_position,
     )
 
     assert new_state.total_liquidity >= Decimal(0), "wrong state: negative total liquidity"
