@@ -74,6 +74,7 @@ class PoolHistoryAction(Enum):
     USER_WITHDRAWN = 'USER_WITHDRAWN'
     RECEIVED_XTZ = 'RECEIVED_XTZ'
     POOL_ORIGINATED = 'POOL_ORIGINATED'
+    ACCUMULATED_DUST = 'ACCUMULATED_DUST'
 
 
 class CurrencyPair(Model):
@@ -338,11 +339,12 @@ class PoolState(Model):
     withdrawable_liquidity_diff = fields.DecimalField(decimal_places=pool_share_precision, max_digits=32, default=Decimal('0'))
     entry_liquidity_diff = fields.DecimalField(decimal_places=pool_share_precision, max_digits=32, default=Decimal('0'))
 
-    affected_user: ForeignKeyFieldInstance[User] = fields.ForeignKeyField('models.User', 'pool_history', null=True)
-    affected_event: ForeignKeyFieldInstance[PoolEvent] = fields.ForeignKeyField('models.PoolEvent', 'pool_history', null=True)
-    affected_entry: ForeignKeyFieldInstance[EntryLiquidity] = fields.ForeignKeyField('models.EntryLiquidity', 'pool_history', null=True)
-    affected_position: ForeignKeyFieldInstance[PoolPosition] = fields.ForeignKeyField('models.PoolPosition', 'pool_history', null=True)
-    # TODO: consider adding affected claim? affected line?
+    affected_user: ForeignKeyFieldInstance[User] = fields.ForeignKeyField('models.User', 'pool_states', null=True)
+    affected_event: ForeignKeyFieldInstance[PoolEvent] = fields.ForeignKeyField('models.PoolEvent', 'states', null=True)
+    affected_entry: ForeignKeyFieldInstance[EntryLiquidity] = fields.ForeignKeyField('models.EntryLiquidity', 'states', null=True)
+    affected_position: ForeignKeyFieldInstance[PoolPosition] = fields.ForeignKeyField('models.PoolPosition', 'states', null=True)
+    affected_claim: ForeignKeyFieldInstance[Claim] = fields.ForeignKeyField('models.Claim', 'states', null=True)
+    opg_hash = fields.CharField(max_length=51)
 
     # TODO: consider adding sender: ForeignKeyFieldInstance[User] = fields.ForeignKeyField('models.User', 'history_as_sender')
     # TODO: consider adding balance?

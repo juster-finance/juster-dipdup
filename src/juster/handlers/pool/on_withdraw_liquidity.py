@@ -39,21 +39,24 @@ async def on_withdraw_liquidity(
         user = await claim.user.get()  # type: ignore
         rewards[user.address] = rewards.get(user.address, Decimal(0)) + reward
 
+        await update_pool_state(
+            pool=pool,
+            action=models.PoolHistoryAction.USER_WITHDRAWN,
+            data=withdraw_liquidity.data,
+            withdrawable_liquidity_diff=-reward,
+            affected_user=user,
+            affected_position=position,
+            affected_claim=claim,
+        )
+
     def calc_dust(amount: Decimal) -> Decimal:
         return amount - quantize_down(amount, mutez)
 
+    # and one more updated state with dust diff (which is not related to single positions):
     dust = Decimal(sum(calc_dust(amt) for amt in rewards.values()))
-    # TODO: split this one withdrawn action to multiple, each for each user
-    # TODO: dust should go into one of actions (first | last)
-    withdrawn = Decimal(sum(amt for amt in rewards.values()))
-
     await update_pool_state(
         pool=pool,
-        action=models.PoolHistoryAction.USER_WITHDRAWN,
+        action=models.PoolHistoryAction.ACCUMULATED_DUST,
         data=withdraw_liquidity.data,
         total_liquidity_diff=dust,
-        withdrawable_liquidity_diff=-withdrawn,
-        # TODO:
-        # affected_user=,
-        # affected_position=,
     )

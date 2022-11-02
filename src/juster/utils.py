@@ -89,6 +89,7 @@ async def update_pool_state(
     affected_event: Optional[models.PoolEvent] = None,
     affected_entry: Optional[models.EntryLiquidity] = None,
     affected_position: Optional[models.PoolPosition] = None,
+    affected_claim: Optional[models.Claim] = None,
 ):
 
     # TODO: do not create new state if nothing changed?
@@ -113,6 +114,8 @@ async def update_pool_state(
         affected_event=affected_event,
         affected_entry=affected_entry,
         affected_position=affected_position,
+        affected_claim=affected_claim,
+        opg_hash=data.hash,
     )
 
     assert new_state.total_liquidity >= Decimal(0), "wrong state: negative total liquidity"

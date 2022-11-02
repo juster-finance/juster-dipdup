@@ -60,6 +60,7 @@ async def on_pool_origination(
         initial_liquidity = from_mutez(amt) if amt else Decimal(0)
         total_liquidity = from_high_precision(storage['activeLiquidityF']) + initial_liquidity
 
+        # TODO: consider using update_pool_state with last_state initiated with zeros to create first state?
         pool_state = models.PoolState(
             pool=pool,
             action=models.PoolHistoryAction.POOL_ORIGINATED,
@@ -71,6 +72,7 @@ async def on_pool_origination(
             active_liquidity=from_high_precision(storage['activeLiquidityF']),
             withdrawable_liquidity=from_high_precision(storage['withdrawableLiquidityF']),
             entry_liquidity=from_high_precision(storage['entryLiquidityF']),
+            opg_hash=pool_origination.data.hash,
         )
         await pool_state.save()
 
