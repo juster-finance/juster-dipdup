@@ -47,6 +47,7 @@ async def on_withdraw_liquidity(
             affected_user=user,
             affected_position=position,
             affected_claim=claim,
+            affected_event=event,
         )
 
     def calc_dust(amount: Decimal) -> Decimal:
@@ -54,9 +55,10 @@ async def on_withdraw_liquidity(
 
     # and one more updated state with dust diff (which is not related to single positions):
     dust = Decimal(sum(calc_dust(amt) for amt in rewards.values()))
-    await update_pool_state(
-        pool=pool,
-        action=models.PoolHistoryAction.ACCUMULATED_DUST,
-        data=withdraw_liquidity.data,
-        total_liquidity_diff=dust,
-    )
+    if dust > Decimal(0):
+        await update_pool_state(
+            pool=pool,
+            action=models.PoolHistoryAction.ACCUMULATED_DUST,
+            data=withdraw_liquidity.data,
+            total_liquidity_diff=dust,
+        )
