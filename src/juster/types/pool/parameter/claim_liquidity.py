@@ -11,5 +11,5 @@ class ClaimLiquidityParameter(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    positionId: str
+    provider: str
     shares: str

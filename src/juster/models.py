@@ -256,11 +256,10 @@ class EntryLiquidity(Model):
 
 
 class PoolPosition(Model):
-    pool_position_id = fields.TextField(pk=True)
+    id = fields.BigIntField(pk=True)
     pool: ForeignKeyFieldInstance[Pool] = fields.ForeignKeyField('models.Pool', 'pool_positions', index=True)
-    position_id = fields.IntField(index=True)  # the key to position is (pool + position_id)
+    user: ForeignKeyFieldInstance[User] = fields.ForeignKeyField('models.User', 'pool_positions', index=True)
     entry: ForeignKeyFieldInstance[EntryLiquidity] = fields.OneToOneField('models.EntryLiquidity', 'position')
-    user: ForeignKeyFieldInstance[User] = fields.ForeignKeyField('models.User', 'pool_positions')
     shares = fields.DecimalField(decimal_places=pool_share_precision, max_digits=32, default=Decimal('0'))
     realized_profit = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'))
     entry_share_price = fields.DecimalField(decimal_places=pool_high_precision, max_digits=32)
@@ -310,9 +309,9 @@ class Claim(Model):
     id = fields.IntField(pk=True)
     pool: ForeignKeyFieldInstance[Pool] = fields.ForeignKeyField('models.Pool', 'claims', index=True)
     event: ForeignKeyFieldInstance[PoolEvent] = fields.ForeignKeyField('models.PoolEvent', 'claims', index=True)
-    position: ForeignKeyFieldInstance[PoolPosition] = fields.ForeignKeyField('models.PoolPosition', 'claims', index=True)
+    user: ForeignKeyFieldInstance[User] = fields.ForeignKeyField('models.User', 'claims', index=True)
+    position: ForeignKeyFieldInstance[PoolPosition] = fields.ForeignKeyField('models.PoolPosition', 'claims')
     amount = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'))
-    user: ForeignKeyFieldInstance[User] = fields.ForeignKeyField('models.User', 'claims')
     withdrawn = fields.BooleanField(default=False)
 
 

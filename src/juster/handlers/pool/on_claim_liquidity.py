@@ -9,7 +9,7 @@ import juster.models as models
 from juster.types.pool.parameter.claim_liquidity import ClaimLiquidityParameter
 from juster.types.pool.storage import PoolStorage
 from juster.utils import from_mutez
-from juster.utils import get_position
+from juster.utils import get_shares
 from juster.utils import mutez
 from juster.utils import process_pool_shares
 from juster.utils import quantize_down
@@ -35,9 +35,12 @@ async def on_claim_liquidity(
     pool = await models.Pool.get(address=pool_address)
     pool_state = await pool.get_last_state()
 
-    position_id, position_diff = get_position(claim_liquidity.storage)
-    position = await models.PoolPosition.filter(pool=pool, position_id=position_id).get()
-    new_shares = process_pool_shares(position_diff.shares)
+    provider, new_shares = get_shares(claim_liquidity.storage)
+    param_provider = claim_liquidity.data.parameter_json['provider']
+    assert provider == param_provider, 'wrong provider address in added claim'
+
+    user = await models.User.get(address=provider)
+    position = await models.PoolPosition.filter(pool=pool, user=user).get()
     param_shares = process_pool_shares(claim_liquidity.parameter.shares)
     claimed_shares = position.shares - new_shares
     assert claimed_shares == param_shares, 'wrong position shares diff'
@@ -51,9 +54,7 @@ async def on_claim_liquidity(
     claimed_sum = Decimal(0)
 
     for claim_pair in claim_liquidity.storage.claims:
-        assert position_id == int(claim_pair.key.positionId), 'wrong position_id in added claim'
-        assert claim_liquidity.data.sender_address == claim_pair.value.provider, 'wrong provider address in added claim'
-
+        assert provider == claim_pair.key.provider, 'wrong provider address in added claim'
         event_id = int(claim_pair.key.eventId)
         event = await models.PoolEvent.filter(id=event_id).get()
         event_active = event.provided - event.claimed
@@ -64,10 +65,10 @@ async def on_claim_liquidity(
         await event.save()
 
         claim, _ = await models.Claim.get_or_create(
-            pool=pool, event=event, position=position, defaults={'amount': 0, 'user': user, 'withdrawn': False}
+            pool=pool, event=event, user=user, defaults={'amount': 0, 'position': position, 'withdrawn': False}
         )
         claim.amount += claimed
-        assert claim.amount == process_pool_shares(claim_pair.value.amount), 'wrong claim shares calculation'
+        assert claim.amount == process_pool_shares(claim_pair.value), 'wrong claim shares calculation'
         await claim.save()
 
     free_liquidity = pool_state.total_liquidity - pool_state.active_liquidity
@@ -87,5 +88,4 @@ async def on_claim_liquidity(
         active_liquidity_diff=-claimed_sum,
         total_shares_diff=-claimed_shares,
         affected_user=user,
-        affected_position=position,
     )

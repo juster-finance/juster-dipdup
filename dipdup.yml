@@ -189,13 +189,6 @@ indexes:
       datasource: tzkt_ithacanet
       juster_core: juster_ithacanet
       approved_source: tz1bgvq6y5RdjAUzBNNovqoAgBXv77dbkdhT
-  pool_ghostnet_example:
-    template: pool
-    values:
-      contract: pool_contract_sample
-      datasource: tzkt_ithacanet
-      juster_core: juster_ithacanet
-      approved_source: tz1bgvq6y5RdjAUzBNNovqoAgBXv77dbkdhT
 
 hooks:
   fetch_coinbase_candles:

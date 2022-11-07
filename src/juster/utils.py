@@ -16,7 +16,6 @@ from juster.types.juster.storage import JusterStorage
 from juster.types.pool.storage import Entries
 from juster.types.pool.storage import Events as PoolEvents
 from juster.types.pool.storage import PoolStorage
-from juster.types.pool.storage import Positions
 
 default_quantize_precision = Decimal('1')
 mutez = Decimal('0.000001')
@@ -50,11 +49,11 @@ def get_entry(storage: PoolStorage) -> Tuple[int, Entries]:
     return entry_id, entry_diff
 
 
-def get_position(storage: PoolStorage) -> Tuple[int, Positions]:
-    assert len(storage.positions) == 1
-    position_id = int(next(iter(storage.positions)))
-    position_diff = storage.positions[str(position_id)]
-    return position_id, position_diff
+def get_shares(storage: PoolStorage) -> Tuple[str, Decimal]:
+    assert len(storage.shares) == 1
+    shares_provider = next(iter(storage.shares))
+    shares_diff = storage.shares[shares_provider]
+    return shares_provider, process_pool_shares(shares_diff)
 
 
 def get_pool_event(storage: PoolStorage) -> Tuple[int, PoolEvents]:
@@ -88,7 +87,6 @@ async def update_pool_state(
     affected_user: Optional[models.User] = None,
     affected_event: Optional[models.PoolEvent] = None,
     affected_entry: Optional[models.EntryLiquidity] = None,
-    affected_position: Optional[models.PoolPosition] = None,
     affected_claim: Optional[models.Claim] = None,
 ):
 
@@ -113,7 +111,6 @@ async def update_pool_state(
         affected_user=affected_user,
         affected_event=affected_event,
         affected_entry=affected_entry,
-        affected_position=affected_position,
         affected_claim=affected_claim,
         opg_hash=data.hash,
     )

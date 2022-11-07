@@ -16,14 +16,6 @@ class Key(BaseModel):
         extra = Extra.forbid
 
     eventId: str
-    positionId: str
-
-
-class Value(BaseModel):
-    class Config:
-        extra = Extra.forbid
-
-    amount: str
     provider: str
 
 
@@ -32,7 +24,15 @@ class Claim(BaseModel):
         extra = Extra.forbid
 
     key: Key
-    value: Value
+    value: str
+
+
+class DurationPoints(BaseModel):
+    class Config:
+        extra = Extra.forbid
+
+    amount: str
+    updateLevel: str
 
 
 class Entries(BaseModel):
@@ -72,24 +72,6 @@ class Lines(BaseModel):
     targetDynamics: str
 
 
-class Positions(BaseModel):
-    class Config:
-        extra = Extra.forbid
-
-    entryLiquidityUnits: str
-    provider: str
-    shares: str
-
-
-class Withdrawals(BaseModel):
-    class Config:
-        extra = Extra.forbid
-
-    liquidityUnits: str
-    positionId: str
-    shares: str
-
-
 class PoolStorage(BaseModel):
     class Config:
         extra = Extra.forbid
@@ -97,23 +79,22 @@ class PoolStorage(BaseModel):
     activeEvents: Dict[str, str]
     activeLiquidityF: str
     claims: List[Claim]
+    durationPoints: Dict[str, DurationPoints]
     entries: Dict[str, Entries]
     entryLiquidityF: str
     entryLockPeriod: str
     events: Dict[str, Events]
     isDepositPaused: bool
+    isDisbandAllow: bool
     lines: Dict[str, Lines]
-    liquidityUnits: str
     manager: str
     maxEvents: str
     metadata: Dict[str, str]
     nextEntryId: str
     nextLineId: str
-    nextPositionId: str
-    nextWithdrawalId: str
-    positions: Dict[str, Positions]
     precision: str
     proposedManager: str
+    shares: Dict[str, str]
+    totalDurationPoints: str
     totalShares: str
     withdrawableLiquidityF: str
-    withdrawals: Dict[str, Withdrawals]
