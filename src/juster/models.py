@@ -339,7 +339,6 @@ class PoolState(Model):
     affected_user: ForeignKeyFieldInstance[User] = fields.ForeignKeyField('models.User', 'pool_states', null=True)
     affected_event: ForeignKeyFieldInstance[PoolEvent] = fields.ForeignKeyField('models.PoolEvent', 'states', null=True)
     affected_entry: ForeignKeyFieldInstance[EntryLiquidity] = fields.ForeignKeyField('models.EntryLiquidity', 'states', null=True)
-    affected_position: ForeignKeyFieldInstance[PoolPosition] = fields.ForeignKeyField('models.PoolPosition', 'states', null=True)
     affected_claim: ForeignKeyFieldInstance[Claim] = fields.ForeignKeyField('models.Claim', 'states', null=True)
     opg_hash = fields.CharField(max_length=51)
 
