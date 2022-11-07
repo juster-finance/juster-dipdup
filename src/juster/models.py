@@ -245,26 +245,27 @@ class Pool(Model):
         return await self.states.order_by('-counter').first()  # type: ignore
 
 
+class PoolPosition(Model):
+    id = fields.BigIntField(pk=True)
+    pool: ForeignKeyFieldInstance[Pool] = fields.ForeignKeyField('models.Pool', 'pool_positions', index=True)
+    user: ForeignKeyFieldInstance[User] = fields.ForeignKeyField('models.User', 'pool_positions', index=True)
+    shares = fields.DecimalField(decimal_places=pool_share_precision, max_digits=32, default=Decimal('0'))
+    realized_profit = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'))
+    entry_share_price = fields.DecimalField(decimal_places=pool_high_precision, max_digits=32, default=Decimal('0'))
+    withdrawn_shares = fields.DecimalField(decimal_places=pool_share_precision, max_digits=32, default=Decimal('0'))
+    withdrawn_amount = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'))
+    deposited_amount = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'))
+
+
 class EntryLiquidity(Model):
     pool_entry_id = fields.TextField(pk=True)
     pool: ForeignKeyFieldInstance[Pool] = fields.ForeignKeyField('models.Pool', 'entries', index=True)
     entry_id = fields.IntField(index=True)  # the key to entry is (pool + entry_id)
     user: ForeignKeyFieldInstance[User] = fields.ForeignKeyField('models.User', 'entries')
+    position: ForeignKeyFieldInstance[PoolPosition] = fields.ForeignKeyField('models.PoolPosition', 'position', null=True)
     accept_time = fields.DatetimeField()
     amount = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'))
     status = fields.CharEnumField(EntryStatus)
-
-
-class PoolPosition(Model):
-    id = fields.BigIntField(pk=True)
-    pool: ForeignKeyFieldInstance[Pool] = fields.ForeignKeyField('models.Pool', 'pool_positions', index=True)
-    user: ForeignKeyFieldInstance[User] = fields.ForeignKeyField('models.User', 'pool_positions', index=True)
-    entry: ForeignKeyFieldInstance[EntryLiquidity] = fields.OneToOneField('models.EntryLiquidity', 'position')
-    shares = fields.DecimalField(decimal_places=pool_share_precision, max_digits=32, default=Decimal('0'))
-    realized_profit = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'))
-    entry_share_price = fields.DecimalField(decimal_places=pool_high_precision, max_digits=32)
-    withdrawn_shares = fields.DecimalField(decimal_places=pool_share_precision, max_digits=32, default=Decimal('0'))
-    withdrawn_amount = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'))
 
 
 class PoolLine(Model):

@@ -14,9 +14,9 @@ async def on_approve_entry(
     approve_entry: Transaction[ApproveEntryParameter, PoolStorage],
 ) -> None:
 
-    provider, shares = get_shares(approve_entry.storage)
+    provider, new_shares = get_shares(approve_entry.storage)
+
     user, _ = await models.User.get_or_create(address=provider)
-    assert shares > 0, 'wrong state: approve liquidity with 0 shares diff'
 
     pool_address = approve_entry.data.target_address
     pool = await models.Pool.get(address=pool_address)
@@ -25,13 +25,24 @@ async def on_approve_entry(
     entry = await models.EntryLiquidity.filter(entry_id=entry_id, pool=pool).get()
     assert entry.status == models.EntryStatus.PENDING, 'unexpected entry status'
     entry.status = models.EntryStatus.APPROVED
-    await entry.save()
 
     position, _ = await models.PoolPosition.get_or_create(
-        user=user, pool=pool, defaults={'entry': entry, 'entry_share_price': entry.amount / shares}
+        user=user, pool=pool, defaults={'entry': entry}
     )
-    position.shares += shares
+    # TODO: is there any way to check that onchain was exactly the same diff?
+    added_shares = new_shares - position.shares
+    assert added_shares >= 0, 'wrong state: approve liquidity with negative shares diff'
+
+    position.shares += added_shares
+    position.deposited_amount += entry.amount
+
+    # TODO: is it required to calculate entry share price on serverside?
+    shares_sum = position.shares + position.withdrawn_shares
+    position.entry_share_price = position.deposited_amount / shares_sum
     await position.save()
+
+    entry.position = position
+    await entry.save()
 
     await update_pool_state(
         pool=pool,
@@ -39,7 +50,7 @@ async def on_approve_entry(
         data=approve_entry.data,
         total_liquidity_diff=entry.amount,
         entry_liquidity_diff=-entry.amount,
-        total_shares_diff=shares,
+        total_shares_diff=added_shares,
         affected_user=user,
         affected_entry=entry,
     )
