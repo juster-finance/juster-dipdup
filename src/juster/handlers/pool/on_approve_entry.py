@@ -26,9 +26,7 @@ async def on_approve_entry(
     assert entry.status == models.EntryStatus.PENDING, 'unexpected entry status'
     entry.status = models.EntryStatus.APPROVED
 
-    position, _ = await models.PoolPosition.get_or_create(
-        user=user, pool=pool, defaults={'entry': entry}
-    )
+    position, _ = await models.PoolPosition.get_or_create(user=user, pool=pool, defaults={'entry': entry})
     # TODO: is there any way to check that onchain was exactly the same diff?
     added_shares = new_shares - position.shares
     assert added_shares >= 0, 'wrong state: approve liquidity with negative shares diff'

@@ -92,16 +92,22 @@ async def update_pool_state(
 
     # TODO: do not create new state if nothing changed?
     last_state = await pool.get_last_state()
+
+    total_liquidity = last_state.total_liquidity + total_liquidity_diff
+    total_shares = last_state.total_shares + total_shares_diff
+    share_price = None if total_shares == Decimal(0) else total_liquidity / total_shares
+
     new_state = models.PoolState(
         pool=pool,
         timestamp=data.timestamp,
         level=data.level,
         counter=last_state.counter + 1,
-        total_liquidity=last_state.total_liquidity + total_liquidity_diff,
-        total_shares=last_state.total_shares + total_shares_diff,
+        total_liquidity=total_liquidity,
+        total_shares=total_shares,
         active_liquidity=last_state.active_liquidity + active_liquidity_diff,
         withdrawable_liquidity=last_state.withdrawable_liquidity + withdrawable_liquidity_diff,
         entry_liquidity=last_state.entry_liquidity + entry_liquidity_diff,
+        share_price=share_price,
         action=action,
         total_liquidity_diff=total_liquidity_diff,
         total_shares_diff=total_shares_diff,

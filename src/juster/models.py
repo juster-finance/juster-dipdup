@@ -328,6 +328,7 @@ class PoolState(Model):
     active_liquidity = fields.DecimalField(decimal_places=pool_high_precision, max_digits=32, default=Decimal('0'))
     withdrawable_liquidity = fields.DecimalField(decimal_places=pool_high_precision, max_digits=32, default=Decimal('0'))
     entry_liquidity = fields.DecimalField(decimal_places=pool_high_precision, max_digits=32, default=Decimal('0'))
+    share_price = fields.DecimalField(decimal_places=pool_high_precision, max_digits=32, null=True)
 
     action = fields.CharEnumField(PoolHistoryAction)
 
@@ -345,7 +346,3 @@ class PoolState(Model):
 
     # TODO: consider adding sender: ForeignKeyFieldInstance[User] = fields.ForeignKeyField('models.User', 'history_as_sender')
     # TODO: consider adding balance?
-    # TODO: add share price as field? (total_liquidity / total_shares)
-    @property
-    def share_price(self) -> Decimal:
-        return self.total_liquidity / self.total_shares
