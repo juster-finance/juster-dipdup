@@ -36,7 +36,7 @@ async def on_claim_liquidity(
     pool_state = await pool.get_last_state()
 
     provider, new_shares = get_shares(claim_liquidity.storage)
-    param_provider = claim_liquidity.data.parameter_json['provider']
+    param_provider = claim_liquidity.parameter.provider
     assert provider == param_provider, 'wrong provider address in added claim'
 
     user = await models.User.get(address=provider)
