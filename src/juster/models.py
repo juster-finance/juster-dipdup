@@ -244,8 +244,6 @@ class Pool(Model):
     async def get_last_state(self) -> 'PoolState':
         return await self.states.order_by('-counter').first()  # type: ignore
 
-    # TODO: add last_state field?
-
 
 class EntryLiquidity(Model):
     pool_entry_id = fields.TextField(pk=True)
