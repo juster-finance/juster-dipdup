@@ -25,7 +25,7 @@ contracts:
     address: KT1Feq9iRBBhpSBdPF1Y7Sd7iJu7uLqqRf1A
     typename: juster
   pool_contract_sample:
-    address: KT1T4zTEZQLbFeKoR8sRihozyS4DAnyicYE3
+    address: KT1E3kP4asggPk72LRssPRAUU2DHZvq7b1qe
     typename: pool
 
 datasources:
@@ -55,16 +55,16 @@ templates:
           - type: transaction
             destination: <contract>
             entrypoint: depositLiquidity
-      - callback: pool.on_approve_liquidity
+      - callback: pool.on_approve_entry
         pattern:
           - type: transaction
             destination: <contract>
-            entrypoint: approveLiquidity
-      - callback: pool.on_cancel_liquidity
+            entrypoint: approveEntry
+      - callback: pool.on_cancel_entry
         pattern:
           - type: transaction
             destination: <contract>
-            entrypoint: cancelLiquidity
+            entrypoint: cancelEntry
       - callback: pool.on_claim_liquidity
         pattern:
           - type: transaction
@@ -73,11 +73,11 @@ templates:
           - type: transaction
             source: <contract>
             optional: True
-      - callback: pool.on_withdraw_liquidity
+      - callback: pool.on_withdraw_claims
         pattern:
           - type: transaction
             destination: <contract>
-            entrypoint: withdrawLiquidity
+            entrypoint: withdrawClaims
       - callback: pool.on_create_event
         pattern:
           - type: transaction
@@ -186,6 +186,13 @@ indexes:
   pool_contract_origination:
     template: pool_contract_origination
     values:
+      datasource: tzkt_ithacanet
+      juster_core: juster_ithacanet
+      approved_source: tz1bgvq6y5RdjAUzBNNovqoAgBXv77dbkdhT
+  pool_ghostnet_example:
+    template: pool
+    values:
+      contract: pool_contract_sample
       datasource: tzkt_ithacanet
       juster_core: juster_ithacanet
       approved_source: tz1bgvq6y5RdjAUzBNNovqoAgBXv77dbkdhT

@@ -6,7 +6,7 @@ contracts:
     address: KT1Feq9iRBBhpSBdPF1Y7Sd7iJu7uLqqRf1A
     typename: juster
   pool_contract_sample:
-    address: KT1T4zTEZQLbFeKoR8sRihozyS4DAnyicYE3
+    address: KT1E3kP4asggPk72LRssPRAUU2DHZvq7b1qe
     typename: pool
 
 datasources:
