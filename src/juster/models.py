@@ -325,7 +325,10 @@ class Claim(Model):
 
 
 class PoolState(Model):
-    # TODO: consider rename to PoolAction?
+    # TODO: consider rename to PoolAction? Or maybe split into two models:
+    # - PoolState for liquidity amounts
+    # - PoolAction for all events (including ones that don't change any liquidity diffs)
+
     id = fields.BigIntField(pk=True)
     pool: ForeignKeyFieldInstance[Pool] = fields.ForeignKeyField('models.Pool', 'states')
     timestamp = fields.DatetimeField()

@@ -15,6 +15,7 @@ from juster.types.juster.storage import Events
 from juster.types.juster.storage import JusterStorage
 from juster.types.pool.storage import Entries
 from juster.types.pool.storage import Events as PoolEvents
+from juster.types.pool.storage import Lines
 from juster.types.pool.storage import PoolStorage
 
 default_quantize_precision = Decimal('1')
@@ -61,6 +62,13 @@ def get_pool_event(storage: PoolStorage) -> Tuple[int, PoolEvents]:
     pool_event_id = int(next(iter(storage.events)))
     pool_event_diff = storage.events[str(pool_event_id)]
     return pool_event_id, pool_event_diff
+
+
+def get_line(storage: PoolStorage) -> Tuple[int, Lines]:
+    assert len(storage.lines) == 1
+    line_id = int(next(iter(storage.lines)))
+    line_diff = storage.lines[str(line_id)]
+    return line_id, line_diff
 
 
 def process_pool_shares(raw: Union[str, int]) -> Decimal:

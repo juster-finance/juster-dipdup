@@ -6,16 +6,9 @@ from dipdup.models import Transaction
 
 import juster.models as models
 from juster.types.pool.parameter.add_line import AddLineParameter
-from juster.types.pool.storage import Lines
 from juster.types.pool.storage import PoolStorage
+from juster.utils import get_line
 from juster.utils import parse_datetime
-
-
-def get_line(storage: PoolStorage) -> Tuple[int, Lines]:
-    assert len(storage.lines) == 1
-    line_id = int(next(iter(storage.lines)))
-    line_diff = storage.lines[str(line_id)]
-    return line_id, line_diff
 
 
 async def on_add_line(
