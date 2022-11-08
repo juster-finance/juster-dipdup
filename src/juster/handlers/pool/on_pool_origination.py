@@ -1,4 +1,5 @@
 from decimal import Decimal
+import json
 
 from dipdup.context import HandlerContext
 from dipdup.models import Origination
@@ -15,12 +16,10 @@ async def on_pool_origination(
     pool_origination: Origination[PoolStorage],
 ) -> None:
 
-    # TODO: making name from lines params // metadata?
+    pool_metadata_raw = pool_origination.storage.metadata['contents']
+    metadata = json.loads(bytes.fromhex(pool_metadata_raw))
     contract_address = pool_origination.data.originated_contract_address
     assert contract_address
-    # TODO: remove this hotfix that disables indexing for contract with >0 origination balance
-    if contract_address == 'KT18yRWV3SxjQXTHAmYMrsVCxapDjAyRc6NX':
-        return
 
     creator = pool_origination.data.sender_address
     manager = pool_origination.storage.manager
@@ -55,6 +54,8 @@ async def on_pool_origination(
             entry_lock_period=int(storage['entryLockPeriod']),
             is_disband_allow=storage['isDisbandAllow'],
             is_deposit_paused=storage['isDepositPaused'],
+            name=metadata.get('name'),
+            version=metadata.get('version'),
         )
         await pool.save()
 

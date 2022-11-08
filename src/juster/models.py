@@ -246,6 +246,8 @@ class Pool(Model):
     entry_lock_period = fields.BigIntField()  # interval in seconds
     is_deposit_paused = fields.BooleanField()
     is_disband_allow = fields.BooleanField()
+    name = fields.TextField(null=True)
+    version = fields.TextField(null=True)
 
     async def get_last_state(self) -> 'PoolState':
         return await self.states.order_by('-counter').first()  # type: ignore
