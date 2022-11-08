@@ -5,7 +5,7 @@ services:
     build: .
     depends_on:
       - db
-    command: ["-c", "dipdup.yml", "-c", "dipdup.${JUSTER_ENV:-ithacanet}.yml", "run"]
+    command: ["-c", "dipdup.yml", "-c", "dipdup.${JUSTER_ENV:-ghostnet}.yml", "run"]
     restart: "no"
     environment:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-changeme}
