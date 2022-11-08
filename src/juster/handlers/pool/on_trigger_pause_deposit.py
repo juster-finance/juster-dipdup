@@ -21,10 +21,7 @@ async def on_trigger_pause_deposit(
     pool.is_deposit_paused = is_deposit_paused
     await pool.save()
 
-    action = (
-        models.PoolHistoryAction.DEPOSITS_PAUSED if is_deposit_paused
-        else models.PoolHistoryAction.DEPOSITS_UNPAUSED
-    )
+    action = models.PoolHistoryAction.DEPOSITS_PAUSED if is_deposit_paused else models.PoolHistoryAction.DEPOSITS_UNPAUSED
 
     await update_pool_state(
         pool=pool,
