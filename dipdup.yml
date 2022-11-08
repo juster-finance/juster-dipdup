@@ -106,6 +106,26 @@ templates:
           - type: transaction
             destination: <contract>
             entrypoint: addLine
+      - callback: pool.on_trigger_pause_deposit
+        pattern:
+          - type: transaction
+            destination: <contract>
+            entrypoint: triggerPauseDeposit
+      - callback: pool.on_trigger_pause_line
+        pattern:
+          - type: transaction
+            destination: <contract>
+            entrypoint: triggerPauseLine
+      - callback: pool.on_set_entry_lock_period
+        pattern:
+          - type: transaction
+            destination: <contract>
+            entrypoint: setEntryLockPeriod
+      - callback: pool.on_disband
+        pattern:
+          - type: transaction
+            destination: <contract>
+            entrypoint: disband
 
   juster:
     kind: operation
