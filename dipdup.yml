@@ -160,6 +160,7 @@ templates:
             entrypoint: triggerForceMajeure
           - type: transaction
             source: <contract>
+
   pool_contract_origination:
     kind: operation
     datasource: tzkt_ithacanet
@@ -171,6 +172,7 @@ templates:
         pattern:
           - type: origination
             similar_to: pool_contract_sample
+            strict: true
 
 indexes:
   harbinger_ithacanet:
