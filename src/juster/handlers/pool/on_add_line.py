@@ -41,5 +41,6 @@ async def on_add_line(
         rate_above_eq=Decimal(line_diff.rateAboveEq),
         rate_below=Decimal(line_diff.rateBelow),
         target_dynamics=models.to_dynamics(line_diff.targetDynamics),
+        is_paused=line_diff.isPaused,
     )
     await line.save()

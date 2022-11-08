@@ -53,6 +53,8 @@ async def on_pool_origination(
         pool = await models.Pool(
             address=contract_address,
             entry_lock_period=int(storage['entryLockPeriod']),
+            is_disband_allow=storage['isDisbandAllow'],
+            is_deposit_paused=storage['isDepositPaused'],
         )
         await pool.save()
 

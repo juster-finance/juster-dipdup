@@ -239,7 +239,10 @@ class Pool(Model):
     address = fields.CharField(36, pk=True)
     # NOTE: tried to add current_state as field but it raised circular reference error:
     # last_state = fields.OneToOneField('models.PoolState', 'pools', null=True)
+
     entry_lock_period = fields.BigIntField()  # interval in seconds
+    is_deposit_paused = fields.BooleanField()
+    is_disband_allow = fields.BooleanField()
 
     async def get_last_state(self) -> 'PoolState':
         return await self.states.order_by('-counter').first()  # type: ignore
@@ -282,6 +285,8 @@ class PoolLine(Model):
     rate_above_eq = fields.DecimalField(decimal_places=6, max_digits=16)  # ratio for the line
     rate_below = fields.DecimalField(decimal_places=6, max_digits=16)  # ratio for the line
     target_dynamics = fields.DecimalField(max_digits=18, decimal_places=target_dynamics_precision)  # 1.1 == +10%, 0.8 == -20%
+
+    is_paused = fields.BooleanField()
 
 
 class PoolEvent(Model):
