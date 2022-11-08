@@ -262,7 +262,7 @@ class EntryLiquidity(Model):
     pool: ForeignKeyFieldInstance[Pool] = fields.ForeignKeyField('models.Pool', 'entries', index=True)
     entry_id = fields.IntField(index=True)  # the key to entry is (pool + entry_id)
     user: ForeignKeyFieldInstance[User] = fields.ForeignKeyField('models.User', 'entries')
-    position: ForeignKeyFieldInstance[PoolPosition] = fields.ForeignKeyField('models.PoolPosition', 'position', null=True)
+    position: ForeignKeyFieldInstance[PoolPosition] = fields.ForeignKeyField('models.PoolPosition', 'entries', null=True)
     accept_time = fields.DatetimeField()
     amount = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'))
     status = fields.CharEnumField(EntryStatus)
