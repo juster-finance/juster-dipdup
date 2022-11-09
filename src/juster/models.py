@@ -263,6 +263,7 @@ class PoolPosition(Model):
     withdrawn_shares = fields.DecimalField(decimal_places=pool_share_precision, max_digits=32, default=Decimal('0'))
     withdrawn_amount = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'))
     deposited_amount = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'))
+    locked_estimate_amount = fields.DecimalField(decimal_places=pool_high_precision, max_digits=32, default=Decimal('0'))
 
 
 class EntryLiquidity(Model):

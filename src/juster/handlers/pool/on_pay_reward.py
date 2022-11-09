@@ -27,6 +27,7 @@ async def on_pay_reward(
 
     pool_address = pay_reward.data.target_address
     pool = await models.Pool.get(address=pool_address)
+    # TODO: consider doing for loop update for all users who had claim in finished event
 
     await update_pool_state(
         pool=pool,

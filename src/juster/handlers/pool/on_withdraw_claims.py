@@ -33,6 +33,8 @@ async def on_withdraw_claims(
         reward = quantize_down(event.result * claim.amount / event.provided, high_precision)
         position.withdrawn_amount += reward
         position.realized_profit += reward - claim.amount
+        position.locked_estimate_amount -= claim.amount
+        assert position.locked_estimate_amount >= Decimal(0), 'wrong state: negative estimated claims'
         await position.save()
         await claim.save()
 

@@ -68,6 +68,7 @@ async def on_claim_liquidity(
             pool=pool, event=event, user=user, defaults={'amount': 0, 'position': position, 'withdrawn': False}
         )
         claim.amount += claimed
+        position.locked_estimate_amount += claimed
         assert claim.amount == process_pool_shares(claim_pair.value), 'wrong claim shares calculation'
         await claim.save()
 
