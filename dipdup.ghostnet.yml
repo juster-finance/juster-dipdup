@@ -5,7 +5,7 @@ contracts:
   juster_ghostnet:
     address: KT1Feq9iRBBhpSBdPF1Y7Sd7iJu7uLqqRf1A
     typename: juster
-  pool_contract_sample:
+  pool_contract_ghostnet:
     address: KT1E3kP4asggPk72LRssPRAUU2DHZvq7b1qe
     typename: pool
 
@@ -27,12 +27,13 @@ indexes:
     values:
       datasource: tzkt_ghostnet
       contract: juster_ghostnet
-  pool_contract_origination:
-    template: pool_contract_origination
+  pool_ghostnet_origination:
+    template: pool_origination
     values:
       datasource: tzkt_ghostnet
       juster_core: juster_ghostnet
       approved_source: tz1bgvq6y5RdjAUzBNNovqoAgBXv77dbkdhT
+      pool_example: pool_contract_ghostnet
 
 advanced:
   reindex:
