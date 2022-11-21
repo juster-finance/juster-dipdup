@@ -6,8 +6,7 @@ contracts:
     address: KT1D6XTy8oAHkUWdzuQrzySECCDMnANEchQq
     typename: juster
   pool_contract_mainnet:
-    # TODO: need to add real sample
-    address: KT1E3kP4asggPk72LRssPRAUU2DHZvq7b1qe
+    address: KT1JKiMQWE8hcSGq8j89mYDEY4DLpTE4vEaD
     typename: pool
 
 datasources:
