@@ -25,7 +25,7 @@ contracts:
     address: KT1Feq9iRBBhpSBdPF1Y7Sd7iJu7uLqqRf1A
     typename: juster
   pool_contract_ghostnet:
-    address: KT1E3kP4asggPk72LRssPRAUU2DHZvq7b1qe
+    address: KT1M6fueToCaYBTeG25XZEFCa7YXcNDMn12x
     typename: pool
 
 datasources:
