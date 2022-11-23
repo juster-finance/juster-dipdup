@@ -1,5 +1,5 @@
-from decimal import Decimal
 import json
+from decimal import Decimal
 
 from dipdup.context import HandlerContext
 from dipdup.models import Origination
