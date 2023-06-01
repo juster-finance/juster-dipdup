@@ -17,12 +17,8 @@ from juster.utils import quantize_up
 from juster.utils import update_pool_state
 
 
-def calc_realized_profit(
-    last_pool_state: models.PoolState,
-    position: models.PoolPosition,
-    claimed_shares: Decimal,
-) -> Decimal:
-    return (last_pool_state.share_price - position.entry_share_price) * claimed_shares
+def calc_realized_profit(last_pool_state: models.PoolState, position: models.PoolPosition) -> Decimal:
+    return last_pool_state.share_price * position.shares + position.withdrawn_amount - position.deposited_amount
 
 
 async def on_claim_liquidity(
@@ -44,7 +40,7 @@ async def on_claim_liquidity(
     param_shares = process_pool_shares(claim_liquidity.parameter.shares)
     claimed_shares = position.shares - new_shares
     assert claimed_shares == param_shares, 'wrong position shares diff'
-    position.realized_profit += calc_realized_profit(pool_state, position, claimed_shares)
+    position.realized_profit = calc_realized_profit(pool_state, position)
     position.shares -= claimed_shares
     assert position.shares >= 0, 'wrong state: negative shares in position'
     position.withdrawn_shares += claimed_shares
