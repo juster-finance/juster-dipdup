@@ -3,7 +3,8 @@ from decimal import Decimal
 from enum import Enum
 
 from dipdup.datasources.coinbase.models import CandleInterval
-from tortoise import Model
+from dipdup.models import Model
+from tortoise import ForeignKeyFieldInstance
 from tortoise import fields
 
 liquidity_precision = 6
@@ -70,7 +71,7 @@ def candle_pk(source: Source, currency_pair_id: int, until: datetime) -> int:
 
 class Candle(Model):
     id = fields.BigIntField(pk=True)
-    currency_pair = fields.ForeignKeyField("models.CurrencyPair", "candles")
+    currency_pair: ForeignKeyFieldInstance[CurrencyPair] = fields.ForeignKeyField("models.CurrencyPair", "candles")
     source = fields.CharEnumField(Source)
     since = fields.DatetimeField()
     until = fields.DatetimeField()
@@ -82,10 +83,21 @@ class Candle(Model):
     volume = fields.DecimalField(decimal_places=6, max_digits=16)
 
 
+class User(Model):
+    address = fields.CharField(36, pk=True)
+    total_bets_count = fields.IntField(default=0)
+    total_bets_amount = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'))
+    total_liquidity_provided = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'))
+    total_reward = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'))
+    total_provider_reward = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'))
+    total_withdrawn = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'))
+    total_fees_collected = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'))
+
+
 class Event(Model):
     id = fields.BigIntField(pk=True)
-    currency_pair = fields.ForeignKeyField("models.CurrencyPair", "events")
-    creator = fields.ForeignKeyField('models.User', 'events')
+    currency_pair: ForeignKeyFieldInstance[CurrencyPair] = fields.ForeignKeyField("models.CurrencyPair", "events")
+    creator: ForeignKeyFieldInstance[User] = fields.ForeignKeyField('models.User', 'events')
     status = fields.CharEnumField(EventStatus)
     winner_bets = fields.CharEnumField(BetSide, null=True)
 
@@ -147,8 +159,8 @@ class Bet(Model):
     side = fields.CharEnumField(BetSide)
     amount = fields.DecimalField(decimal_places=6, max_digits=16)
     reward = fields.DecimalField(decimal_places=6, max_digits=16)
-    event = fields.ForeignKeyField('models.Event', 'bets')
-    user = fields.ForeignKeyField('models.User', 'bets')
+    event: ForeignKeyFieldInstance[Event] = fields.ForeignKeyField('models.Event', 'bets')
+    user: ForeignKeyFieldInstance[User] = fields.ForeignKeyField('models.User', 'bets')
 
 
 class Deposit(Model):
@@ -158,8 +170,8 @@ class Deposit(Model):
     amount_above_eq = fields.DecimalField(decimal_places=6, max_digits=16)
     amount_below = fields.DecimalField(decimal_places=6, max_digits=16)
     shares = fields.DecimalField(16, share_precision)
-    event = fields.ForeignKeyField('models.Event', 'deposits')
-    user = fields.ForeignKeyField('models.User', 'deposits')
+    event: ForeignKeyFieldInstance[Event] = fields.ForeignKeyField('models.Event', 'deposits')
+    user: ForeignKeyFieldInstance[User] = fields.ForeignKeyField('models.User', 'deposits')
 
 
 class Withdrawal(Model):
@@ -167,9 +179,9 @@ class Withdrawal(Model):
     opg_hash = fields.CharField(max_length=51)
     created_time = fields.DatetimeField()
     amount = fields.DecimalField(decimal_places=6, max_digits=16)
-    event = fields.ForeignKeyField('models.Event', 'withdrawals')
-    user = fields.ForeignKeyField('models.User', 'withdrawals')
-    fee_collector = fields.ForeignKeyField('models.User', 'third_party_withdrawals', null=True)
+    event: ForeignKeyFieldInstance[Event] = fields.ForeignKeyField('models.Event', 'withdrawals')
+    user: ForeignKeyFieldInstance[User] = fields.ForeignKeyField('models.User', 'withdrawals')
+    fee_collector: ForeignKeyFieldInstance[User] = fields.ForeignKeyField('models.User', 'third_party_withdrawals', null=True)
     type = fields.CharEnumField(WithdrawalType)
 
 
@@ -181,8 +193,8 @@ class Position(Model):
     liquidity_provided_below = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'))
     shares = fields.DecimalField(max_digits=18, decimal_places=share_precision, default=Decimal('0'))
     withdrawn = fields.BooleanField(default=False)
-    event = fields.ForeignKeyField('models.Event', 'positions')
-    user = fields.ForeignKeyField('models.User', 'positions')
+    event: ForeignKeyFieldInstance[Event] = fields.ForeignKeyField('models.Event', 'positions')
+    user: ForeignKeyFieldInstance[User] = fields.ForeignKeyField('models.User', 'positions')
     value = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'))
 
     def get_reward(self, side: BetSide) -> Decimal:
@@ -200,14 +212,3 @@ class Position(Model):
         profit *= 1 - event.liquidity_percent  # type: ignore
         profit += max(self.liquidity_provided_below, self.liquidity_provided_above_eq)  # type: ignore
         return profit
-
-
-class User(Model):
-    address = fields.TextField(pk=True)
-    total_bets_count = fields.IntField(default=0)
-    total_bets_amount = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'))
-    total_liquidity_provided = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'))
-    total_reward = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'))
-    total_provider_reward = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'))
-    total_withdrawn = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'))
-    total_fees_collected = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'))

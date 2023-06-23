@@ -18,21 +18,19 @@ hasura:
   rest: true
 
 contracts:
-  coinbase_storage_hangzhounet:
-    address: KT19yapgDLPR3CuvK32xJHgxNJigyNxjSr4y
+  coinbase_storage_ithacanet:
+    address: KT1UcwQtaztLSq8oufdXAtWpRTfFySCj7gFM
     typename: harbinger_storage
-  juster_hangzhounet:
-    address: KT197iHRJaAGw3oGpQj21YYV1vK9Fa5ShoMn
+  juster_ithacanet:
+    address: KT1Feq9iRBBhpSBdPF1Y7Sd7iJu7uLqqRf1A
     typename: juster
 
 datasources:
-  tzkt_hangzhounet:
+  tzkt_ithacanet:
     kind: tzkt
-    url: https://api.hangzhou2net.tzkt.io
+    url: https://api.ithacanet.tzkt.io
   coinbase:
     kind: coinbase
-    http:
-      cache: False
 
 templates:
   harbinger:
@@ -98,16 +96,16 @@ templates:
             source: <contract>
 
 indexes:
-  harbinger_hangzhounet:
+  harbinger_ithacanet:
     template: harbinger
     values:
-      datasource: tzkt_hangzhounet
-      contract: coinbase_storage_hangzhounet
-  juster_hangzhounet:
+      datasource: tzkt_ithacanet
+      contract: coinbase_storage_ithacanet
+  juster_ithacanet:
     template: juster
     values:
-      datasource: tzkt_hangzhounet
-      contract: juster_hangzhounet
+      datasource: tzkt_ithacanet
+      contract: juster_ithacanet
 
 hooks:
   fetch_coinbase_candles:
