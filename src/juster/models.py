@@ -11,6 +11,8 @@ liquidity_precision = 6
 ratio_precision = 8
 share_precision = 8
 target_dynamics_precision = 6
+pool_share_precision = 6
+pool_high_precision = 12
 
 
 def to_liquidity(value):
@@ -54,6 +56,28 @@ class Source(Enum):
 class WithdrawalType(Enum):
     MANUAL = 'MANUAL'
     THIRD_PARTY = 'THIRD_PARTY'
+
+
+class EntryStatus(Enum):
+    PENDING = 'PENDING'
+    APPROVED = 'APPROVED'
+    CANCELED = 'CANCELED'
+
+
+class PoolHistoryAction(Enum):
+    EVENT_CREATED = 'EVENT_CREATED'
+    EVENT_FINISHED = 'EVENT_FINISHED'
+    USER_DEPOSITED = 'USER_DEPOSITED'
+    LIQUIDITY_APPROVED = 'LIQUIDITY_APPROVED'
+    LIQUIDITY_CANCELED = 'LIQUIDITY_CANCELED'
+    USER_CLAIMED = 'USER_CLAIMED'
+    USER_WITHDRAWN = 'USER_WITHDRAWN'
+    RECEIVED_XTZ = 'RECEIVED_XTZ'
+    POOL_ORIGINATED = 'POOL_ORIGINATED'
+    ACCUMULATED_DUST = 'ACCUMULATED_DUST'
+    POOL_DISBANDED = 'POOL_DISBANDED'
+    DEPOSITS_PAUSED = 'DEPOSITS_PAUSED'
+    DEPOSITS_UNPAUSED = 'DEPOSITS_UNPAUSED'
 
 
 class CurrencyPair(Model):
@@ -205,10 +229,134 @@ class Position(Model):
 
     def get_provider_reward(self, side: BetSide, event: Event) -> Decimal:
         if side == BetSide.ABOVE_EQ:
-            profit = self.shares * event.pool_below / event.total_liquidity_shares - self.liquidity_provided_below  # type: ignore
+            profit = self.shares * event.pool_below / event.total_liquidity_shares - self.liquidity_provided_below
         else:
-            profit = self.shares * event.pool_above_eq / event.total_liquidity_shares - self.liquidity_provided_above_eq  # type: ignore
+            profit = self.shares * event.pool_above_eq / event.total_liquidity_shares - self.liquidity_provided_above_eq
 
-        profit *= 1 - event.liquidity_percent  # type: ignore
-        profit += max(self.liquidity_provided_below, self.liquidity_provided_above_eq)  # type: ignore
+        profit *= 1 - event.liquidity_percent
+        profit += max(self.liquidity_provided_below, self.liquidity_provided_above_eq)
         return profit
+
+
+class Pool(Model):
+    address = fields.CharField(36, pk=True)
+    # NOTE: tried to add current_state as field but it raised circular reference error:
+    # last_state = fields.OneToOneField('models.PoolState', 'pools', null=True)
+
+    entry_lock_period = fields.BigIntField()  # interval in seconds
+    is_deposit_paused = fields.BooleanField()
+    is_disband_allow = fields.BooleanField()
+    name = fields.TextField(null=True)
+    version = fields.TextField(null=True)
+
+    async def get_last_state(self) -> 'PoolState':
+        return await self.states.order_by('-counter').first()  # type: ignore
+
+
+class PoolPosition(Model):
+    id = fields.BigIntField(pk=True)
+    pool: ForeignKeyFieldInstance[Pool] = fields.ForeignKeyField('models.Pool', 'pool_positions', index=True)
+    user: ForeignKeyFieldInstance[User] = fields.ForeignKeyField('models.User', 'pool_positions', index=True)
+    shares = fields.DecimalField(decimal_places=pool_share_precision, max_digits=32, default=Decimal('0'))
+    realized_profit = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'))
+    entry_share_price = fields.DecimalField(decimal_places=pool_high_precision, max_digits=32, default=Decimal('0'))
+    withdrawn_shares = fields.DecimalField(decimal_places=pool_share_precision, max_digits=32, default=Decimal('0'))
+    withdrawn_amount = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'))
+    deposited_amount = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'))
+    locked_estimate_amount = fields.DecimalField(decimal_places=pool_high_precision, max_digits=32, default=Decimal('0'))
+
+
+class EntryLiquidity(Model):
+    pool_entry_id = fields.TextField(pk=True)
+    pool: ForeignKeyFieldInstance[Pool] = fields.ForeignKeyField('models.Pool', 'entries', index=True)
+    entry_id = fields.IntField(index=True)  # the key to entry is (pool + entry_id)
+    user: ForeignKeyFieldInstance[User] = fields.ForeignKeyField('models.User', 'entries')
+    position: ForeignKeyFieldInstance[PoolPosition] = fields.ForeignKeyField('models.PoolPosition', 'entries', null=True)
+    accept_time = fields.DatetimeField()
+    amount = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'))
+    status = fields.CharEnumField(EntryStatus)
+
+
+class PoolLine(Model):
+    pool_line_id = fields.TextField(pk=True)
+    pool: ForeignKeyFieldInstance[Pool] = fields.ForeignKeyField('models.Pool', 'pool_lines', index=True)
+    line_id = fields.IntField(index=True)  # the key to line is (pool + line_id)
+    last_bets_close_time = fields.DatetimeField()
+    max_events = fields.IntField()  # max events that can be run in parallel
+
+    # following parameters are the same as in Event, this parameters used in new event creation:
+    currency_pair: ForeignKeyFieldInstance[CurrencyPair] = fields.ForeignKeyField("models.CurrencyPair", "pool_lines")
+    liquidity_percent = fields.DecimalField(max_digits=18, decimal_places=liquidity_precision)
+    measure_period = fields.BigIntField()  # interval in seconds
+    rate_above_eq = fields.DecimalField(decimal_places=6, max_digits=16)  # ratio for the line
+    rate_below = fields.DecimalField(decimal_places=6, max_digits=16)  # ratio for the line
+    target_dynamics = fields.DecimalField(max_digits=18, decimal_places=target_dynamics_precision)  # 1.1 == +10%, 0.8 == -20%
+
+    is_paused = fields.BooleanField()
+
+
+class PoolEvent(Model):
+    id = fields.BigIntField(pk=True)
+    provided = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'))
+    result = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'), null=True)
+    claimed = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'))
+    pool: ForeignKeyFieldInstance[Pool] = fields.ForeignKeyField('models.Pool', 'events')
+    line: ForeignKeyFieldInstance[PoolLine] = fields.ForeignKeyField('models.PoolLine', 'events')
+    event: ForeignKeyFieldInstance[Event] = fields.OneToOneField('models.Event', 'pool_event_data', null=True)
+
+    def calc_withdrawable(self) -> Decimal:
+        return self.result * self.claimed / self.provided
+
+    def calc_profit_loss(self) -> Decimal:
+        assert self.result
+        return self.result - self.provided
+
+    def calc_pool_profit_loss(self) -> Decimal:
+        left_amount = self.provided - self.claimed
+        assert left_amount >= 0, 'wrong state: event claimed > provided'
+        return self.calc_profit_loss() * left_amount / self.provided
+
+
+class Claim(Model):
+    id = fields.IntField(pk=True)
+    pool: ForeignKeyFieldInstance[Pool] = fields.ForeignKeyField('models.Pool', 'claims', index=True)
+    event: ForeignKeyFieldInstance[PoolEvent] = fields.ForeignKeyField('models.PoolEvent', 'claims', index=True)
+    user: ForeignKeyFieldInstance[User] = fields.ForeignKeyField('models.User', 'claims', index=True)
+    position: ForeignKeyFieldInstance[PoolPosition] = fields.ForeignKeyField('models.PoolPosition', 'claims')
+    amount = fields.DecimalField(decimal_places=6, max_digits=32, default=Decimal('0'))
+    withdrawn = fields.BooleanField(default=False)
+
+
+class PoolState(Model):
+    # TODO: consider rename to PoolAction? Or maybe split into two models:
+    # - PoolState for liquidity amounts
+    # - PoolAction for all events (including ones that don't change any liquidity diffs)
+
+    id = fields.BigIntField(pk=True)
+    pool: ForeignKeyFieldInstance[Pool] = fields.ForeignKeyField('models.Pool', 'states')
+    timestamp = fields.DatetimeField()
+    level = fields.IntField()
+    counter = fields.IntField(default=0)
+    total_liquidity = fields.DecimalField(decimal_places=pool_high_precision, max_digits=32, default=Decimal('0'))
+    total_shares = fields.DecimalField(decimal_places=pool_share_precision, max_digits=32, default=Decimal('0'))
+    active_liquidity = fields.DecimalField(decimal_places=pool_high_precision, max_digits=32, default=Decimal('0'))
+    withdrawable_liquidity = fields.DecimalField(decimal_places=pool_high_precision, max_digits=32, default=Decimal('0'))
+    entry_liquidity = fields.DecimalField(decimal_places=pool_high_precision, max_digits=32, default=Decimal('0'))
+    share_price = fields.DecimalField(decimal_places=pool_high_precision, max_digits=32, null=True)
+
+    action = fields.CharEnumField(PoolHistoryAction)
+
+    total_liquidity_diff = fields.DecimalField(decimal_places=pool_high_precision, max_digits=32, default=Decimal('0'))
+    total_shares_diff = fields.DecimalField(decimal_places=pool_share_precision, max_digits=32, default=Decimal('0'))
+    active_liquidity_diff = fields.DecimalField(decimal_places=pool_share_precision, max_digits=32, default=Decimal('0'))
+    withdrawable_liquidity_diff = fields.DecimalField(decimal_places=pool_share_precision, max_digits=32, default=Decimal('0'))
+    entry_liquidity_diff = fields.DecimalField(decimal_places=pool_share_precision, max_digits=32, default=Decimal('0'))
+
+    affected_user: ForeignKeyFieldInstance[User] = fields.ForeignKeyField('models.User', 'pool_states', null=True)
+    affected_event: ForeignKeyFieldInstance[PoolEvent] = fields.ForeignKeyField('models.PoolEvent', 'states', null=True)
+    affected_entry: ForeignKeyFieldInstance[EntryLiquidity] = fields.ForeignKeyField('models.EntryLiquidity', 'states', null=True)
+    affected_claim: ForeignKeyFieldInstance[Claim] = fields.ForeignKeyField('models.Claim', 'states', null=True)
+    opg_hash = fields.CharField(max_length=51)
+
+    # TODO: consider adding sender: ForeignKeyFieldInstance[User] = fields.ForeignKeyField('models.User', 'history_as_sender')
+    # TODO: consider adding balance?

@@ -18,17 +18,20 @@ hasura:
   rest: true
 
 contracts:
-  coinbase_storage_ithacanet:
+  coinbase_storage_ghostnet:
     address: KT1UcwQtaztLSq8oufdXAtWpRTfFySCj7gFM
     typename: harbinger_storage
-  juster_ithacanet:
+  juster_ghostnet:
     address: KT1Feq9iRBBhpSBdPF1Y7Sd7iJu7uLqqRf1A
     typename: juster
+  pool_contract_ghostnet:
+    address: KT1M6fueToCaYBTeG25XZEFCa7YXcNDMn12x
+    typename: pool
 
 datasources:
-  tzkt_ithacanet:
+  tzkt_ghostnet:
     kind: tzkt
-    url: https://api.ithacanet.tzkt.io
+    url: https://api.ghostnet.tzkt.io
   coinbase:
     kind: coinbase
 
@@ -37,9 +40,92 @@ templates:
     kind: big_map
     datasource: <datasource>
     handlers:
-      - callback: on_oracle_storage_update
+      - callback: harbinger.on_oracle_storage_update
         contract: <contract>
         path: oracleData
+
+  pool:
+    kind: operation
+    datasource: <datasource>
+    contracts:
+      - <contract>
+    handlers:
+      - callback: pool.on_deposit_liquidity
+        pattern:
+          - type: transaction
+            destination: <contract>
+            entrypoint: depositLiquidity
+      - callback: pool.on_approve_entry
+        pattern:
+          - type: transaction
+            destination: <contract>
+            entrypoint: approveEntry
+      - callback: pool.on_cancel_entry
+        pattern:
+          - type: transaction
+            destination: <contract>
+            entrypoint: cancelEntry
+      - callback: pool.on_claim_liquidity
+        pattern:
+          - type: transaction
+            destination: <contract>
+            entrypoint: claimLiquidity
+          - type: transaction
+            source: <contract>
+            optional: True
+      - callback: pool.on_withdraw_claims
+        pattern:
+          - type: transaction
+            destination: <contract>
+            entrypoint: withdrawClaims
+      - callback: pool.on_create_event
+        pattern:
+          - type: transaction
+            destination: <contract>
+            entrypoint: createEvent
+          - type: transaction
+            entrypoint: newEvent
+            source: <contract>
+            destination: <juster_core>
+          - type: transaction
+            entrypoint: provideLiquidity
+            source: <contract>
+            destination: <juster_core>
+      - callback: pool.on_pay_reward
+        pattern:
+          - type: transaction
+            destination: <contract>
+            entrypoint: payReward
+      - callback: pool.on_default
+        pattern:
+          - type: transaction
+            destination: <contract>
+            entrypoint: default
+      - callback: pool.on_add_line
+        pattern:
+          - type: transaction
+            destination: <contract>
+            entrypoint: addLine
+      - callback: pool.on_trigger_pause_deposit
+        pattern:
+          - type: transaction
+            destination: <contract>
+            entrypoint: triggerPauseDeposit
+      - callback: pool.on_trigger_pause_line
+        pattern:
+          - type: transaction
+            destination: <contract>
+            entrypoint: triggerPauseLine
+      - callback: pool.on_set_entry_lock_period
+        pattern:
+          - type: transaction
+            destination: <contract>
+            entrypoint: setEntryLockPeriod
+      - callback: pool.on_disband
+        pattern:
+          - type: transaction
+            destination: <contract>
+            entrypoint: disband
 
   juster:
     kind: operation
@@ -47,36 +133,36 @@ templates:
     contracts:
       - <contract>
     handlers:
-      - callback: on_new_event
+      - callback: core.on_new_event
         pattern:
           - type: transaction
             destination: <contract>
             entrypoint: newEvent
-      - callback: on_provide_liquidity
+      - callback: core.on_provide_liquidity
         pattern:
           - type: transaction
             destination: <contract>
             entrypoint: provideLiquidity
-      - callback: on_bet
+      - callback: core.on_bet
         pattern:
           - type: transaction
             destination: <contract>
             entrypoint: bet
-      - callback: on_start_measurement
+      - callback: core.on_start_measurement
         pattern:
           - type: transaction
             destination: <contract>
             entrypoint: startMeasurementCallback
           - type: transaction
             source: <contract>
-      - callback: on_close
+      - callback: core.on_close
         pattern:
           - type: transaction
             destination: <contract>
             entrypoint: closeCallback
           - type: transaction
             source: <contract>
-      - callback: on_withdraw
+      - callback: core.on_withdraw
         pattern:
           - type: transaction
             destination: <contract>
@@ -87,7 +173,7 @@ templates:
           - type: transaction
             source: <contract>
             optional: True
-      - callback: on_force_majeure
+      - callback: core.on_force_majeure
         pattern:
           - type: transaction
             destination: <contract>
@@ -95,17 +181,37 @@ templates:
           - type: transaction
             source: <contract>
 
+  pool_origination:
+    kind: operation
+    datasource: <datasource>
+    types:
+      - transaction
+      - origination
+    handlers:
+      - callback: pool.on_pool_origination
+        pattern:
+          - type: origination
+            similar_to: <pool_example>
+            strict: true
+
 indexes:
-  harbinger_ithacanet:
+  harbinger_ghostnet:
     template: harbinger
     values:
-      datasource: tzkt_ithacanet
-      contract: coinbase_storage_ithacanet
-  juster_ithacanet:
+      datasource: tzkt_ghostnet
+      contract: coinbase_storage_ghostnet
+  juster_ghostnet:
     template: juster
     values:
-      datasource: tzkt_ithacanet
-      contract: juster_ithacanet
+      datasource: tzkt_ghostnet
+      contract: juster_ghostnet
+  pool_ghostnet_origination:
+    template: pool_origination
+    values:
+      datasource: tzkt_ghostnet
+      juster_core: juster_ghostnet
+      approved_source: tz1bgvq6y5RdjAUzBNNovqoAgBXv77dbkdhT
+      pool_example: pool_contract_ghostnet
 
 hooks:
   fetch_coinbase_candles:

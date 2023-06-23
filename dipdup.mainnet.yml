@@ -5,6 +5,9 @@ contracts:
   juster_mainnet:
     address: KT1D6XTy8oAHkUWdzuQrzySECCDMnANEchQq
     typename: juster
+  pool_contract_mainnet:
+    address: KT1JKiMQWE8hcSGq8j89mYDEY4DLpTE4vEaD
+    typename: pool
 
 datasources:
   tzkt_mainnet:
@@ -25,6 +28,13 @@ indexes:
     values:
       datasource: tzkt_mainnet
       contract: juster_mainnet
+  pool_mainnet_origination:
+    template: pool_origination
+    values:
+      datasource: tzkt_mainnet
+      juster_core: juster_mainnet
+      approved_source: tz1Lbp9byNSXY8rKYJ4RXmW8iPXYVBvYNCoF
+      pool_example: pool_contract_mainnet
 
 advanced:
   reindex:

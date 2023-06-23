@@ -15,7 +15,7 @@ async def on_new_event(
     event_id, event_diff = get_event(new_event.storage)
 
     currency_pair, _ = await models.CurrencyPair.get_or_create(symbol=event_diff.currencyPair)
-    currency_pair.total_events += 1  # type: ignore
+    currency_pair.total_events += 1
     await currency_pair.save()
 
     creator, _ = await models.User.get_or_create(address=new_event.data.sender_address)
@@ -34,3 +34,10 @@ async def on_new_event(
         liquidity_percent=models.to_liquidity(event_diff.liquidityPercent),
     )
     await event.save()
+
+    # As far as this handler may run after pool.on_create_event handler, pool_event
+    # may be created before event creation and then it is bounded to event here:
+    pool_event = await models.PoolEvent.get_or_none(id=event.id)
+    if pool_event is not None:
+        pool_event.event = event
+        await pool_event.save()

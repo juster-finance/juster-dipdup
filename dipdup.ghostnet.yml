@@ -1,0 +1,41 @@
+contracts:
+  coinbase_storage_ghostnet:
+    address: KT1UcwQtaztLSq8oufdXAtWpRTfFySCj7gFM
+    typename: harbinger_storage
+  juster_ghostnet:
+    address: KT1Feq9iRBBhpSBdPF1Y7Sd7iJu7uLqqRf1A
+    typename: juster
+  pool_contract_ghostnet:
+    address: KT1M6fueToCaYBTeG25XZEFCa7YXcNDMn12x
+    typename: pool
+
+datasources:
+  tzkt_ghostnet:
+    kind: tzkt
+    url: https://api.ghostnet.tzkt.io
+  coinbase:
+    kind: coinbase
+
+indexes:
+  harbinger_ghostnet:
+    template: harbinger
+    values:
+      datasource: tzkt_ghostnet
+      contract: coinbase_storage_ghostnet
+  juster_ghostnet:
+    template: juster
+    values:
+      datasource: tzkt_ghostnet
+      contract: juster_ghostnet
+  pool_ghostnet_origination:
+    template: pool_origination
+    values:
+      datasource: tzkt_ghostnet
+      juster_core: juster_ghostnet
+      approved_source: tz1bgvq6y5RdjAUzBNNovqoAgBXv77dbkdhT
+      pool_example: pool_contract_ghostnet
+
+advanced:
+  reindex:
+    config_modified: ignore
+    schema_modified: ignore
