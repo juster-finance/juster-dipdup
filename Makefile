@@ -18,7 +18,7 @@ all:            ## Run all checks
 
 install:        ## Install project dependencies
 	poetry install \
-	`if [ "${DEV}" = "0" ]; then echo "--no-dev"; fi`
+	`if [ "${DEV}" = "0" ]; then echo "--without dev"; fi`
 
 lint:           ## Lint with all tools
 	make isort black ruff mypy

@@ -45,7 +45,7 @@ async def on_claim_liquidity(
     position.withdrawn_shares += claimed_shares
 
     claimed_fraction = claimed_shares / pool_state.total_shares
-    user = await position.user.get()  # : ignore
+    user = await position.user.get()
     claimed_sum = Decimal(0)
 
     for claim_pair in claim_liquidity.storage.claims:
