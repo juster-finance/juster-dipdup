@@ -1,3 +1,3 @@
-FROM dipdup/dipdup:6.1-slim
+FROM dipdup/dipdup:6
 COPY . .
-RUN install_dependencies requirements.txt
+RUN pip install -r requirements.txt

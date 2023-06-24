@@ -26,7 +26,6 @@ async def on_claim_liquidity(
     claim_liquidity: Transaction[ClaimLiquidityParameter, PoolStorage],
     transaction_1: Optional[OperationData] = None,
 ) -> None:
-
     pool_address = claim_liquidity.data.target_address
     pool = await models.Pool.get(address=pool_address)
     pool_state = await pool.get_last_state()
@@ -46,7 +45,7 @@ async def on_claim_liquidity(
     position.withdrawn_shares += claimed_shares
 
     claimed_fraction = claimed_shares / pool_state.total_shares
-    user = await position.user.get()  # type: ignore
+    user = await position.user.get()  # : ignore
     claimed_sum = Decimal(0)
 
     for claim_pair in claim_liquidity.storage.claims:

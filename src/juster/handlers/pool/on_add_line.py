@@ -1,5 +1,4 @@
 from decimal import Decimal
-from typing import Tuple
 
 from dipdup.context import HandlerContext
 from dipdup.models import Transaction

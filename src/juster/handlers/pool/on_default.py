@@ -12,7 +12,6 @@ async def on_default(
     ctx: HandlerContext,
     default: Transaction[DefaultParameter, PoolStorage],
 ) -> None:
-
     if default.data.amount == 0:
         return
 
