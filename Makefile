@@ -35,13 +35,13 @@ ruff:           ## Lint with ruff
 	poetry run ruff check src
 
 mypy:           ## Lint with mypy
-	poetry run mypy src --show-traceback
+	poetry run mypy src
 
 build:          ## Build Python wheel package
 	poetry build
 
 image:          ## Build Docker image
-	docker build . -f deploy/Dockerfile -t demo_auction:${TAG}
+	docker build . -t juster-dipdup:${TAG}
 
 clean:          ## Remove all files from .gitignore except for `.venv`
 	git clean -xdf --exclude=".venv"
