@@ -1,9 +1,11 @@
 [tool.poetry]
 name = "juster-dipdup"
 version = "1.0.0"
-description = ""
+description = "DipDup indexer for Juster protocol"
 authors = [
-    "Lev Gorodetskiy <github@droserasprout.space>"
+    "Lev Gorodetskiy <dipdup@drsr.io>",
+    "Stepan Naumov <ztepler@gmail.com>",
+    "Michael Zaikin <mz@baking-bad.org>"
 ]
 packages = [
     { include = "juster", from = "src" },

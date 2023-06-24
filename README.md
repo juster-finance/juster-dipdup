@@ -1,4 +1,4 @@
-# Juster indexer
+# juster-dipdup
 
 ## Installation
 

@@ -1,5 +1,5 @@
-query candle_query {
-  juster_candle(where: {currency_pair: {symbol: {_eq: "XTZ-USD"}}}) {
+query candlesQuery {
+  candle(where: {currency_pair: {symbol: {_eq: "XTZ-USD"}}}) {
     id
     close
     source

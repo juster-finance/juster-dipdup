@@ -28,19 +28,11 @@ class BetsAboveEqItem(BaseModel):
     value: str
 
 
-class Key1(BaseModel):
-    class Config:
-        extra = Extra.forbid
-
-    address: str
-    nat: str
-
-
 class BetsBelowItem(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    key: Key1
+    key: Key
     value: str
 
 
@@ -64,35 +56,19 @@ class Config(BaseModel):
     rewardFeeSplitAfter: str
 
 
-class Key2(BaseModel):
-    class Config:
-        extra = Extra.forbid
-
-    address: str
-    nat: str
-
-
 class DepositedBet(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    key: Key2
+    key: Key
     value: str
-
-
-class Key3(BaseModel):
-    class Config:
-        extra = Extra.forbid
-
-    address: str
-    nat: str
 
 
 class DepositedLiquidityItem(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    key: Key3
+    key: Key
     value: str
 
 
@@ -125,67 +101,35 @@ class Events(BaseModel):
     totalLiquidityShares: str
 
 
-class Key4(BaseModel):
-    class Config:
-        extra = Extra.forbid
-
-    address: str
-    nat: str
-
-
 class IsWithdrawnItem(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    key: Key4
+    key: Key
     value: Dict[str, Any]
-
-
-class Key5(BaseModel):
-    class Config:
-        extra = Extra.forbid
-
-    address: str
-    nat: str
 
 
 class LiquidityShare(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    key: Key5
+    key: Key
     value: str
-
-
-class Key6(BaseModel):
-    class Config:
-        extra = Extra.forbid
-
-    address: str
-    nat: str
 
 
 class ProvidedLiquidityAboveEqItem(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    key: Key6
+    key: Key
     value: str
-
-
-class Key7(BaseModel):
-    class Config:
-        extra = Extra.forbid
-
-    address: str
-    nat: str
 
 
 class ProvidedLiquidityBelowItem(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    key: Key7
+    key: Key
     value: str
 
 
