@@ -29,7 +29,7 @@ async def on_withdraw_claims(
         user = await models.User.get(address=claim_key.provider)
         position = await models.PoolPosition.filter(pool=pool, user=user).get()
         claim = await models.Claim.filter(pool=pool, event=event, user=user).get()
-        claim.withdrawn = True  # type: ignore
+        claim.withdrawn = True
         reward = quantize_down(event.result * claim.amount / event.provided, high_precision)
         position.withdrawn_amount += reward
         position.realized_profit += reward - claim.amount

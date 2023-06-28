@@ -249,8 +249,10 @@ class Pool(Model):
     name = fields.TextField(null=True)
     version = fields.TextField(null=True)
 
+    states: fields.ReverseRelation['PoolState']
+
     async def get_last_state(self) -> 'PoolState':
-        return await self.states.order_by('-counter').first()  # type: ignore
+        return await self.states.order_by('-counter').get()
 
 
 class PoolPosition(Model):
@@ -358,5 +360,5 @@ class PoolState(Model):
     affected_claim: ForeignKeyFieldInstance[Claim] = fields.ForeignKeyField('models.Claim', 'states', null=True)
     opg_hash = fields.CharField(max_length=51)
 
-    # TODO: consider adding sender: ForeignKeyFieldInstance[User] = fields.ForeignKeyField('models.User', 'history_as_sender')
-    # TODO: consider adding balance?
+    # TODO: Consider adding sender and balance fields
+    # ForeignKeyFieldInstance[User] = fields.ForeignKeyField('models.User', 'history_as_sender')

@@ -7,7 +7,7 @@ from typing import Optional
 from typing import Tuple
 from typing import Union
 
-import strict_rfc3339  # type: ignore
+import strict_rfc3339  # type: ignore[import]
 from dipdup.models import OperationData
 
 import juster.models as models
@@ -97,7 +97,6 @@ async def update_pool_state(
     affected_entry: Optional[models.EntryLiquidity] = None,
     affected_claim: Optional[models.Claim] = None,
 ):
-
     # TODO: do not create new state if nothing changed?
     last_state = await pool.get_last_state()
 
