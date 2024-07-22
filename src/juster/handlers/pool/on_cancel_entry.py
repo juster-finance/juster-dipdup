@@ -11,7 +11,6 @@ async def on_cancel_entry(
     ctx: HandlerContext,
     cancel_entry: Transaction[CancelEntryParameter, PoolStorage],
 ) -> None:
-
     entry_id = int(cancel_entry.parameter.__root__)
     pool_address = cancel_entry.data.target_address
     pool = await models.Pool.get(address=pool_address)

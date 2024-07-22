@@ -11,7 +11,6 @@ async def on_disband(
     ctx: HandlerContext,
     disband: Transaction[DisbandParameter, PoolStorage],
 ) -> None:
-
     assert disband.storage.isDisbandAllow is True
     pool_address = disband.data.target_address
     pool = await models.Pool.get(address=pool_address)

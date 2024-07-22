@@ -11,7 +11,6 @@ async def on_trigger_pause_deposit(
     ctx: HandlerContext,
     trigger_pause_deposit: Transaction[TriggerPauseDepositParameter, PoolStorage],
 ) -> None:
-
     pool_address = trigger_pause_deposit.data.target_address
     pool = await models.Pool.get(address=pool_address)
 

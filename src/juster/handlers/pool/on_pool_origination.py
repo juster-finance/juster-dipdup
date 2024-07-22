@@ -15,7 +15,6 @@ async def on_pool_origination(
     ctx: HandlerContext,
     pool_origination: Origination[PoolStorage],
 ) -> None:
-
     pool_metadata_raw = pool_origination.storage.metadata['contents']
     metadata = json.loads(bytes.fromhex(pool_metadata_raw))
     contract_address = pool_origination.data.originated_contract_address
@@ -29,12 +28,13 @@ async def on_pool_origination(
 
     if is_approved:
         contracts_names = {contract.address: name for name, contract in ctx.config.contracts.items()}
-        is_added_to_indexer = contract_address in contracts_names
-        contract_name = contracts_names.get(contract_address)
-
-        if not is_added_to_indexer:
-            contract_name = f'pool_{contract_address}'
-            await ctx.add_contract(name=contract_name, address=contract_address, typename='pool')
+        contract_name = contracts_names.get(contract_address, f'pool_{contract_address}')
+        if contract_address not in contracts_names:
+            await ctx.add_contract(
+                name=contract_name,
+                address=contract_address,
+                typename='pool',
+            )
 
         await ctx.add_index(
             name=contract_name,
@@ -61,7 +61,7 @@ async def on_pool_origination(
         initial_liquidity = from_mutez(amt) if amt else Decimal(0)
         total_liquidity = from_high_precision(storage['activeLiquidityF']) + initial_liquidity
 
-        # TODO: consider using update_pool_state with last_state initiated with zeros to create first state?
+        # TODO: Consider using update_pool_state with last_state initiated with zeros to create first state?
         pool_state = models.PoolState(
             pool=pool,
             action=models.PoolHistoryAction.POOL_ORIGINATED,

@@ -5,7 +5,6 @@ import juster.models as models
 from juster.types.pool.parameter.approve_entry import ApproveEntryParameter
 from juster.types.pool.storage import PoolStorage
 from juster.utils import get_shares
-from juster.utils import process_pool_shares
 from juster.utils import update_pool_state
 
 
@@ -13,7 +12,6 @@ async def on_approve_entry(
     ctx: HandlerContext,
     approve_entry: Transaction[ApproveEntryParameter, PoolStorage],
 ) -> None:
-
     provider, new_shares = get_shares(approve_entry.storage)
 
     user, _ = await models.User.get_or_create(address=provider)

@@ -1,5 +1,3 @@
-from decimal import Decimal
-
 from dipdup.context import HandlerContext
 from dipdup.models import Transaction
 
